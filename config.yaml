@@ -1,0 +1,55 @@
+baseURL: https://hugo-paper.vercel.app/
+#author: Steve Francia
+#copyright: Copyright © 2008–2019, Steve Francia and the lee.so; all rights reserved.
+paginate: 5
+languageCode: en
+DefaultContentLanguage: en
+enableInlineShortcodes: yes
+ignoreErrors: error-remote-getjson
+theme: hugo-paper
+title: Blog
+params:
+  avatar: xieguowei2023@gmail.com
+  bio: 不会写代码的运营，不是个好的数据分析师...
+  color: linen
+  github: 
+  instagram:
+  name: Xiebro
+  twitter:
+markup:
+  goldmark:
+    renderer:
+      unsafe: yes
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /about/
+      weight: 10
+    - identifier: contact
+      name: Contact
+      url: /contact/
+      weight: 10
+taxonomies:
+  category: categories
+  series: series
+  tag: tags
+privacy:
+  instagram:
+    disabled: no
+    simple: yes
+  twitter:
+    disabled: no
+    enableDNT: yes
+    simple: yes
+  vimeo:
+    disabled: no
+    simple: yes
+  youtube:
+    disabled: no
+    privacyEnhanced: yes
+services:
+  instagram:
+    disableInlineCSS: yes
+  twitter:
+    disableInlineCSS: yes
