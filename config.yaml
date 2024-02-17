@@ -1,6 +1,4 @@
-baseURL: https://hugo-paper.vercel.app/
-#author: Steve Francia
-#copyright: Copyright © 2008–2019, Steve Francia and the lee.so; all rights reserved.
+baseURL: http://123.56.29.19/
 paginate: 5
 languageCode: en
 DefaultContentLanguage: en
