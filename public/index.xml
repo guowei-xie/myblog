@@ -2,73 +2,73 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>数据之道</title>
-    <link>http://www.xiebro.cool/</link>
+    <link>https://www.xiebro.cool/</link>
     <description>Recent content on 数据之道</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 23 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://www.xiebro.cool/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://www.xiebro.cool/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Placeholder Text</title>
-      <link>http://www.xiebro.cool/post/placeholder-text/</link>
+      <link>https://www.xiebro.cool/post/placeholder-text/</link>
       <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/placeholder-text/</guid>
+      <guid>https://www.xiebro.cool/post/placeholder-text/</guid>
       <description>&lt;p&gt;Lorem est tota propiore conpellat pectoribus de pectora summo.&lt;/p&gt;</description>
     </item>
     <item>
       <title>About</title>
-      <link>http://www.xiebro.cool/about/</link>
+      <link>https://www.xiebro.cool/about/</link>
       <pubDate>Fri, 23 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/about/</guid>
+      <guid>https://www.xiebro.cool/about/</guid>
       <description> 蟹老板（英文：Captain Eugene H. Armor Abs Krabs），美国动画片《海绵宝宝》系列中的配角，原名“尤金蟹”，是蟹堡王的老板。&#xA;他最爱的东西是他挣到的第一个美元和第一百万张钞票。 有一次，他为了拿出卡在下水管之中的硬币，钳子都不管了。 有一次，他赢得了马拉松比赛冠军，原因仅仅是有人在终点线掉了一分钱。 有一次，他丢了一角钱，认为是章鱼哥偷的，逼得章鱼哥辞职，纠缠了半年多，才知道是在自己的裤腿里。 </description>
     </item>
     <item>
       <title>emoji-support2</title>
-      <link>http://www.xiebro.cool/post/emoji-support2/</link>
+      <link>https://www.xiebro.cool/post/emoji-support2/</link>
       <pubDate>Fri, 16 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/emoji-support2/</guid>
+      <guid>https://www.xiebro.cool/post/emoji-support2/</guid>
       <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hello R Markdown</title>
-      <link>http://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</link>
+      <link>https://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</link>
       <pubDate>Tue, 01 Dec 2020 21:13:14 -0500</pubDate>
-      <guid>http://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</guid>
+      <guid>https://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</guid>
       <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.&#xA;You can embed an R code chunk like this:&#xA;summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
     </item>
     <item>
       <title>Markdown Syntax Guide</title>
-      <link>http://www.xiebro.cool/post/markdown-syntax/</link>
+      <link>https://www.xiebro.cool/post/markdown-syntax/</link>
       <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/markdown-syntax/</guid>
+      <guid>https://www.xiebro.cool/post/markdown-syntax/</guid>
       <description>&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Rich Content</title>
-      <link>http://www.xiebro.cool/post/rich-content/</link>
+      <link>https://www.xiebro.cool/post/rich-content/</link>
       <pubDate>Sun, 10 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/rich-content/</guid>
+      <guid>https://www.xiebro.cool/post/rich-content/</guid>
       <description>&lt;p&gt;Hugo ships with several &lt;a href=&#34;https://gohugo.io/content-management/shortcodes/#use-hugos-built-in-shortcodes&#34;&gt;Built-in Shortcodes&lt;/a&gt; for rich content, along with a &lt;a href=&#34;https://gohugo.io/about/hugo-and-gdpr/&#34;&gt;Privacy Config&lt;/a&gt; and a set of Simple Shortcodes that enable static and no-JS versions of various social media embeds.&lt;/p&gt;&#xA;&lt;h2 id=&#34;heading&#34;&gt;&lt;/h2&gt;</description>
     </item>
     <item>
       <title>Math Typesetting</title>
-      <link>http://www.xiebro.cool/post/math-typesetting/</link>
+      <link>https://www.xiebro.cool/post/math-typesetting/</link>
       <pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/math-typesetting/</guid>
+      <guid>https://www.xiebro.cool/post/math-typesetting/</guid>
       <description>&lt;p&gt;Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Emoji Support</title>
-      <link>http://www.xiebro.cool/post/emoji-support/</link>
+      <link>https://www.xiebro.cool/post/emoji-support/</link>
       <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/post/emoji-support/</guid>
+      <guid>https://www.xiebro.cool/post/emoji-support/</guid>
       <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Contact</title>
-      <link>http://www.xiebro.cool/contact/</link>
+      <link>https://www.xiebro.cool/contact/</link>
       <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
-      <guid>http://www.xiebro.cool/contact/</guid>
+      <guid>https://www.xiebro.cool/contact/</guid>
       <description> github.com/nanxiaobei lee.so </description>
     </item>
   </channel>
