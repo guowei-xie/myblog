@@ -5,8 +5,8 @@
     <loc>http://123.56.29.19/post/placeholder-text/</loc>
     <lastmod>2019-03-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://123.56.29.19/</loc>
-    <lastmod>2024-02-16T00:00:00+00:00</lastmod>
+    <loc>http://123.56.29.19/about/</loc>
+    <lastmod>2024-02-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://123.56.29.19/categories/</loc>
     <lastmod>2024-02-16T00:00:00+00:00</lastmod>
@@ -24,6 +24,9 @@
     <lastmod>2024-02-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://123.56.29.19/tags/</loc>
+    <lastmod>2024-02-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://123.56.29.19/</loc>
     <lastmod>2024-02-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://123.56.29.19/post/2020-12-01-r-rmarkdown/</loc>
@@ -85,9 +88,6 @@
   </url><url>
     <loc>http://123.56.29.19/post/emoji-support/</loc>
     <lastmod>2019-03-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://123.56.29.19/about/</loc>
-    <lastmod>2019-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://123.56.29.19/contact/</loc>
     <lastmod>2019-02-28T00:00:00+00:00</lastmod>

@@ -1,14 +1,15 @@
 baseURL: http://123.56.29.19/
-paginate: 5
+paginate: 30
 languageCode: en
 DefaultContentLanguage: en
 enableInlineShortcodes: yes
 ignoreErrors: error-remote-getjson
 theme: hugo-paper
-title: Blog
+title: 数据之道
 params:
+  sub_title: Home
   avatar: xieguowei2023@gmail.com
-  bio: 不会写代码的运营，不是个好的数据分析师...
+  bio: Welcome to my blog.
   color: linen
   github: 
   instagram:

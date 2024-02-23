@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Blog</title>
+    <title>数据之道</title>
     <link>http://123.56.29.19/</link>
-    <description>Recent content on Blog</description>
+    <description>Recent content on 数据之道</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 16 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 23 Feb 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://123.56.29.19/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Placeholder Text</title>
@@ -14,6 +14,13 @@
       <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
       <guid>http://123.56.29.19/post/placeholder-text/</guid>
       <description>&lt;p&gt;Lorem est tota propiore conpellat pectoribus de pectora summo.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>http://123.56.29.19/about/</link>
+      <pubDate>Fri, 23 Feb 2024 00:00:00 +0000</pubDate>
+      <guid>http://123.56.29.19/about/</guid>
+      <description> 蟹老板（英文：Captain Eugene H. Armor Abs Krabs），美国动画片《海绵宝宝》系列中的配角，原名“尤金蟹”，是蟹堡王的老板。&#xA;他最爱的东西是他挣到的第一个美元和第一百万张钞票。 有一次，他为了拿出卡在下水管之中的硬币，钳子都不管了。 有一次，他赢得了马拉松比赛冠军，原因仅仅是有人在终点线掉了一分钱。 有一次，他丢了一角钱，认为是章鱼哥偷的，逼得章鱼哥辞职，纠缠了半年多，才知道是在自己的裤腿里。 </description>
     </item>
     <item>
       <title>emoji-support2</title>
@@ -56,13 +63,6 @@
       <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
       <guid>http://123.56.29.19/post/emoji-support/</guid>
       <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>About</title>
-      <link>http://123.56.29.19/about/</link>
-      <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
-      <guid>http://123.56.29.19/about/</guid>
-      <description>Written in Go, Hugo is an open source static site generator available under the Apache Licence 2.0. Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.&#xA;Hugo makes use of a variety of open source projects including:&#xA;https://github.com/yuin/goldmark https://github.</description>
     </item>
     <item>
       <title>Contact</title>

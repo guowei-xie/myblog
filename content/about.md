@@ -3,26 +3,15 @@ aliases:
 - about-us
 - about-hugo
 - contact
-author: lee.so
-date: "2019-02-28"
-description: Hugo, the world's fastest framework for building websites
+author: xiebro
+date: "2024-02-23"
 title: About
 ---
+![](/./about_files/xiebro-logo-icon.png)
+蟹老板（英文：Captain Eugene H. Armor Abs Krabs），美国动画片《海绵宝宝》系列中的配角，原名“尤金蟹”，是蟹堡王的老板。
+- 他最爱的东西是他挣到的第一个美元和第一百万张钞票。
+- 有一次，他为了拿出卡在下水管之中的硬币，钳子都不管了。
+- 有一次，他赢得了马拉松比赛冠军，原因仅仅是有人在终点线掉了一分钱。
+- 有一次，他丢了一角钱，认为是章鱼哥偷的，逼得章鱼哥辞职，纠缠了半年多，才知道是在自己的裤腿里。
 
-Written in Go, Hugo is an open source static site generator available under the [Apache Licence 2.0.](https://github.com/gohugoio/hugo/blob/master/LICENSE) Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.
 
-Hugo makes use of a variety of open source projects including:
-
-- https://github.com/yuin/goldmark
-- https://github.com/alecthomas/chroma
-- https://github.com/muesli/smartcrop
-- https://github.com/spf13/cobra
-- https://github.com/spf13/viper
-
-Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.
-
-Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.
-
-Websites built with Hugo are extremely fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.
-
-Learn more and contribute on [GitHub](https://github.com/gohugoio).
