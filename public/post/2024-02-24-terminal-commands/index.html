@@ -1,0 +1,427 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Terminal常用命令 - 数据之道</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.gravatar.com/avatar/c9e9304520c41d32642a8b0922eb8347?s=160&amp;d=identicon" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="Terminal常用命令">
+<meta itemprop="description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example."><meta itemprop="datePublished" content="2024-02-24T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-02-24T00:00:00+00:00" />
+<meta itemprop="wordCount" content="153">
+<meta itemprop="keywords" content="terminal," />
+  
+  <meta property="og:title" content="Terminal常用命令" />
+<meta property="og:description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2024-02-24-terminal-commands/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-24T00:00:00+00:00" />
+
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Terminal常用命令"/>
+<meta name="twitter:description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2024-02-24-terminal-commands/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Terminal常用命令</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Feb 24, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="基础操作">基础操作</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查询磁盘使用情况</span>
+</span></span><span style="display:flex;"><span>du -d1 -h
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查询CPU使用情况</span>
+</span></span><span style="display:flex;"><span>top -d
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查询网络情况</span>
+</span></span><span style="display:flex;"><span>networkQuality
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 文件复制</span>
+</span></span><span style="display:flex;"><span>cp file.txt newfile.txt
+</span></span><span style="display:flex;"><span>cp file.txt /path/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 文件内容复制</span>
+</span></span><span style="display:flex;"><span>cat file.txt | pbcopy  <span style="color:#75715e"># 复制到剪贴板</span>
+</span></span><span style="display:flex;"><span>pbpaste &gt; newfile.txt  <span style="color:#75715e"># 粘贴到新文件 </span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 文件压缩</span>
+</span></span><span style="display:flex;"><span>tar -zcvf abc.tar.gz directory <span style="color:#75715e">#将目录压缩为gzip格式</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 文件解压</span>
+</span></span><span style="display:flex;"><span>tar -zxvf abc.tar.gz 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 对比两份文件</span>
+</span></span><span style="display:flex;"><span>diff file1 file2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 上传文件到云端</span>
+</span></span><span style="display:flex;"><span>scp /path/to/local/file username@server:/path/to/remote/directory
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载文件到本地</span>
+</span></span><span style="display:flex;"><span>scp username@server:/path/to/remote/file /path/to/local/directory
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查询自身 IP</span>
+</span></span><span style="display:flex;"><span>curl -v https://api.ipify.org  
+</span></span></code></pre></div><h3 id="生成秘钥">生成秘钥</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># .ssh目录下</span>
+</span></span><span style="display:flex;"><span>$ ssh-keygen -t rsa -C “youremail@example.com” 
+</span></span></code></pre></div><h3 id="git">Git</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 查看工作区和暂存区版本差异</span>
+</span></span><span style="display:flex;"><span>git diff readme.txt 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看暂存区和版本库差异</span>
+</span></span><span style="display:flex;"><span>git dff --cached 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 将文件从暂存区移除</span>
+</span></span><span style="display:flex;"><span>git rm --cached readme.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看工作区和版本库差异</span>
+</span></span><span style="display:flex;"><span>git dff HEAD --readme.txt 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 回退上一版本</span>
+</span></span><span style="display:flex;"><span>git reset --hard HEAD^
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 回退到第上n个版本</span>
+</span></span><span style="display:flex;"><span>git reset --hard HEAD~n
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 回退到指定版本</span>
+</span></span><span style="display:flex;"><span>git reset --hard commit_id
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 当文件未add到暂存区时，使其回退到上一次commit（丢弃工作区修改）</span>
+</span></span><span style="display:flex;"><span>git checkout --readme.txt
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 当文件已add到暂存区时，将其撤回到工作区</span>
+</span></span><span style="display:flex;"><span>git reset HEAD readme.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 保存工作现场</span>
+</span></span><span style="display:flex;"><span>git stash
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 恢复工作现场(但不删除stash内容)</span>
+</span></span><span style="display:flex;"><span>git stash apply
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 恢复工作现场(并且删除stash内容)</span>
+</span></span><span style="display:flex;"><span>git stash pop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 显示所有工作现场</span>
+</span></span><span style="display:flex;"><span>git stash list
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 选择要恢复的工作现场</span>
+</span></span><span style="display:flex;"><span>git stash apply stash@<span style="color:#f92672">{</span>0<span style="color:#f92672">}</span>
+</span></span></code></pre></div></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/terminal"
+      >terminal</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/placeholder-text/"
+      ><span class="mr-1.5">←</span><span>Placeholder Text</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/emoji-support2/"
+      ><span>emoji-support2</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>
