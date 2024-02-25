@@ -1,0 +1,437 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>蒙特卡洛模拟：猜猜篮子里有多少个苹果 - 数据之道</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="问题场景 在一个桶里，有同等数量的红苹果与青苹果，但你并不知道具体数量。 你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。 针对刚才桶里苹果的总数量（红与青之和），最好的猜测是多少？ 注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。 这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。
+在这个情景中，我们知道从一个桶中抽取了19个苹果，其中8个是红色的，11个是青色的。我们并不知道桶中到底有多少个苹果，但我们想要估计红色和青色苹果的总数量。
+因此，我们需要考虑在不同假设下（桶中红色苹果的数量），得到观察样本的概率。然后，我们找到使得这一概率最大化的假设，即我们的最佳估计。
+换句话说就是：当篮子里有多少个苹果时，你有最大的概率会抽到8红11青。
+所以我们可以通过蒙特卡洛模拟计算：
+当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p11 当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p12 &hellip;&hellip; 当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是pn Monte-Carlo Simulation library(purrr) # 场景复刻 nn_size = 19 nn_red = 8 nn_green = 11 # 生成一个装有2n个苹果的篮子(0:红, 1:青) generate_bin &lt;- function(n) { rep.int(c(0L, 1L), n) } # 实验设计 run_experiment &lt;- function(n, trials = 10e3) { if (n &lt; max(nn_red, nn_green)) return(0L) reps &lt;- replicate( trials, n |&gt; # 生成篮子 generate_bin() |&gt; # 随机不放回抽样 sample(size = nn_size, replace = FALSE) |&gt; # 判断结果是否符合预期 sum() == nn_green ) # 预期结果出现的概率=预期结果出现的次数/总抽样次数 sum(reps) / trials } # 实验进行 set." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.gravatar.com/avatar/c9e9304520c41d32642a8b0922eb8347?s=160&amp;d=identicon" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="蒙特卡洛模拟：猜猜篮子里有多少个苹果">
+<meta itemprop="description" content="问题场景 在一个桶里，有同等数量的红苹果与青苹果，但你并不知道具体数量。 你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。 针对刚才桶里苹果的总数量（红与青之和），最好的猜测是多少？ 注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。 这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。
+在这个情景中，我们知道从一个桶中抽取了19个苹果，其中8个是红色的，11个是青色的。我们并不知道桶中到底有多少个苹果，但我们想要估计红色和青色苹果的总数量。
+因此，我们需要考虑在不同假设下（桶中红色苹果的数量），得到观察样本的概率。然后，我们找到使得这一概率最大化的假设，即我们的最佳估计。
+换句话说就是：当篮子里有多少个苹果时，你有最大的概率会抽到8红11青。
+所以我们可以通过蒙特卡洛模拟计算：
+当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p11 当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p12 &hellip;&hellip; 当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是pn Monte-Carlo Simulation library(purrr) # 场景复刻 nn_size = 19 nn_red = 8 nn_green = 11 # 生成一个装有2n个苹果的篮子(0:红, 1:青) generate_bin &lt;- function(n) { rep.int(c(0L, 1L), n) } # 实验设计 run_experiment &lt;- function(n, trials = 10e3) { if (n &lt; max(nn_red, nn_green)) return(0L) reps &lt;- replicate( trials, n |&gt; # 生成篮子 generate_bin() |&gt; # 随机不放回抽样 sample(size = nn_size, replace = FALSE) |&gt; # 判断结果是否符合预期 sum() == nn_green ) # 预期结果出现的概率=预期结果出现的次数/总抽样次数 sum(reps) / trials } # 实验进行 set."><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="wordCount" content="143">
+<meta itemprop="keywords" content="Simulation," />
+  
+  <meta property="og:title" content="蒙特卡洛模拟：猜猜篮子里有多少个苹果" />
+<meta property="og:description" content="问题场景 在一个桶里，有同等数量的红苹果与青苹果，但你并不知道具体数量。 你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。 针对刚才桶里苹果的总数量（红与青之和），最好的猜测是多少？ 注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。 这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。
+在这个情景中，我们知道从一个桶中抽取了19个苹果，其中8个是红色的，11个是青色的。我们并不知道桶中到底有多少个苹果，但我们想要估计红色和青色苹果的总数量。
+因此，我们需要考虑在不同假设下（桶中红色苹果的数量），得到观察样本的概率。然后，我们找到使得这一概率最大化的假设，即我们的最佳估计。
+换句话说就是：当篮子里有多少个苹果时，你有最大的概率会抽到8红11青。
+所以我们可以通过蒙特卡洛模拟计算：
+当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p11 当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p12 &hellip;&hellip; 当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是pn Monte-Carlo Simulation library(purrr) # 场景复刻 nn_size = 19 nn_red = 8 nn_green = 11 # 生成一个装有2n个苹果的篮子(0:红, 1:青) generate_bin &lt;- function(n) { rep.int(c(0L, 1L), n) } # 实验设计 run_experiment &lt;- function(n, trials = 10e3) { if (n &lt; max(nn_red, nn_green)) return(0L) reps &lt;- replicate( trials, n |&gt; # 生成篮子 generate_bin() |&gt; # 随机不放回抽样 sample(size = nn_size, replace = FALSE) |&gt; # 判断结果是否符合预期 sum() == nn_green ) # 预期结果出现的概率=预期结果出现的次数/总抽样次数 sum(reps) / trials } # 实验进行 set." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/apple-basket/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-25T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="蒙特卡洛模拟：猜猜篮子里有多少个苹果"/>
+<meta name="twitter:description" content="问题场景 在一个桶里，有同等数量的红苹果与青苹果，但你并不知道具体数量。 你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。 针对刚才桶里苹果的总数量（红与青之和），最好的猜测是多少？ 注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。 这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。
+在这个情景中，我们知道从一个桶中抽取了19个苹果，其中8个是红色的，11个是青色的。我们并不知道桶中到底有多少个苹果，但我们想要估计红色和青色苹果的总数量。
+因此，我们需要考虑在不同假设下（桶中红色苹果的数量），得到观察样本的概率。然后，我们找到使得这一概率最大化的假设，即我们的最佳估计。
+换句话说就是：当篮子里有多少个苹果时，你有最大的概率会抽到8红11青。
+所以我们可以通过蒙特卡洛模拟计算：
+当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p11 当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p12 &hellip;&hellip; 当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是pn Monte-Carlo Simulation library(purrr) # 场景复刻 nn_size = 19 nn_red = 8 nn_green = 11 # 生成一个装有2n个苹果的篮子(0:红, 1:青) generate_bin &lt;- function(n) { rep.int(c(0L, 1L), n) } # 实验设计 run_experiment &lt;- function(n, trials = 10e3) { if (n &lt; max(nn_red, nn_green)) return(0L) reps &lt;- replicate( trials, n |&gt; # 生成篮子 generate_bin() |&gt; # 随机不放回抽样 sample(size = nn_size, replace = FALSE) |&gt; # 判断结果是否符合预期 sum() == nn_green ) # 预期结果出现的概率=预期结果出现的次数/总抽样次数 sum(reps) / trials } # 实验进行 set."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/apple-basket/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">蒙特卡洛模拟：猜猜篮子里有多少个苹果</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Feb 25, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="问题场景">问题场景</h3>
+<ul>
+<li>在一个桶里，有<strong>同等数量</strong>的<strong>红苹果</strong>与<strong>青苹果</strong>，但你并不知道具体数量。</li>
+<li>你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。</li>
+<li>针对刚才桶里苹果的总数量（红与青之和），<em>最好的猜测</em>是多少？</li>
+<li>注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。</li>
+</ul>
+<hr>
+<p>这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。</p>
+<p>在这个情景中，我们知道从一个桶中抽取了19个苹果，其中8个是红色的，11个是青色的。我们并不知道桶中到底有多少个苹果，但我们想要估计红色和青色苹果的总数量。</p>
+<p>因此，我们需要考虑在不同假设下（桶中红色苹果的数量），得到观察样本的概率。然后，我们找到使得这一概率最大化的假设，即我们的最佳估计。</p>
+<p>换句话说就是：当篮子里有多少个苹果时，你有最大的概率会抽到8红11青。</p>
+<p>所以我们可以通过<strong>蒙特卡洛模拟</strong>计算：</p>
+<ul>
+<li>当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p<sub>11</sub></li>
+<li>当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p<sub>12</sub></li>
+<li>&hellip;&hellip;</li>
+<li>当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是p<sub>n</sub></li>
+</ul>
+<hr>
+<h3 id="monte-carlo-simulation">Monte-Carlo Simulation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(purrr)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 场景复刻</span>
+</span></span><span style="display:flex;"><span>nn_size  <span style="color:#f92672">=</span> <span style="color:#ae81ff">19</span>
+</span></span><span style="display:flex;"><span>nn_red   <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span> 
+</span></span><span style="display:flex;"><span>nn_green <span style="color:#f92672">=</span> <span style="color:#ae81ff">11</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成一个装有2n个苹果的篮子(0:红, 1:青)</span>
+</span></span><span style="display:flex;"><span>generate_bin <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(n) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">rep.int</span>(<span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0L</span>, <span style="color:#ae81ff">1L</span>), n)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 实验设计</span>
+</span></span><span style="display:flex;"><span>run_experiment <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(n, trials <span style="color:#f92672">=</span> <span style="color:#ae81ff">10e3</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (n <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">max</span>(nn_red, nn_green)) <span style="color:#66d9ef">return</span>(<span style="color:#ae81ff">0L</span>)
+</span></span><span style="display:flex;"><span>    reps <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">replicate</span>(
+</span></span><span style="display:flex;"><span>        trials,
+</span></span><span style="display:flex;"><span>        n <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 生成篮子</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">generate_bin</span>() <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 随机不放回抽样</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sample</span>(size <span style="color:#f92672">=</span> nn_size, replace <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># 判断结果是否符合预期</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">sum</span>() <span style="color:#f92672">==</span> nn_green 
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 预期结果出现的概率=预期结果出现的次数/总抽样次数</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sum</span>(reps) <span style="color:#f92672">/</span> trials
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 实验进行</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">1234</span>)
+</span></span><span style="display:flex;"><span>res <span style="color:#f92672">&lt;-</span> purrr<span style="color:#f92672">::</span><span style="color:#a6e22e">map_dbl</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">:</span><span style="color:#ae81ff">50</span>, run_experiment)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 出现最大概率时所对应的红（青）苹果数量</span>
+</span></span><span style="display:flex;"><span>N <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">which</span>(res <span style="color:#f92672">==</span> <span style="color:#a6e22e">max</span>(res)) 
+</span></span></code></pre></div><h3 id="可视化">可视化</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(ggplot2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#a6e22e">length</span>(res), y <span style="color:#f92672">=</span> res))<span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_step</span>()<span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> N,
+</span></span><span style="display:flex;"><span>             col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;salmon&#34;</span>,
+</span></span><span style="display:flex;"><span>             lty <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>)<span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_text</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> N <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>                y <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.025</span>,
+</span></span><span style="display:flex;"><span>                col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;red&#34;</span>,
+</span></span><span style="display:flex;"><span>                label <span style="color:#f92672">=</span> N))<span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">guides</span>(col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/apple-basket/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<p>所以，最好的猜测是：总共34个苹果。</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/simulation"
+      >Simulation</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/survival-analysis/"
+      ><span class="mr-1.5">←</span><span>R可视化：用户生存分析</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2024-02-24-shell-commands/"
+      ><span>Shell：个人常用但经常会忘的命令行</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

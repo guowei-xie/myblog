@@ -11,7 +11,7 @@ tags:
   - git
 ---
 
-### linux
+### Linux
 ```bash
 # 查询磁盘使用情况
 du -d1 -h
