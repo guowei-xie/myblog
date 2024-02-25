@@ -1,0 +1,458 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>R可视化：用户生存分析 - 数据之道</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
+数据集下载：Telco-Customer-Churn.csv
+数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29." />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.gravatar.com/avatar/c9e9304520c41d32642a8b0922eb8347?s=160&amp;d=identicon" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="R可视化：用户生存分析">
+<meta itemprop="description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
+数据集下载：Telco-Customer-Churn.csv
+数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29."><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="wordCount" content="476">
+<meta itemprop="keywords" content="R可视化,生存分析," />
+  
+  <meta property="og:title" content="R可视化：用户生存分析" />
+<meta property="og:description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
+数据集下载：Telco-Customer-Churn.csv
+数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/survival-analysis/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-25T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="R可视化：用户生存分析"/>
+<meta name="twitter:description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
+数据集下载：Telco-Customer-Churn.csv
+数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/survival-analysis/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">R可视化：用户生存分析</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Feb 25, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p><em><strong>Kaplan-Meier</strong></em>生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的<strong>生存概率</strong>。</p>
+<p>数据集下载：<a href="datasets/Telco-Customer-Churn.csv">Telco-Customer-Churn.csv</a></p>
+<h3 id="数据集概览">数据集概览</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">read.csv</span>(<span style="color:#e6db74">&#34;datasets/Telco-Customer-Churn.csv&#34;</span>) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(churn <span style="color:#f92672">=</span> <span style="color:#a6e22e">if_else</span>(Churn <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Yes&#34;</span>, <span style="color:#ae81ff">1L</span>, <span style="color:#ae81ff">0L</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">%&gt;%</span>  <span style="color:#a6e22e">glimpse</span>()
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 7,043
+## Columns: 22
+## $ customerID       &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW…
+## $ gender           &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,…
+## $ SeniorCitizen    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ Partner          &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes…
+## $ Dependents       &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;…
+## $ tenure           &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2…
+## $ PhoneService     &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, …
+## $ MultipleLines    &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;…
+## $ InternetService  &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt…
+## $ OnlineSecurity   &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;…
+## $ OnlineBackup     &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N…
+## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y…
+## $ TechSupport      &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes…
+## $ StreamingTV      &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye…
+## $ StreamingMovies  &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes…
+## $ Contract         &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One …
+## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, …
+## $ PaymentMethod    &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;…
+## $ MonthlyCharges   &lt;dbl&gt; 29.85, 56.95, 53.85, 42.30, 70.70, 99.65, 89.10, 29.7…
+## $ TotalCharges     &lt;dbl&gt; 29.85, 1889.50, 108.15, 1840.75, 151.65, 820.50, 1949…
+## $ Churn            &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y…
+## $ churn            &lt;int&gt; 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,…
+</code></pre><h3 id="生存分析">生存分析</h3>
+<h4 id="1-初步探查整体生存趋势">1. 初步探查，整体生存趋势</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(survival) <span style="color:#75715e"># 进行生存分析的函数和工具</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(survminer) <span style="color:#75715e"># 用于生存分析结果的可视化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(hrbrthemes) <span style="color:#75715e"># 用于设置可视化主题</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Kaplan-Meier Analysis</span>
+</span></span><span style="display:flex;"><span>km_fit <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">survfit</span>(<span style="color:#a6e22e">Surv</span>(tenure, churn) <span style="color:#f92672">~</span> <span style="color:#ae81ff">1</span>, data <span style="color:#f92672">=</span> dat)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>km_fit <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggsurvplot</span>(
+</span></span><span style="display:flex;"><span>    data     <span style="color:#f92672">=</span> dat,
+</span></span><span style="display:flex;"><span>    linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;solid&#34;</span>,
+</span></span><span style="display:flex;"><span>    conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>    ggtheme  <span style="color:#f92672">=</span> <span style="color:#a6e22e">theme_ipsum</span>(),
+</span></span><span style="display:flex;"><span>    xlab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Time&#34;</span>,
+</span></span><span style="display:flex;"><span>    ylab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Surv. Prob&#34;</span>
+</span></span><span style="display:flex;"><span>  )
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/survival-analysis/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<h4 id="2-维度探查不同特征人群的生存趋势">2. 维度探查，不同特征人群的生存趋势</h4>
+<p>封装函数，方便多次画图使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>pals <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rownames</span>(RColorBrewer<span style="color:#f92672">::</span>brewer.pal.info)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sc <span style="color:#f92672">&lt;-</span> . <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggsurvplot</span>(
+</span></span><span style="display:flex;"><span>    data     <span style="color:#f92672">=</span> dat,
+</span></span><span style="display:flex;"><span>    linetype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;solid&#34;</span>,
+</span></span><span style="display:flex;"><span>    conf.int <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>    pval     <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>,
+</span></span><span style="display:flex;"><span>    censor   <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>    palette  <span style="color:#f92672">=</span> <span style="color:#a6e22e">sample</span>(pals, <span style="color:#ae81ff">1</span>),
+</span></span><span style="display:flex;"><span>    ggtheme  <span style="color:#f92672">=</span> <span style="color:#a6e22e">theme_ipsum</span>(),
+</span></span><span style="display:flex;"><span>    break.time.by <span style="color:#f92672">=</span> <span style="color:#ae81ff">14</span>,
+</span></span><span style="display:flex;"><span>    xlab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Time&#34;</span>,
+</span></span><span style="display:flex;"><span>    ylab <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Surv. Prob&#34;</span>
+</span></span><span style="display:flex;"><span>  )
+</span></span></code></pre></div><ul>
+<li>by gender:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>gender_fit <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">survfit</span>(<span style="color:#a6e22e">Surv</span>(tenure, churn) <span style="color:#f92672">~</span> gender, data <span style="color:#f92672">=</span> dat)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sc</span>(gender_fit)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/survival-analysis/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<ul>
+<li>by PaymentMethod:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>payment_method <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">survfit</span>(<span style="color:#a6e22e">Surv</span>(tenure, churn) <span style="color:#f92672">~</span> PaymentMethod, data <span style="color:#f92672">=</span> dat)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sc</span>(payment_method)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/survival-analysis/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<h4 id="3-使用迭代法快速扫描维度">3. 使用迭代法快速扫描维度</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(gridExtra)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 需要扫描的维度</span>
+</span></span><span style="display:flex;"><span>cols <span style="color:#f92672">&lt;-</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">c</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;PhoneService&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;TechSupport&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;StreamingTV&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;StreamingMovies&#34;</span>
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plots <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  cols <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 这里引入了meta programming的编程思想，用函数生成函数</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map_chr</span>( <span style="color:#f92672">~</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;survfit(Surv(tenure, churn) ~ %s, data = dat)&#34;</span>, .x)) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map</span>(<span style="color:#f92672">~</span> <span style="color:#a6e22e">eval</span>(<span style="color:#a6e22e">parse</span>(text <span style="color:#f92672">=</span> .))) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map</span>(sc) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 从ggsurvplot对象中提取图片</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map</span>(pluck, <span style="color:#e6db74">&#34;plot&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">do.call</span>(grid.arrange, plots)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/survival-analysis/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96"
+      >R可视化</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90"
+      >生存分析</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2024-02-24-shell-commands/"
+      ><span>Shell：个人常用但经常会忘的命令行</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -1,68 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 数据之道</title>
+    <title>数据之道</title>
     <link>https://www.xiebro.cool/post/</link>
-    <description>Recent content in Posts on 数据之道</description>
+    <description>Recent content on 数据之道</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 24 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 25 Feb 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Placeholder Text</title>
-      <link>https://www.xiebro.cool/post/placeholder-text/</link>
-      <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/placeholder-text/</guid>
-      <description>&lt;p&gt;Lorem est tota propiore conpellat pectoribus de pectora summo.&lt;/p&gt;</description>
+      <title>R可视化：用户生存分析</title>
+      <link>https://www.xiebro.cool/post/survival-analysis/</link>
+      <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/survival-analysis/</guid>
+      <description>Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。&#xA;数据集下载：Telco-Customer-Churn.csv&#xA;数据集概览 library(tidyverse) dat &amp;lt;- read.csv(&amp;#34;datasets/Telco-Customer-Churn.csv&amp;#34;) %&amp;gt;% mutate(churn = if_else(Churn == &amp;#34;Yes&amp;#34;, 1L, 0L)) dat %&amp;gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &amp;lt;chr&amp;gt; &amp;#34;7590-VHVEG&amp;#34;, &amp;#34;5575-GNVDE&amp;#34;, &amp;#34;3668-QPYBK&amp;#34;, &amp;#34;7795-CFOCW… ## $ gender &amp;lt;chr&amp;gt; &amp;#34;Female&amp;#34;, &amp;#34;Male&amp;#34;, &amp;#34;Male&amp;#34;, &amp;#34;Male&amp;#34;, &amp;#34;Female&amp;#34;, &amp;#34;Female&amp;#34;,… ## $ SeniorCitizen &amp;lt;int&amp;gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &amp;lt;chr&amp;gt; &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes… ## $ Dependents &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;… ## $ tenure &amp;lt;int&amp;gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, … ## $ MultipleLines &amp;lt;chr&amp;gt; &amp;#34;No phone service&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No phone service&amp;#34;, &amp;#34;… ## $ InternetService &amp;lt;chr&amp;gt; &amp;#34;DSL&amp;#34;, &amp;#34;DSL&amp;#34;, &amp;#34;DSL&amp;#34;, &amp;#34;DSL&amp;#34;, &amp;#34;Fiber optic&amp;#34;, &amp;#34;Fiber opt… ## $ OnlineSecurity &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;… ## $ OnlineBackup &amp;lt;chr&amp;gt; &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;N… ## $ DeviceProtection &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Y… ## $ TechSupport &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes… ## $ StreamingTV &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Ye… ## $ StreamingMovies &amp;lt;chr&amp;gt; &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes… ## $ Contract &amp;lt;chr&amp;gt; &amp;#34;Month-to-month&amp;#34;, &amp;#34;One year&amp;#34;, &amp;#34;Month-to-month&amp;#34;, &amp;#34;One … ## $ PaperlessBilling &amp;lt;chr&amp;gt; &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;Yes&amp;#34;, &amp;#34;No&amp;#34;, … ## $ PaymentMethod &amp;lt;chr&amp;gt; &amp;#34;Electronic check&amp;#34;, &amp;#34;Mailed check&amp;#34;, &amp;#34;Mailed check&amp;#34;, &amp;#34;… ## $ MonthlyCharges &amp;lt;dbl&amp;gt; 29.</description>
     </item>
     <item>
-      <title>Terminal常用命令</title>
-      <link>https://www.xiebro.cool/post/2024-02-24-terminal-commands/</link>
+      <title>Shell：个人常用但经常会忘的命令行</title>
+      <link>https://www.xiebro.cool/post/2024-02-24-shell-commands/</link>
       <pubDate>Sat, 24 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/2024-02-24-terminal-commands/</guid>
-      <description>基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &amp;gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example.</description>
-    </item>
-    <item>
-      <title>emoji-support2</title>
-      <link>https://www.xiebro.cool/post/emoji-support2/</link>
-      <pubDate>Fri, 16 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/emoji-support2/</guid>
-      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Hello R Markdown</title>
-      <link>https://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</link>
-      <pubDate>Tue, 01 Dec 2020 21:13:14 -0500</pubDate>
-      <guid>https://www.xiebro.cool/post/2020-12-01-r-rmarkdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.&#xA;You can embed an R code chunk like this:&#xA;summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
-    </item>
-    <item>
-      <title>Markdown Syntax Guide</title>
-      <link>https://www.xiebro.cool/post/markdown-syntax/</link>
-      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/markdown-syntax/</guid>
-      <description>&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Rich Content</title>
-      <link>https://www.xiebro.cool/post/rich-content/</link>
-      <pubDate>Sun, 10 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/rich-content/</guid>
-      <description>&lt;p&gt;Hugo ships with several &lt;a href=&#34;https://gohugo.io/content-management/shortcodes/#use-hugos-built-in-shortcodes&#34;&gt;Built-in Shortcodes&lt;/a&gt; for rich content, along with a &lt;a href=&#34;https://gohugo.io/about/hugo-and-gdpr/&#34;&gt;Privacy Config&lt;/a&gt; and a set of Simple Shortcodes that enable static and no-JS versions of various social media embeds.&lt;/p&gt;&#xA;&lt;h2 id=&#34;heading&#34;&gt;&lt;/h2&gt;</description>
-    </item>
-    <item>
-      <title>Math Typesetting</title>
-      <link>https://www.xiebro.cool/post/math-typesetting/</link>
-      <pubDate>Fri, 08 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/math-typesetting/</guid>
-      <description>&lt;p&gt;Mathematical notation in a Hugo project can be enabled by using third party JavaScript libraries.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Emoji Support</title>
-      <link>https://www.xiebro.cool/post/emoji-support/</link>
-      <pubDate>Tue, 05 Mar 2019 00:00:00 +0000</pubDate>
-      <guid>https://www.xiebro.cool/post/emoji-support/</guid>
-      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
+      <guid>https://www.xiebro.cool/post/2024-02-24-shell-commands/</guid>
+      <description>linux # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &amp;gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example.</description>
     </item>
   </channel>
 </rss>

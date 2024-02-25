@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>shell on 数据之道</title>
+    <link>https://www.xiebro.cool/categories/shell/</link>
+    <description>Recent content in shell on 数据之道</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 24 Feb 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/categories/shell/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Shell：个人常用但经常会忘的命令行</title>
+      <link>https://www.xiebro.cool/post/2024-02-24-shell-commands/</link>
+      <pubDate>Sat, 24 Feb 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2024-02-24-shell-commands/</guid>
+      <description>linux # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &amp;gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example.</description>
+    </item>
+  </channel>
+</rss>

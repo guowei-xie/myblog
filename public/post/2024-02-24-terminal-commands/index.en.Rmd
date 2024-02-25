@@ -1,5 +1,5 @@
 ---
-title: Terminal常用命令
+title: Shell：终端常用命令
 author: Xiebro
 date: '2024-02-24'
 slug: [linux]
@@ -59,13 +59,13 @@ $ ssh-keygen -t rsa -C “youremail@example.com”
 git diff readme.txt 
 
 # 查看暂存区和版本库差异
-git dff --cached 
+git diff --cached 
 
 # 将文件从暂存区移除
 git rm --cached readme.txt
 
 # 查看工作区和版本库差异
-git dff HEAD --readme.txt 
+git diff HEAD --readme.txt 
 
 # 回退上一版本
 git reset --hard HEAD^

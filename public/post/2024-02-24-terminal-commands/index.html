@@ -56,7 +56,7 @@
   />
 
   
-  <title>Terminal常用命令 - 数据之道</title>
+  <title>Shell：个人常用但经常记不住的命令行 - 数据之道</title>
 
   
   <meta name="theme-color" />
@@ -127,13 +127,13 @@
   
   
   
-  <meta itemprop="name" content="Terminal常用命令">
+  <meta itemprop="name" content="Shell：个人常用但经常记不住的命令行">
 <meta itemprop="description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example."><meta itemprop="datePublished" content="2024-02-24T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-02-24T00:00:00+00:00" />
-<meta itemprop="wordCount" content="153">
+<meta itemprop="wordCount" content="149">
 <meta itemprop="keywords" content="terminal," />
   
-  <meta property="og:title" content="Terminal常用命令" />
+  <meta property="og:title" content="Shell：个人常用但经常记不住的命令行" />
 <meta property="og:description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.xiebro.cool/post/2024-02-24-terminal-commands/" /><meta property="article:section" content="post" />
@@ -143,7 +143,7 @@
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Terminal常用命令"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Shell：个人常用但经常记不住的命令行"/>
 <meta name="twitter:description" content="基础操作 # 查询磁盘使用情况 du -d1 -h # 查询CPU使用情况 top -d # 查询网络情况 networkQuality # 文件复制 cp file.txt newfile.txt cp file.txt /path/ # 文件内容复制 cat file.txt | pbcopy # 复制到剪贴板 pbpaste &gt; newfile.txt # 粘贴到新文件 # 文件压缩 tar -zcvf abc.tar.gz directory #将目录压缩为gzip格式 # 文件解压 tar -zxvf abc.tar.gz # 对比两份文件 diff file1 file2 # 上传文件到云端 scp /path/to/local/file username@server:/path/to/remote/directory # 下载文件到本地 scp username@server:/path/to/remote/file /path/to/local/directory # 查询自身 IP curl -v https://api.ipify.org 生成秘钥 # .ssh目录下 $ ssh-keygen -t rsa -C “youremail@example."/>
 
   
@@ -253,7 +253,7 @@
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Terminal常用命令</h1>
+    <h1 class="!my-0 pb-2.5">Shell：个人常用但经常记不住的命令行</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -313,13 +313,13 @@
 </span></span><span style="display:flex;"><span>git diff readme.txt 
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看暂存区和版本库差异</span>
-</span></span><span style="display:flex;"><span>git dff --cached 
+</span></span><span style="display:flex;"><span>git diff --cached 
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 将文件从暂存区移除</span>
 </span></span><span style="display:flex;"><span>git rm --cached readme.txt
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 查看工作区和版本库差异</span>
-</span></span><span style="display:flex;"><span>git dff HEAD --readme.txt 
+</span></span><span style="display:flex;"><span>git diff HEAD --readme.txt 
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 回退上一版本</span>
 </span></span><span style="display:flex;"><span>git reset --hard HEAD^
@@ -335,9 +335,6 @@
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 当文件已add到暂存区时，将其撤回到工作区</span>
 </span></span><span style="display:flex;"><span>git reset HEAD readme.txt
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 保存工作现场</span>
-</span></span><span style="display:flex;"><span>git stash
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 恢复工作现场(但不删除stash内容)</span>
 </span></span><span style="display:flex;"><span>git stash apply
@@ -373,8 +370,8 @@
     
     <a
       class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://www.xiebro.cool/post/placeholder-text/"
-      ><span class="mr-1.5">←</span><span>Placeholder Text</span></a
+      href="https://www.xiebro.cool/post/survival-analysis/"
+      ><span class="mr-1.5">←</span><span>R可视化：用户生存分析</span></a
     >
     
     
