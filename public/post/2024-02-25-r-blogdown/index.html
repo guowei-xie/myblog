@@ -1,0 +1,552 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>网站搭建：用R语言blogdown搭建博客站点 - 数据之道</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="搭建这个Blog的起因是这样的&hellip;
+有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
+二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
+安装blogdown install.packages(&#39;blogdown&#39;) 创建blogdown项目 上图中的Hugo theme是网站的主题模板，这里配置的是默认模板，你也可以到https://themes.gohugo.io 上选择自己喜欢的模板，比如本站点使用的是Paper这个主题，你可以进入主题点击“Download”进入项目。 而github的项目名称就是主题模板名称，你可以很方便的将模板名称替换到Hugo theme的配置里，比如： 预览网站
+blogdown包提供了很多非常便利的功能，比如：
+# 预览网站，并且可以实时预览网站修改效果 blogdown::serve_site() 修改网站 /content/post/路径下的文件就是文章内容了，如果要添加新文章可以使用Rstudio插件快捷创建 插件中也提供了很多其他的快捷功能，比如“插入图片”。 config.yaml是网站的配置文件，比如网站标题、社交账号等，可以根据自己需要做修改 themes/路径下的内容是模板设计相关的代码，如果想要修改，建议有一些前端开发的经验 生成网站 修改完毕后，现在我们可以生成静态网站了，blogdown包同样提供了非常方便的方法：
+blogdown::build_site() 如果看到类似上图的输出，说明站点已经生成，此时你的项目中会出现一个public目录，该目录下的内容就是你的静态站点了。
+所以，我们每次修改或添加完内容，都需要重新build_site()，
+接下来，我们只需要将public部署到服务器端即可。
+三、网站部署 服务器登录 ssh username@xxx.xxx.xxx.xxx 上传站点 把public目录上传到服务器的/data/wwwroot/目录下 scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot # 如果服务器没有该目录，需要先创建 # 切到根目录后 sudo mkdir data/wwwroot 这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些 Nginx sudo权限下安装nginx sudo apt install nginx 启动nginx服务 sudo systemctl start nginx 验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。" />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.gravatar.com/avatar/c9e9304520c41d32642a8b0922eb8347?s=160&amp;d=identicon" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="网站搭建：用R语言blogdown搭建博客站点">
+<meta itemprop="description" content="搭建这个Blog的起因是这样的&hellip;
+有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
+二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
+安装blogdown install.packages(&#39;blogdown&#39;) 创建blogdown项目 上图中的Hugo theme是网站的主题模板，这里配置的是默认模板，你也可以到https://themes.gohugo.io 上选择自己喜欢的模板，比如本站点使用的是Paper这个主题，你可以进入主题点击“Download”进入项目。 而github的项目名称就是主题模板名称，你可以很方便的将模板名称替换到Hugo theme的配置里，比如： 预览网站
+blogdown包提供了很多非常便利的功能，比如：
+# 预览网站，并且可以实时预览网站修改效果 blogdown::serve_site() 修改网站 /content/post/路径下的文件就是文章内容了，如果要添加新文章可以使用Rstudio插件快捷创建 插件中也提供了很多其他的快捷功能，比如“插入图片”。 config.yaml是网站的配置文件，比如网站标题、社交账号等，可以根据自己需要做修改 themes/路径下的内容是模板设计相关的代码，如果想要修改，建议有一些前端开发的经验 生成网站 修改完毕后，现在我们可以生成静态网站了，blogdown包同样提供了非常方便的方法：
+blogdown::build_site() 如果看到类似上图的输出，说明站点已经生成，此时你的项目中会出现一个public目录，该目录下的内容就是你的静态站点了。
+所以，我们每次修改或添加完内容，都需要重新build_site()，
+接下来，我们只需要将public部署到服务器端即可。
+三、网站部署 服务器登录 ssh username@xxx.xxx.xxx.xxx 上传站点 把public目录上传到服务器的/data/wwwroot/目录下 scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot # 如果服务器没有该目录，需要先创建 # 切到根目录后 sudo mkdir data/wwwroot 这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些 Nginx sudo权限下安装nginx sudo apt install nginx 启动nginx服务 sudo systemctl start nginx 验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。"><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-02-25T00:00:00+00:00" />
+<meta itemprop="wordCount" content="115">
+<meta itemprop="keywords" content="Website,linux,R编程," />
+  
+  <meta property="og:title" content="网站搭建：用R语言blogdown搭建博客站点" />
+<meta property="og:description" content="搭建这个Blog的起因是这样的&hellip;
+有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
+二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
+安装blogdown install.packages(&#39;blogdown&#39;) 创建blogdown项目 上图中的Hugo theme是网站的主题模板，这里配置的是默认模板，你也可以到https://themes.gohugo.io 上选择自己喜欢的模板，比如本站点使用的是Paper这个主题，你可以进入主题点击“Download”进入项目。 而github的项目名称就是主题模板名称，你可以很方便的将模板名称替换到Hugo theme的配置里，比如： 预览网站
+blogdown包提供了很多非常便利的功能，比如：
+# 预览网站，并且可以实时预览网站修改效果 blogdown::serve_site() 修改网站 /content/post/路径下的文件就是文章内容了，如果要添加新文章可以使用Rstudio插件快捷创建 插件中也提供了很多其他的快捷功能，比如“插入图片”。 config.yaml是网站的配置文件，比如网站标题、社交账号等，可以根据自己需要做修改 themes/路径下的内容是模板设计相关的代码，如果想要修改，建议有一些前端开发的经验 生成网站 修改完毕后，现在我们可以生成静态网站了，blogdown包同样提供了非常方便的方法：
+blogdown::build_site() 如果看到类似上图的输出，说明站点已经生成，此时你的项目中会出现一个public目录，该目录下的内容就是你的静态站点了。
+所以，我们每次修改或添加完内容，都需要重新build_site()，
+接下来，我们只需要将public部署到服务器端即可。
+三、网站部署 服务器登录 ssh username@xxx.xxx.xxx.xxx 上传站点 把public目录上传到服务器的/data/wwwroot/目录下 scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot # 如果服务器没有该目录，需要先创建 # 切到根目录后 sudo mkdir data/wwwroot 这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些 Nginx sudo权限下安装nginx sudo apt install nginx 启动nginx服务 sudo systemctl start nginx 验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2024-02-25-r-blogdown/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-02-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-25T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="网站搭建：用R语言blogdown搭建博客站点"/>
+<meta name="twitter:description" content="搭建这个Blog的起因是这样的&hellip;
+有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
+二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
+安装blogdown install.packages(&#39;blogdown&#39;) 创建blogdown项目 上图中的Hugo theme是网站的主题模板，这里配置的是默认模板，你也可以到https://themes.gohugo.io 上选择自己喜欢的模板，比如本站点使用的是Paper这个主题，你可以进入主题点击“Download”进入项目。 而github的项目名称就是主题模板名称，你可以很方便的将模板名称替换到Hugo theme的配置里，比如： 预览网站
+blogdown包提供了很多非常便利的功能，比如：
+# 预览网站，并且可以实时预览网站修改效果 blogdown::serve_site() 修改网站 /content/post/路径下的文件就是文章内容了，如果要添加新文章可以使用Rstudio插件快捷创建 插件中也提供了很多其他的快捷功能，比如“插入图片”。 config.yaml是网站的配置文件，比如网站标题、社交账号等，可以根据自己需要做修改 themes/路径下的内容是模板设计相关的代码，如果想要修改，建议有一些前端开发的经验 生成网站 修改完毕后，现在我们可以生成静态网站了，blogdown包同样提供了非常方便的方法：
+blogdown::build_site() 如果看到类似上图的输出，说明站点已经生成，此时你的项目中会出现一个public目录，该目录下的内容就是你的静态站点了。
+所以，我们每次修改或添加完内容，都需要重新build_site()，
+接下来，我们只需要将public部署到服务器端即可。
+三、网站部署 服务器登录 ssh username@xxx.xxx.xxx.xxx 上传站点 把public目录上传到服务器的/data/wwwroot/目录下 scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot # 如果服务器没有该目录，需要先创建 # 切到根目录后 sudo mkdir data/wwwroot 这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些 Nginx sudo权限下安装nginx sudo apt install nginx 启动nginx服务 sudo systemctl start nginx 验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。"/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2024-02-25-r-blogdown/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">网站搭建：用R语言blogdown搭建博客站点</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Feb 25, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p>搭建这个Blog的起因是这样的&hellip;</p>
+<p>有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。
+<img src="images/screenshot.png" alt=""></p>
+<hr>
+<h2 id="一服务器准备">一、服务器准备</h2>
+<ol>
+<li>购买服务器</li>
+</ol>
+<ul>
+<li>登录<a href="https://www.aliyun.com/">阿里云</a>去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。</li>
+<li>注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统
+<img src="images/buy.png" alt=""></li>
+</ul>
+<ol start="2">
+<li>安全组配置</li>
+</ol>
+<ul>
+<li>在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加”
+<img src="images/%E5%AE%9E%E4%BE%8B.png" alt="">
+<img src="images/%E5%AE%89%E5%85%A8%E7%BB%84.png" alt=""></li>
+<li>添加安全组规则，开放必要的端口
+<img src="images/port.png" alt=""></li>
+</ul>
+<ol start="3">
+<li>账号权限配置</li>
+</ol>
+<ul>
+<li>打开本地终端，ssh连接登录root账号</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh root@xxx.xxx.xxx.xxx  <span style="color:#75715e"># xxx替换为你的服务器ip</span>
+</span></span></code></pre></div><ul>
+<li>创建一个用户(比如我的用户名：guowei)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>adduser guowei
+</span></span></code></pre></div><ul>
+<li>设置用户密码</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>passwd guowei
+</span></span></code></pre></div><ul>
+<li>分配管理员权限</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 进入权限配置文件</span>
+</span></span><span style="display:flex;"><span>visudo
+</span></span></code></pre></div><ul>
+<li>
+<p>将用户添加到root下，配置与root相同权限并保存
+<img src="images/sudo.png" alt=""></p>
+</li>
+<li>
+<p>退出root连接，之后可以使用新创建的用户登录</p>
+</li>
+</ul>
+<hr>
+<h2 id="二制作网站">二、制作网站</h2>
+<p>在Rstudio中，使用blogdown包来快速建站，具体可以阅读<a href="https://bookdown.org/yihui/blogdown/">blogdown说明文档</a>，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。</p>
+<ol>
+<li>安装blogdown</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">install.packages</span>(<span style="color:#e6db74">&#39;blogdown&#39;</span>)
+</span></span></code></pre></div><ol start="2">
+<li>
+<p>创建blogdown项目
+<img src="images/new-project.png" alt="">
+<img src="images/blogdown-project.png" alt="">
+上图中的Hugo theme是网站的主题模板，这里配置的是默认模板，你也可以到<a href="https://themes.gohugo.io">https://themes.gohugo.io </a>上选择自己喜欢的模板，比如本站点使用的是<a href="https://themes.gohugo.io/themes/hugo-paper/">Paper</a>这个主题，你可以进入主题点击“Download”进入项目。
+<img src="images/theme.png" alt="">
+而github的项目名称就是主题模板名称，你可以很方便的将模板名称替换到Hugo theme的配置里，比如：
+<img src="images/theme-name.png" alt="">
+<img src="images/nanxiaobei.png" alt=""></p>
+</li>
+<li>
+<p>预览网站</p>
+</li>
+</ol>
+<p>blogdown包提供了很多非常便利的功能，比如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 预览网站，并且可以实时预览网站修改效果</span>
+</span></span><span style="display:flex;"><span>blogdown<span style="color:#f92672">::</span><span style="color:#a6e22e">serve_site</span>()
+</span></span></code></pre></div><ol start="4">
+<li>修改网站</li>
+</ol>
+<ul>
+<li><code>/content/post/</code>路径下的文件就是文章内容了，如果要添加新文章可以使用Rstudio插件快捷创建
+<img src="images/addins-newpost.png" alt="">
+插件中也提供了很多其他的快捷功能，比如“插入图片”。</li>
+<li><code>config.yaml</code>是网站的配置文件，比如网站标题、社交账号等，可以根据自己需要做修改</li>
+<li><code>themes/</code>路径下的内容是模板设计相关的代码，如果想要修改，建议有一些前端开发的经验</li>
+</ul>
+<ol start="5">
+<li>生成网站</li>
+</ol>
+<p>修改完毕后，现在我们可以生成静态网站了，blogdown包同样提供了非常方便的方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>blogdown<span style="color:#f92672">::</span><span style="color:#a6e22e">build_site</span>()
+</span></span></code></pre></div><p><img src="images/build.png" alt="">
+如果看到类似上图的输出，说明站点已经生成，此时你的项目中会出现一个<code>public</code>目录，该目录下的内容就是你的静态站点了。<br>
+所以，我们每次修改或添加完内容，都需要重新<code>build_site()</code>，</p>
+<p>接下来，我们只需要将<code>public</code>部署到服务器端即可。</p>
+<hr>
+<h2 id="三网站部署">三、网站部署</h2>
+<ol>
+<li>服务器登录</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh username@xxx.xxx.xxx.xxx
+</span></span></code></pre></div><ol start="2">
+<li>上传站点</li>
+</ol>
+<ul>
+<li>把<code>public</code>目录上传到服务器的<code>/data/wwwroot/</code>目录下</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果服务器没有该目录，需要先创建</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 切到根目录后</span>
+</span></span><span style="display:flex;"><span>sudo mkdir data/wwwroot
+</span></span></code></pre></div><ul>
+<li>这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些</li>
+</ul>
+<ol start="3">
+<li>Nginx</li>
+</ol>
+<ul>
+<li>sudo权限下安装nginx</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install nginx
+</span></span></code></pre></div><ul>
+<li>启动nginx服务</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl start nginx
+</span></span></code></pre></div><p>验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。</p>
+<ul>
+<li>进入nginx配置文件目录</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd /etc/nginx/conf.d
+</span></span></code></pre></div><ul>
+<li>创建配置文件</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vim myblog.conf
+</span></span></code></pre></div><ul>
+<li>添加配置内容并保存</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">server{</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">server_name www.xiebro.cool;</span> <span style="color:#75715e"># 如果没有域名也可以用公网ip</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">location / {</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#ae81ff">root /data/wwwroot/public;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#ae81ff">index index.html;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>      }
+</span></span></code></pre></div><ul>
+<li>重启nginx服务</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl restart nginx
+</span></span></code></pre></div><ul>
+<li>浏览器中使用<code>http</code>访问域名或公网ip，现在应该可以看到网站内容了</li>
+</ul>
+<ol start="4">
+<li>域名与SSL证书</li>
+</ol>
+<ul>
+<li>域名解析</li>
+</ul>
+<p>假设你已经注册了域名并且做了备案，需要到域名控制台添加解析记录，比较简单，具体方法这里不做介绍了。</p>
+<ul>
+<li>SSL证书</li>
+</ul>
+<p>这里介绍一个免费的SSL证书工具<a href="https://certbot.eff.org/instructions?ws=nginx&amp;os=ubuntufocal">certbot</a>，根据该网站教程配置SSL证书后，就可以使用<code>https</code>进行访问了（当然前提是你已经有备案好的域名）。</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/website"
+      >Website</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/linux"
+      >linux</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/r%E7%BC%96%E7%A8%8B"
+      >R编程</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/survival-analysis/"
+      ><span>R可视化：用户生存分析</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

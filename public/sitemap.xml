@@ -2,10 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://www.xiebro.cool/post/2024-02-25-r-blogdown/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://www.xiebro.cool/post/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/contact/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/linux/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96/</loc>
@@ -17,16 +26,25 @@
     <loc>https://www.xiebro.cool/post/survival-analysis/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://www.xiebro.cool/tags/r%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://www.xiebro.cool/tags/simulation/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://www.xiebro.cool/tags/website/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://www.xiebro.cool/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/%E7%BD%91%E7%AB%99%E6%90%AD%E5%BB%BA/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%A8%A1%E6%8B%9F/</loc>
@@ -36,9 +54,6 @@
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/git/</loc>
-    <lastmod>2024-02-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/linux/</loc>
     <lastmod>2024-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/shell/</loc>
@@ -52,9 +67,6 @@
   </url><url>
     <loc>https://www.xiebro.cool/about/</loc>
     <lastmod>2024-02-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/contact/</loc>
-    <lastmod>2019-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/series/</loc>
   </url>
