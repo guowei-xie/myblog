@@ -141,7 +141,7 @@
 当篮子里有11个红(或青)苹果时（即总共22个），抽到8红11青的概率是p11 当篮子里有12个红(或青)苹果时（即总共24个），抽到8红11青的概率是p12 &hellip;&hellip; 当篮子里有n个红(或青)苹果时（即总共2n个），抽到8红11青的概率是pn Monte-Carlo Simulation library(purrr) # 场景复刻 nn_size = 19 nn_red = 8 nn_green = 11 # 生成一个装有2n个苹果的篮子(0:红, 1:青) generate_bin &lt;- function(n) { rep.int(c(0L, 1L), n) } # 实验设计 run_experiment &lt;- function(n, trials = 10e3) { if (n &lt; max(nn_red, nn_green)) return(0L) reps &lt;- replicate( trials, n |&gt; # 生成篮子 generate_bin() |&gt; # 随机不放回抽样 sample(size = nn_size, replace = FALSE) |&gt; # 判断结果是否符合预期 sum() == nn_green ) # 预期结果出现的概率=预期结果出现的次数/总抽样次数 sum(reps) / trials } # 实验进行 set."><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-02-25T00:00:00+00:00" />
 <meta itemprop="wordCount" content="143">
-<meta itemprop="keywords" content="Simulation," />
+<meta itemprop="keywords" content="Monte-Carlo," />
   
   <meta property="og:title" content="蒙特卡洛模拟：猜猜篮子里有多少个苹果" />
 <meta property="og:description" content="问题场景 在一个桶里，有同等数量的红苹果与青苹果，但你并不知道具体数量。 你随机抽取了 19 个，发现拿了红苹果 8 个，青苹果 11 个。 针对刚才桶里苹果的总数量（红与青之和），最好的猜测是多少？ 注：为了卫生起见，拿出任何一个苹果后就不准再放回桶里。 这是一个参数估计的概率问题，具体来说是通过已知的样本信息来估计总体参数的值。
@@ -368,8 +368,8 @@
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/simulation"
-      >Simulation</a
+      href="https://www.xiebro.cool/tags/monte-carlo"
+      >Monte-Carlo</a
     >
     
   </footer>

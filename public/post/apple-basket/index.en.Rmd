@@ -77,7 +77,7 @@ N <- which(res == max(res))
 
 ### 可视化
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggplot2)
 
 NULL |>
