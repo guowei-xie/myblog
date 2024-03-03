@@ -6,7 +6,7 @@ slug: apple basket
 categories:
   - 蒙特卡洛模拟
 tags:
-  - Simulation
+  - Monte-Carlo
 ---
 
 

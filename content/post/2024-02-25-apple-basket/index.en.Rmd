@@ -6,7 +6,7 @@ slug: apple basket
 categories:
   - 蒙特卡洛模拟
 tags:
-  - Simulation
+  - Monte-Carlo
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message = FALSE)
@@ -77,7 +77,7 @@ N <- which(res == max(res))
 
 ### 可视化
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggplot2)
 
 NULL |>

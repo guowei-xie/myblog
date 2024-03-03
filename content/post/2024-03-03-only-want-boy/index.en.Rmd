@@ -1,0 +1,118 @@
+---
+title: 蒙特卡洛模拟：“重男轻女”是否会导致男女比例失衡？
+author: Package Build
+date: '2024-03-03'
+slug: only-want-boy
+categories:
+  - 蒙特卡洛模拟
+tags:
+  - Monte-Carlo
+---
+
+在一个严重受到“重男轻女”思想影响的村庄里，父母渴望拥有男孩，因此每当生下女孩时，他们就会不断地生育，直到有一天生下男孩为止。由于计划生育政策的限制，一旦有了男孩，就不能再生了。
+
+那么，在这个村庄里的男女比例应该是怎样的？是否会偏向男性？
+
+---
+
+我们可以通过使用**蒙特卡洛方法**来模拟现实场景，计算出该村庄的男女比例。
+
+```{r}
+simulate_once <- function(N, prob = 0.5, verbose = FALSE) {
+    
+    # nobody has anything yet...
+    boys  = 0; girls = 0;
+    
+    print_vars <- function() {
+        message("Boy-to-Girl Ratio: ", boys, " / ", girls)
+        message("====================================")
+    }
+    
+    tryonemore <- function(x, msgON) {
+        
+        if(msgON) message(x)
+        
+        # terminal condition: all 1 (boys)
+        if (all(x)) {
+            boys  <<- boys + sum(x)
+            if (msgON) print_vars()
+            return(1)
+        }
+        
+        # assign to parent env so that we can keep track
+        boys  <<-  boys + sum(x)
+        girls <<- girls + sum(!x)
+        
+        if (msgON) print_vars()
+        return(tryonemore(rbinom(sum(!x), 1, prob), msgON = msgON))
+    }
+    
+    # initial call
+    tryonemore(rbinom(N, 1, prob), msgON = verbose)
+    return(boys / girls)
+}
+```
+
+假设村庄里有10个家庭，我们先来尝试进行一次模拟：
+```{r, message=FALSE, results='hide'}
+set.seed(1111)
+simulate_once(N = 10, verbose = TRUE)
+# # 0010111010
+# # Boy-to-Girl Ratio: 5 / 5
+# # ====================================
+# # 01111
+# # Boy-to-Girl Ratio: 9 / 6
+# # ====================================
+# # 0
+# # Boy-to-Girl Ratio: 9 / 7
+# # ====================================
+# # 1
+# # Boy-to-Girl Ratio: 10 / 7
+# # ====================================
+# # [1] 1.428571
+```
+从模拟结果来看，`男10/女7=1.428571`比例似乎失衡了，但这只是对拥有10个家庭规模的小村庄进行了一次模拟的观测结果，那么，如果对不同规模的村庄分别进行足够多次的模拟，答案是否会有不同？  
+
+- 分别模拟10~2000个家庭规模的村庄；
+- 分别对每个村庄进行1000次模拟，求模拟结果的期望值
+
+```{r, warning=FALSE, message=FALSE}
+library(furrr)
+
+# for paralle computing
+plan(multisession, workers = 10)
+
+# simulate from small village to large village
+village_size = 10:2000
+
+# for every single village we simulate 1000 times
+simulate_many <- function(N, trials = 1000) {
+    replicate(trials, simulate_once(N, verbose = FALSE))
+}
+
+# start simulation
+res <- furrr::future_map_dbl(village_size, ~ mean(simulate_many(.x)))
+```
+
+```{r, warning=FALSE}
+library(ggplot2)
+
+p <- 
+  cbind(size = village_size, ev = res) |>
+  as.data.frame() |>
+  ggplot(aes(size, ev)) + 
+  geom_line(alpha = 0.7) + 
+  geom_hline(yintercept = 1, col = "red", lty = 4) +
+  theme_minimal(base_family = "Osaka") + 
+  labs(x = "Village Size", y = "", title = "Expected Value of Boy-Girl Ratio")
+
+p
+```
+```{r}
+# zoom in
+p + coord_cartesian(ylim = c(0.9, 1.05))
+```
+
+从上图结果来看，当村庄达到一定规模后(约1000个家庭)，即使“重男轻女”也不会导致男女比例的失衡。
+
+
