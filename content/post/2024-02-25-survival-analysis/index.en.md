@@ -21,17 +21,7 @@ tags:
 
 ```r
 library(tidyverse)
-```
 
-```
-## Warning: package 'ggplot2' was built under R version 4.2.3
-```
-
-```
-## Warning: package 'dplyr' was built under R version 4.2.3
-```
-
-```r
 dat <- 
   read.csv("datasets/Telco-Customer-Churn.csv") %>% 
   mutate(churn = if_else(Churn == "Yes", 1L, 0L))

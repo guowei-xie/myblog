@@ -12,7 +12,7 @@ tags:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ***Kaplan-Meier***生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的**生存概率**。
@@ -22,6 +22,7 @@ knitr::opts_chunk$set(message = FALSE)
 ### 数据集概览
 ```{r}
 library(tidyverse)
+
 dat <- 
   read.csv("datasets/Telco-Customer-Churn.csv") %>% 
   mutate(churn = if_else(Churn == "Yes", 1L, 0L))
