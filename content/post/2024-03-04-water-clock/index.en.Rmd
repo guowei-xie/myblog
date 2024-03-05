@@ -23,7 +23,7 @@ tags:
 - 这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请>>[申请地址](https://aistudio.google.com/app/apikey)
 
 - 设置触发提醒的时间，在这些时间整点会触发喝水提醒  
-  
+
   
 `config.yml`
 ```yaml
