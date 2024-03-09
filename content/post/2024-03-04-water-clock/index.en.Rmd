@@ -1,28 +1,28 @@
 ---
-title: AI应用：喝水定时器，帮助同事每天喝下8杯水
+title: 玩AI：趣味定时器，帮助同事喝水减肥
 author: Xiebro
 date: '2024-03-04'
 slug: water-clock
 categories:
-  - AI应用
+  - 玩AI
 tags:
-  - AI应用
+  - 玩AI
+  - LLM
 ---
 
 ![](images/chat.png)
-为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样：
-![](images/1.png)
-![](images/2.png)
+我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
 
+![](images/screenshot-20240309-135913.png)
 
 接下来，用R语言实现这个趣味定时器...
 ## 配置文件
 
-- 因为我们公司用飞书办公，所以这里使用的是飞书**自定义机器人**，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照>>[飞书API文档](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)
+- 这里使用的是飞书**自定义机器人**，因此需要在群聊中创建机器人并获得webhook_url，具体可参照>>[飞书API文档](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)
 
-- 这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请>>[申请地址](https://aistudio.google.com/app/apikey)
+- 这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成>>[申请地址](https://aistudio.google.com/app/apikey)
 
-- 设置触发提醒的时间，在这些时间整点会触发喝水提醒  
+- 设置触发提醒的时间，在这些时间点才会触发喝水提醒
 
   
 `config.yml`
@@ -48,7 +48,7 @@ default:
     
 gemini:
   api: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
-  token: "xxxxxxxxxxxxx" # 替换成你自己的
+  token: "xxxxxxxxxxxxx" # 替换成你自己的key
   prompt: "用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了"
   
 ```
@@ -157,5 +157,5 @@ crontab -e
 00 * * * * cd /home/xiebro/water-clock/; Rscript clock.R >> clock.log 2>&1
 ```
 
-最后，祝愿我的同事们能够持之以恒、减肥成功...
+最后，祝愿这些沙雕同事们能够喝水减肥成功...
 

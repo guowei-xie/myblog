@@ -56,7 +56,7 @@
   />
 
   
-  <title>AI应用：喝水定时器，帮助同事每天喝下8杯水 - 数据之道</title>
+  <title>玩AI：趣味定时器，帮助同事喝水减肥 - 数据之道</title>
 
   
   <meta name="theme-color" />
@@ -65,12 +65,13 @@
   
   
   
-  <meta name="description" content="为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样： 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 因为我们公司用飞书办公，所以这里使用的是飞书自定义机器人，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请&raquo;申请地址
-设置触发提醒的时间，在这些时间整点会触发喝水提醒
+  <meta name="description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
+接下来，用R语言实现这个趣味定时器&hellip;
+配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
+这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发喝水提醒
 config.yml
-default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的 prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
+default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !" />
   <meta name="author" content="Xiebro" />
   
@@ -133,25 +134,27 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
   
   
   
-  <meta itemprop="name" content="AI应用：喝水定时器，帮助同事每天喝下8杯水">
-<meta itemprop="description" content="为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样： 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 因为我们公司用飞书办公，所以这里使用的是飞书自定义机器人，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请&raquo;申请地址
-设置触发提醒的时间，在这些时间整点会触发喝水提醒
+  <meta itemprop="name" content="玩AI：趣味定时器，帮助同事喝水减肥">
+<meta itemprop="description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
+接下来，用R语言实现这个趣味定时器&hellip;
+配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
+这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发喝水提醒
 config.yml
-default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的 prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
+default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !"><meta itemprop="datePublished" content="2024-03-04T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-04T00:00:00+00:00" />
 <meta itemprop="wordCount" content="233">
-<meta itemprop="keywords" content="AI应用," />
+<meta itemprop="keywords" content="玩AI,LLM," />
   
-  <meta property="og:title" content="AI应用：喝水定时器，帮助同事每天喝下8杯水" />
-<meta property="og:description" content="为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样： 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 因为我们公司用飞书办公，所以这里使用的是飞书自定义机器人，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请&raquo;申请地址
-设置触发提醒的时间，在这些时间整点会触发喝水提醒
+  <meta property="og:title" content="玩AI：趣味定时器，帮助同事喝水减肥" />
+<meta property="og:description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
+接下来，用R语言实现这个趣味定时器&hellip;
+配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
+这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发喝水提醒
 config.yml
-default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的 prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
+default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.xiebro.cool/post/water-clock/" /><meta property="article:section" content="post" />
@@ -160,13 +163,14 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="AI应用：喝水定时器，帮助同事每天喝下8杯水"/>
-<meta name="twitter:description" content="为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样： 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 因为我们公司用飞书办公，所以这里使用的是飞书自定义机器人，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请&raquo;申请地址
-设置触发提醒的时间，在这些时间整点会触发喝水提醒
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="玩AI：趣味定时器，帮助同事喝水减肥"/>
+<meta name="twitter:description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
+接下来，用R语言实现这个趣味定时器&hellip;
+配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
+这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发喝水提醒
 config.yml
-default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的 prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
+default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !"/>
 
   
@@ -276,7 +280,7 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">AI应用：喝水定时器，帮助同事每天喝下8杯水</h1>
+    <h1 class="!my-0 pb-2.5">玩AI：趣味定时器，帮助同事喝水减肥</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -294,20 +298,19 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
   </header>
 
   <section><p><img src="images/chat.png" alt="">
-为了帮助那些立志要减肥的同事每天按时喝下八杯水，我做了一个喝水定时器。但如果只是简单的提醒未免有些单调乏味，所以我尝试用大语言模型来生成有趣味的提醒内容，让喝水这件事变得更加有意思，比如像这样：
-<img src="images/1.png" alt="">
-<img src="images/2.png" alt=""></p>
+我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：</p>
+<p><img src="images/screenshot-20240309-135913.png" alt=""></p>
 <p>接下来，用R语言实现这个趣味定时器&hellip;</p>
 <h2 id="配置文件">配置文件</h2>
 <ul>
 <li>
-<p>因为我们公司用飞书办公，所以这里使用的是飞书<strong>自定义机器人</strong>，因此我们需要在群聊中创建机器人并拿到webhook_url，具体可参照&raquo;<a href="https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot">飞书API文档</a></p>
+<p>这里使用的是飞书<strong>自定义机器人</strong>，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;<a href="https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot">飞书API文档</a></p>
 </li>
 <li>
-<p>这里调用的是Gemini的API（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里申请&raquo;<a href="https://aistudio.google.com/app/apikey">申请地址</a></p>
+<p>这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;<a href="https://aistudio.google.com/app/apikey">申请地址</a></p>
 </li>
 <li>
-<p>设置触发提醒的时间，在这些时间整点会触发喝水提醒</p>
+<p>设置触发提醒的时间，在这些时间点才会触发喝水提醒</p>
 </li>
 </ul>
 <p><code>config.yml</code></p>
@@ -332,7 +335,7 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
 </span></span><span style="display:flex;"><span>    
 </span></span><span style="display:flex;"><span><span style="color:#f92672">gemini</span>:
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">api</span>: <span style="color:#e6db74">&#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">token</span>: <span style="color:#e6db74">&#34;xxxxxxxxxxxxx&#34;</span> <span style="color:#75715e"># 替换成你自己的</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">token</span>: <span style="color:#e6db74">&#34;xxxxxxxxxxxxx&#34;</span> <span style="color:#75715e"># 替换成你自己的key</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">prompt</span>: <span style="color:#e6db74">&#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34;</span>
 </span></span><span style="display:flex;"><span>  
 </span></span></code></pre></div><h2 id="r脚本">R脚本</h2>
@@ -433,7 +436,7 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
 <li>创建定时任务</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ae81ff">00</span> * * * * cd /home/xiebro/water-clock/; Rscript clock.R &gt;&gt; clock.log 2&gt;&amp;<span style="color:#ae81ff">1</span>
-</span></span></code></pre></div><p>最后，祝愿我的同事们能够持之以恒、减肥成功&hellip;</p>
+</span></span></code></pre></div><p>最后，祝愿这些沙雕同事们能够喝水减肥成功&hellip;</p>
 </section>
 
   
@@ -442,8 +445,14 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/ai%E5%BA%94%E7%94%A8"
-      >AI应用</a
+      href="https://www.xiebro.cool/tags/%E7%8E%A9ai"
+      >玩AI</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/llm"
+      >LLM</a
     >
     
   </footer>
