@@ -8,8 +8,8 @@ theme: hugo-paper
 title: 数据之道
 params:
   sub_title: Home
-  avatar: xieguowei2023@gmail.com
-  bio: Welcome to my blog.
+  avatar: https://avatars.githubusercontent.com/u/160246290?v=4
+  bio: 周末的愉快时光...
   color: linen
   github: 
   instagram:
