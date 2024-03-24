@@ -48,6 +48,9 @@ scp username@server:/path/to/remote/file /path/to/local/directory
 
 # 查询自身 IP
 curl -v https://api.ipify.org  
+
+# 服务重启
+systemctl restart nginx  # stop/start ； mysql
 ```
 
 ### Git

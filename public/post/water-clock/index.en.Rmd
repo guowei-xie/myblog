@@ -8,7 +8,6 @@ categories:
 tags:
   - 玩AI
   - LLM
-  - Shiny
 ---
 
 ![](images/chat.png)
