@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>蟹不肉的浑身蟹数</title>
+    <title>浑身蟹数</title>
     <link>https://www.xiebro.cool/</link>
-    <description>Recent content on 蟹不肉的浑身蟹数</description>
+    <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 24 Mar 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Machine-Learning：用于检测异常值的几种方法</title>
+      <link>https://www.xiebro.cool/post/anomaly-detection/</link>
+      <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/anomaly-detection/</guid>
+      <description>library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &amp;#34;Kai&amp;#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &amp;lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &amp;lt;- tibble(x, y, outlier = o) dat |&amp;gt; ggplot(aes(x, y, col = factor(o))) + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) + geom_point(alpha = 0.</description>
+    </item>
     <item>
       <title>玩AI：基于Rshiny&#43;LLM开发的自然语言取数工具</title>
       <link>https://www.xiebro.cool/post/io-the-wisp/</link>
@@ -16,14 +23,14 @@
       <description>DEMO ➫ 🔗 io-the-wisp&#xA;Github ➫ 🔗 guowei-xie/io-the-wisp&#xA;项目简介 基于Rshiny+LLM开发的自然语言取数工具，通过调用Gemini的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。&#xA;使用流程 1. 配置config.yml 配置主路径下的config.yml文件，具体参照如下示例：&#xA;default: seed: 123 # no use # 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置 database: host: xxxxxx user: xxxxxx pwd: xxxxxx database: xxxxxx port: xxxxxx # 默认连接database中配置的数据库，进行建表和插入数据 # 用于记录用户查询结果，方便后续有针对性的优化prompt cache: dbname: xxxxxx tblname: &amp;#34;io_the_wisp_propmt&amp;#34; # 默认的表名，也可以自定义 # 模型参数配置 gemini: api_token: &amp;#34;xxxxx&amp;#34; # 替换为你的Gemini API token domain: &amp;#34;https://generativelanguage.googleapis.com/v1beta/models/&amp;#34; # Gemini接口 text_model: &amp;#34;gemini-pro:generateContent&amp;#34; # 选用文本生成模型 temperature: 0 topK: 1 topP: 1 maxOutputTokens: 2048 embedding_model: &amp;#34;embedding-001:embedContent&amp;#34; # 选用embedding模型 # prompt模板相关配置 template: folder: templates # prompt模板存放位置 embeddings: embeddings.</description>
     </item>
     <item>
-      <title>因果推断：两种结构比率归因方法</title>
+      <title>Causal-Inference：两种结构比率归因的方法</title>
       <link>https://www.xiebro.cool/post/twofactor/</link>
       <pubDate>Sat, 16 Mar 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/twofactor/</guid>
       <description>在一些工作场景当中，比如渠道广告投放，假如这月与上月相比，总投放转化率出现了差异，那么，作为指导业务决策的数据分析师，我们需要讲清楚：两次投放转化率的差异，有多少是来自于渠道占比变化的结果，又有多少是来自渠道本身转化率波动的结果。&#xA;构造一份演示数据：&#xA;dat &amp;lt;- data.frame( dim = c(&amp;#34;A&amp;#34;, &amp;#34;B&amp;#34;, &amp;#34;C&amp;#34;, &amp;#34;D&amp;#34;, &amp;#34;E&amp;#34;), # 渠道名称 base_prop = c(0.2, 0.3, 0.1, 0.2, 0.2), # 上月(基期)各渠道用户数量占比 base_rate = c(0.1, 0.2, 0.15, 0.12, 0.05), # 上月(基期)各渠道用户转化率 curr_prop = c(0.25, 0.25, 0.15, 0.2, 0.15), # 本月(现期)各渠道用户数量占比 curr_rate = c(0.08, 0.15, 0.09, 0.1, 0.07) # 本月(现期)各渠道用户转化率 ) dat |&amp;gt; knitr::kable() dim base_prop base_rate curr_prop curr_rate A 0.2 0.10 0.25 0.08 B 0.3 0.20 0.25 0.15 C 0.</description>
     </item>
     <item>
-      <title>因果推断：LMDI乘积因子拆解</title>
+      <title>Causal-Inference：LMDI乘积因子拆解，漏斗指标归因</title>
       <link>https://www.xiebro.cool/post/lmdi/</link>
       <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/lmdi/</guid>
@@ -51,7 +58,7 @@
       <description>在一个严重受到“重男轻女”思想影响的村庄里，父母渴望拥有男孩，因此每当生下女孩时，他们就会不断地生育，直到有一天生下男孩为止。由于计划生育政策的限制，一旦有了男孩，就不能再生了。&#xA;那么，在这个村庄里的男女比例应该是怎样的？是否会偏向男性？&#xA;我们可以通过使用蒙特卡洛方法来模拟现实场景，计算出该村庄的男女比例。&#xA;simulate_once &amp;lt;- function(N, prob = 0.5, verbose = FALSE) { # nobody has anything yet... boys = 0; girls = 0; print_vars &amp;lt;- function() { message(&amp;#34;Boy-to-Girl Ratio: &amp;#34;, boys, &amp;#34; / &amp;#34;, girls) message(&amp;#34;====================================&amp;#34;) } tryonemore &amp;lt;- function(x, msgON) { if(msgON) message(x) # terminal condition: all 1 (boys) if (all(x)) { boys &amp;lt;&amp;lt;- boys + sum(x) if (msgON) print_vars() return(1) } # assign to parent env so that we can keep track boys &amp;lt;&amp;lt;- boys + sum(x) girls &amp;lt;&amp;lt;- girls + sum(!</description>
     </item>
     <item>
-      <title>Blog搭建：为了一口醋，包了一顿饺子。</title>
+      <title>Blog搭建：为了一口醋，包了一顿饺子</title>
       <link>https://www.xiebro.cool/post/2024-02-25-r-blogdown/</link>
       <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/2024-02-25-r-blogdown/</guid>
@@ -65,7 +72,7 @@
       <description> github.com/guowei-xie xieguowei2023@gmail.com </description>
     </item>
     <item>
-      <title>Kaplan-Meier：用户生存曲线</title>
+      <title>Kaplan-Meier：用户生存分析</title>
       <link>https://www.xiebro.cool/post/survival-analysis/</link>
       <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/survival-analysis/</guid>

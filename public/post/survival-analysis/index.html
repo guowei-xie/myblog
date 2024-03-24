@@ -52,7 +52,7 @@
   />
 
   
-  <title>Kaplan-Meier：用户生存曲线 - 蟹不肉的浑身蟹数</title>
+  <title>Kaplan-Meier：用户生存分析 - 浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -125,7 +125,7 @@
   
   
   
-  <meta itemprop="name" content="Kaplan-Meier：用户生存曲线">
+  <meta itemprop="name" content="Kaplan-Meier：用户生存分析">
 <meta itemprop="description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
 数据集下载：Telco-Customer-Churn.csv
 数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29."><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
@@ -133,7 +133,7 @@
 <meta itemprop="wordCount" content="476">
 <meta itemprop="keywords" content="R可视化,Kaplan-Meier," />
   
-  <meta property="og:title" content="Kaplan-Meier：用户生存曲线" />
+  <meta property="og:title" content="Kaplan-Meier：用户生存分析" />
 <meta property="og:description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
 数据集下载：Telco-Customer-Churn.csv
 数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29." />
@@ -144,7 +144,7 @@
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Kaplan-Meier：用户生存曲线"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Kaplan-Meier：用户生存分析"/>
 <meta name="twitter:description" content="Kaplan-Meier生存分析：探索客户的生存概率随时间的变化，并可视化生存曲线，显示客户在不同时间点的生存概率。
 数据集下载：Telco-Customer-Churn.csv
 数据集概览 library(tidyverse) dat &lt;- read.csv(&#34;datasets/Telco-Customer-Churn.csv&#34;) %&gt;% mutate(churn = if_else(Churn == &#34;Yes&#34;, 1L, 0L)) dat %&gt;% glimpse() ## Rows: 7,043 ## Columns: 22 ## $ customerID &lt;chr&gt; &#34;7590-VHVEG&#34;, &#34;5575-GNVDE&#34;, &#34;3668-QPYBK&#34;, &#34;7795-CFOCW… ## $ gender &lt;chr&gt; &#34;Female&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Male&#34;, &#34;Female&#34;, &#34;Female&#34;,… ## $ SeniorCitizen &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,… ## $ Partner &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Dependents &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;… ## $ tenure &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58, 49, 2… ## $ PhoneService &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ MultipleLines &lt;chr&gt; &#34;No phone service&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No phone service&#34;, &#34;… ## $ InternetService &lt;chr&gt; &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;DSL&#34;, &#34;Fiber optic&#34;, &#34;Fiber opt… ## $ OnlineSecurity &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;… ## $ OnlineBackup &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;N… ## $ DeviceProtection &lt;chr&gt; &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Y… ## $ TechSupport &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ StreamingTV &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Ye… ## $ StreamingMovies &lt;chr&gt; &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;No&#34;, &#34;Yes… ## $ Contract &lt;chr&gt; &#34;Month-to-month&#34;, &#34;One year&#34;, &#34;Month-to-month&#34;, &#34;One … ## $ PaperlessBilling &lt;chr&gt; &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;No&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;Yes&#34;, &#34;No&#34;, … ## $ PaymentMethod &lt;chr&gt; &#34;Electronic check&#34;, &#34;Mailed check&#34;, &#34;Mailed check&#34;, &#34;… ## $ MonthlyCharges &lt;dbl&gt; 29."/>
@@ -256,7 +256,7 @@
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Kaplan-Meier：用户生存曲线</h1>
+    <h1 class="!my-0 pb-2.5">Kaplan-Meier：用户生存分析</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -408,7 +408,7 @@
     <a
       class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
       href="https://www.xiebro.cool/post/2024-02-25-r-blogdown/"
-      ><span class="mr-1.5">←</span><span>Blog搭建：为了一口醋，包了一顿饺子。</span></a
+      ><span class="mr-1.5">←</span><span>Blog搭建：为了一口醋，包了一顿饺子</span></a
     >
     
     

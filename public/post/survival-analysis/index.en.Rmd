@@ -1,5 +1,5 @@
 ---
-title: Kaplan-Meier：用户生存曲线
+title: Kaplan-Meier：用户生存分析
 author: xiebro
 date: '2024-02-25'
 slug: survival-analysis

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>R可视化 on 蟹不肉的浑身蟹数</title>
+    <title>R可视化 on 浑身蟹数</title>
     <link>https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96/</link>
-    <description>Recent content in R可视化 on 蟹不肉的浑身蟹数</description>
+    <description>Recent content in R可视化 on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 25 Feb 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Kaplan-Meier：用户生存曲线</title>
+      <title>Kaplan-Meier：用户生存分析</title>
       <link>https://www.xiebro.cool/post/survival-analysis/</link>
       <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/survival-analysis/</guid>

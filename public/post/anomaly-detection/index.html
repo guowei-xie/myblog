@@ -1,0 +1,437 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Machine-Learning：用于检测异常值的几种方法 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="Machine-Learning：用于检测异常值的几种方法">
+<meta itemprop="description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0."><meta itemprop="datePublished" content="2024-03-24T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-03-24T00:00:00+00:00" />
+<meta itemprop="wordCount" content="367">
+<meta itemprop="keywords" content="Machine-Learning,Anomaly-Detection," />
+  
+  <meta property="og:title" content="Machine-Learning：用于检测异常值的几种方法" />
+<meta property="og:description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/anomaly-detection/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-03-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-24T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Machine-Learning：用于检测异常值的几种方法"/>
+<meta name="twitter:description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/anomaly-detection/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Machine-Learning：用于检测异常值的几种方法</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Mar 24, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(hrbrthemes)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">theme_set</span>(<span style="color:#a6e22e">theme_ipsum</span>(base_family <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Kai&#34;</span>,
+</span></span><span style="display:flex;"><span>                      base_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>))
+</span></span></code></pre></div><h2 id="dummy-data-with-outliers">Dummy Data with Outliers</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">1234</span>)
+</span></span><span style="display:flex;"><span>N <span style="color:#f92672">=</span> <span style="color:#ae81ff">1e3</span>
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#a6e22e">rnorm</span>(N, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.5</span>), <span style="color:#a6e22e">rnorm</span>(N <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.05</span>, <span style="color:#ae81ff">-1</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>y <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#a6e22e">rnorm</span>(N, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.5</span>), <span style="color:#a6e22e">rnorm</span>(N <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.05</span>,  <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>o <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#a6e22e">rep</span>(<span style="color:#ae81ff">0L</span>, N), <span style="color:#a6e22e">rep</span>(<span style="color:#ae81ff">1L</span>, (N <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.05</span>)))
+</span></span><span style="display:flex;"><span>mm  <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">matrix</span>(x, y, nrow <span style="color:#f92672">=</span> N <span style="color:#f92672">*</span> <span style="color:#ae81ff">1.05</span>, ncol <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(x, y, outlier <span style="color:#f92672">=</span> o)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x, y, col <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(o))) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;blue&#34;</span>, <span style="color:#e6db74">&#34;1&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;red&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">guides</span>(color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Dummy Data with Outliers&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/anomaly-detection/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<h2 id="kmeans-clustering">Kmeans-Clustering</h2>
+<p>既然我们知道了我们有两类数据组，离群值和非离群值，我们能不能利用聚类区分他们？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>km <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">kmeans</span>(mm, centers <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x, y, fill <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(km<span style="color:#f92672">$</span>cluster))) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>, shape <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_fill_brewer</span>(guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>, palette <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Dark2&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/anomaly-detection/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+<h2 id="dbscan">DBSCAN</h2>
+<p>DBSCAN 算法可以抽象为以下步骤：</p>
+<ol>
+<li>找到每个点的 ε（eps）邻域中的点，并识别具有 m 个 (minPts) 邻居的核心点 (core points);</li>
+<li>在邻居图上查找核心点的连通组件，忽略所有非核心点;</li>
+<li>如果群集是 ε（eps）邻居，则将每个非核心点分配给附近的群集，否则将其分配给噪声;</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(dbscan)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># do density-based clustering</span>
+</span></span><span style="display:flex;"><span>dbs <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">dbscan</span>(mm, eps <span style="color:#f92672">=</span> <span style="color:#ae81ff">.3</span>, minPts <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>, borderPoints <span style="color:#f92672">=</span> F)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x, y, fill <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(dbs<span style="color:#f92672">$</span>cluster))) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>, shape <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_fill_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;red&#34;</span>, <span style="color:#e6db74">&#34;lightblue&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">guides</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/anomaly-detection/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<h2 id="one-class-svm">One-Class SVM</h2>
+<p>基本的原理就是利用 svm 进行单分类（正常类）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># One Class SVM ----------------------------------------------</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(e1071)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># nu is determined with hindsight over here</span>
+</span></span><span style="display:flex;"><span>svmfit <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">svm</span>(mm, type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;one-classification&#34;</span>, nu <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(is_outlier <span style="color:#f92672">=</span> <span style="color:#a6e22e">predict</span>(svmfit, mm)) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x, y, fill <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(is_outlier))) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>, shape <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_fill_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;red&#34;</span>, <span style="color:#e6db74">&#34;lightblue&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">guides</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/anomaly-detection/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<h2 id="isolation-forest">Isolation Forest</h2>
+<p>孤立森林的核心假设是，异常数据只占很少量、且特征值和正常数据差别很大。因此如果使用递归地随机分割数据集，直到所有的样本点都是孤立的。在这种随机分割的策略下，异常点通常具有较短的路径。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(solitude)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iso <span style="color:#f92672">=</span> isolationForest<span style="color:#f92672">$</span><span style="color:#a6e22e">new</span>()
+</span></span><span style="display:flex;"><span>isofit <span style="color:#f92672">&lt;-</span> dat <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span>outlier) <span style="color:#f92672">|&gt;</span> iso<span style="color:#f92672">$</span><span style="color:#a6e22e">fit</span>()
+</span></span></code></pre></div><pre tabindex="0"><code>## INFO  [19:34:14.734] Building Isolation Forest ...
+## INFO  [19:34:15.113] done
+## INFO  [19:34:15.115] Computing depth of terminal nodes ...
+## INFO  [19:34:15.262] done
+## INFO  [19:34:15.273] Completed growing isolation forest
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">bind_cols</span>(iso<span style="color:#f92672">$</span><span style="color:#a6e22e">predict</span>(dat)) <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(is_outlier <span style="color:#f92672">=</span> anomaly_score <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.65</span>) <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(
+</span></span><span style="display:flex;"><span>        x    <span style="color:#f92672">=</span> x,
+</span></span><span style="display:flex;"><span>        y    <span style="color:#f92672">=</span> y,
+</span></span><span style="display:flex;"><span>        fill <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(<span style="color:#f92672">-</span>is_outlier)
+</span></span><span style="display:flex;"><span>    )) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>, shape <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_fill_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;red&#34;</span>, <span style="color:#e6db74">&#34;lightblue&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">guides</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/anomaly-detection/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/machine-learning"
+      >Machine-Learning</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/anomaly-detection"
+      >Anomaly-Detection</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/io-the-wisp/"
+      ><span>玩AI：基于Rshiny&#43;LLM开发的自然语言取数工具</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Machine-Learning on 浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/machine-learning/</link>
+    <description>Recent content in Machine-Learning on 浑身蟹数</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 24 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Machine-Learning：用于检测异常值的几种方法</title>
+      <link>https://www.xiebro.cool/post/anomaly-detection/</link>
+      <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/anomaly-detection/</guid>
+      <description>library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &amp;#34;Kai&amp;#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &amp;lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &amp;lt;- tibble(x, y, outlier = o) dat |&amp;gt; ggplot(aes(x, y, col = factor(o))) + geom_vline(xintercept = 0) + geom_hline(yintercept = 0) + geom_point(alpha = 0.</description>
+    </item>
+  </channel>
+</rss>

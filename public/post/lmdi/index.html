@@ -52,7 +52,7 @@
   />
 
   
-  <title>因果推断：LMDI乘积因子拆解 - 蟹不肉的浑身蟹数</title>
+  <title>Causal-Inference：LMDI乘积因子拆解，漏斗指标归因 - 浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -127,7 +127,7 @@
   
   
   
-  <meta itemprop="name" content="因果推断：LMDI乘积因子拆解">
+  <meta itemprop="name" content="Causal-Inference：LMDI乘积因子拆解，漏斗指标归因">
 <meta itemprop="description" content="我们有一个结果指标新用户购买率Y，它由4个漏斗指标构成，分别为：新用户注册率A、注册用户激活率B、激活用户留存率C、留存用户购买率D。
 即：Y = A x B x C x D
 我们希望通过计算因子波动对结果指标Y的影响，来衡量这4个指标的重要性如何。
@@ -135,9 +135,9 @@
 # 创建一个包含基期和现期漏斗指标的示例数据框 set.seed(42) funnel_data &lt;- data.frame(Indicator = c(&#34;新用户注册率A&#34;, &#34;注册用户激活率B&#34;, &#34;激活用户留存率C&#34;, &#34;留存用户购买率D&#34;), Base_Rate = runif(4, min = 0.1, max = 0.5), Current_Rate = runif(4, min = 0.1, max = 0.5) ) print(funnel_data) ## Indicator Base_Rate Current_Rate ## 1 新用户注册率A 0.4659224 0.3566982 ## 2 注册用户激活率B 0.4748302 0.3076384 ## 3 激活用户留存率C 0.2144558 0.3946353 ## 4 留存用户购买率D 0.4321791 0.1538666 LMDI（Logarithmic Mean Index Method）乘积因子拆解 library(dplyr) # 计算现期与基期结果指标Y的差异 Y0 &lt;- prod(funnel_data$Base_Rate) Y1 &lt;- prod(funnel_data$Current_Rate) Y_delta &lt;- Y1 - Y0 # 计算平均对数权重 L &lt;- Y_delta / (log(Y1) - log(Y0)) # 计算各指标在Y_delta中的贡献 C &lt;- \(r0, r1) L * log(r1 / r0) # 计算各指标对整体变化率的贡献，即重要性 I &lt;- \(C) C / Y_delta result &lt;- funnel_data |&gt; mutate(C = C(Base_Rate, Current_Rate), I = I(C)) result |&gt; knitr::kable() Indicator Base_Rate Current_Rate C I 新用户注册率A 0."><meta itemprop="datePublished" content="2024-03-15T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-15T00:00:00+00:00" />
 <meta itemprop="wordCount" content="193">
-<meta itemprop="keywords" content="因果推断," />
+<meta itemprop="keywords" content="Causal-Inference," />
   
-  <meta property="og:title" content="因果推断：LMDI乘积因子拆解" />
+  <meta property="og:title" content="Causal-Inference：LMDI乘积因子拆解，漏斗指标归因" />
 <meta property="og:description" content="我们有一个结果指标新用户购买率Y，它由4个漏斗指标构成，分别为：新用户注册率A、注册用户激活率B、激活用户留存率C、留存用户购买率D。
 即：Y = A x B x C x D
 我们希望通过计算因子波动对结果指标Y的影响，来衡量这4个指标的重要性如何。
@@ -150,7 +150,7 @@
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="因果推断：LMDI乘积因子拆解"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Causal-Inference：LMDI乘积因子拆解，漏斗指标归因"/>
 <meta name="twitter:description" content="我们有一个结果指标新用户购买率Y，它由4个漏斗指标构成，分别为：新用户注册率A、注册用户激活率B、激活用户留存率C、留存用户购买率D。
 即：Y = A x B x C x D
 我们希望通过计算因子波动对结果指标Y的影响，来衡量这4个指标的重要性如何。
@@ -264,7 +264,7 @@
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">因果推断：LMDI乘积因子拆解</h1>
+    <h1 class="!my-0 pb-2.5">Causal-Inference：LMDI乘积因子拆解，漏斗指标归因</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -380,8 +380,8 @@
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/%E5%9B%A0%E6%9E%9C%E6%8E%A8%E6%96%AD"
-      >因果推断</a
+      href="https://www.xiebro.cool/tags/causal-inference"
+      >Causal-Inference</a
     >
     
   </footer>
@@ -396,7 +396,7 @@
     <a
       class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
       href="https://www.xiebro.cool/post/twofactor/"
-      ><span class="mr-1.5">←</span><span>因果推断：两种结构比率归因方法</span></a
+      ><span class="mr-1.5">←</span><span>Causal-Inference：两种结构比率归因的方法</span></a
     >
     
     

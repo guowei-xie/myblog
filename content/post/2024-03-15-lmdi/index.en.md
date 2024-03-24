@@ -1,12 +1,12 @@
 ---
-title: 因果推断：LMDI乘积因子拆解
+title: Causal-Inference：LMDI乘积因子拆解，漏斗指标归因
 author: Xiebro
 date: '2024-03-15'
 slug: lmdi
 categories:
-  - 因果推断
+  - R
 tags:
-  - 因果推断
+  - Causal-Inference
 ---
 
 我们有一个结果指标***新用户购买率Y***，它由4个漏斗指标构成，分别为：***新用户注册率A***、***注册用户激活率B***、***激活用户留存率C***、***留存用户购买率D***。
