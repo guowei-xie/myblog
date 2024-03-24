@@ -4,10 +4,11 @@ author: Xiebro
 date: '2024-03-04'
 slug: water-clock
 categories:
-  - 玩AI
+  - AI
 tags:
   - 玩AI
   - LLM
+  - Shiny
 ---
 
 ![](images/chat.png)

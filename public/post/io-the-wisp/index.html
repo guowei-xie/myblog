@@ -1,0 +1,465 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>玩AI：基于Geimini API开发的自然语言取数工具 - 蟹不肉的浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="DEMO ➫ 🔗 io-the-wisp
+Github ➫ 🔗 guowei-xie/io-the-wisp
+项目简介 基于Rshiny&#43;LLM开发的自然语言取数工具，通过调用Gemini的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。
+使用流程 1. 配置config.yml 配置主路径下的config.yml文件，具体参照如下示例：
+default: seed: 123 # no use # 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置 database: host: xxxxxx user: xxxxxx pwd: xxxxxx database: xxxxxx port: xxxxxx # 默认连接database中配置的数据库，进行建表和插入数据 # 用于记录用户查询结果，方便后续有针对性的优化prompt cache: dbname: xxxxxx tblname: &#34;io_the_wisp_propmt&#34; # 默认的表名，也可以自定义 # 模型参数配置 gemini: api_token: &#34;xxxxx&#34; # 替换为你的Gemini API token domain: &#34;https://generativelanguage.googleapis.com/v1beta/models/&#34; # Gemini接口 text_model: &#34;gemini-pro:generateContent&#34; # 选用文本生成模型 temperature: 0 topK: 1 topP: 1 maxOutputTokens: 2048 embedding_model: &#34;embedding-001:embedContent&#34; # 选用embedding模型 # prompt模板相关配置 template: folder: templates # prompt模板存放位置 embeddings: embeddings." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="玩AI：基于Geimini API开发的自然语言取数工具">
+<meta itemprop="description" content="DEMO ➫ 🔗 io-the-wisp
+Github ➫ 🔗 guowei-xie/io-the-wisp
+项目简介 基于Rshiny&#43;LLM开发的自然语言取数工具，通过调用Gemini的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。
+使用流程 1. 配置config.yml 配置主路径下的config.yml文件，具体参照如下示例：
+default: seed: 123 # no use # 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置 database: host: xxxxxx user: xxxxxx pwd: xxxxxx database: xxxxxx port: xxxxxx # 默认连接database中配置的数据库，进行建表和插入数据 # 用于记录用户查询结果，方便后续有针对性的优化prompt cache: dbname: xxxxxx tblname: &#34;io_the_wisp_propmt&#34; # 默认的表名，也可以自定义 # 模型参数配置 gemini: api_token: &#34;xxxxx&#34; # 替换为你的Gemini API token domain: &#34;https://generativelanguage.googleapis.com/v1beta/models/&#34; # Gemini接口 text_model: &#34;gemini-pro:generateContent&#34; # 选用文本生成模型 temperature: 0 topK: 1 topP: 1 maxOutputTokens: 2048 embedding_model: &#34;embedding-001:embedContent&#34; # 选用embedding模型 # prompt模板相关配置 template: folder: templates # prompt模板存放位置 embeddings: embeddings."><meta itemprop="datePublished" content="2024-03-24T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-03-24T00:00:00+00:00" />
+<meta itemprop="wordCount" content="165">
+<meta itemprop="keywords" content="玩AI,Shiny,LLM," />
+  
+  <meta property="og:title" content="玩AI：基于Geimini API开发的自然语言取数工具" />
+<meta property="og:description" content="DEMO ➫ 🔗 io-the-wisp
+Github ➫ 🔗 guowei-xie/io-the-wisp
+项目简介 基于Rshiny&#43;LLM开发的自然语言取数工具，通过调用Gemini的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。
+使用流程 1. 配置config.yml 配置主路径下的config.yml文件，具体参照如下示例：
+default: seed: 123 # no use # 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置 database: host: xxxxxx user: xxxxxx pwd: xxxxxx database: xxxxxx port: xxxxxx # 默认连接database中配置的数据库，进行建表和插入数据 # 用于记录用户查询结果，方便后续有针对性的优化prompt cache: dbname: xxxxxx tblname: &#34;io_the_wisp_propmt&#34; # 默认的表名，也可以自定义 # 模型参数配置 gemini: api_token: &#34;xxxxx&#34; # 替换为你的Gemini API token domain: &#34;https://generativelanguage.googleapis.com/v1beta/models/&#34; # Gemini接口 text_model: &#34;gemini-pro:generateContent&#34; # 选用文本生成模型 temperature: 0 topK: 1 topP: 1 maxOutputTokens: 2048 embedding_model: &#34;embedding-001:embedContent&#34; # 选用embedding模型 # prompt模板相关配置 template: folder: templates # prompt模板存放位置 embeddings: embeddings." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/io-the-wisp/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-03-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-24T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="玩AI：基于Geimini API开发的自然语言取数工具"/>
+<meta name="twitter:description" content="DEMO ➫ 🔗 io-the-wisp
+Github ➫ 🔗 guowei-xie/io-the-wisp
+项目简介 基于Rshiny&#43;LLM开发的自然语言取数工具，通过调用Gemini的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。
+使用流程 1. 配置config.yml 配置主路径下的config.yml文件，具体参照如下示例：
+default: seed: 123 # no use # 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置 database: host: xxxxxx user: xxxxxx pwd: xxxxxx database: xxxxxx port: xxxxxx # 默认连接database中配置的数据库，进行建表和插入数据 # 用于记录用户查询结果，方便后续有针对性的优化prompt cache: dbname: xxxxxx tblname: &#34;io_the_wisp_propmt&#34; # 默认的表名，也可以自定义 # 模型参数配置 gemini: api_token: &#34;xxxxx&#34; # 替换为你的Gemini API token domain: &#34;https://generativelanguage.googleapis.com/v1beta/models/&#34; # Gemini接口 text_model: &#34;gemini-pro:generateContent&#34; # 选用文本生成模型 temperature: 0 topK: 1 topP: 1 maxOutputTokens: 2048 embedding_model: &#34;embedding-001:embedContent&#34; # 选用embedding模型 # prompt模板相关配置 template: folder: templates # prompt模板存放位置 embeddings: embeddings."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/io-the-wisp/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">玩AI：基于Geimini API开发的自然语言取数工具</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Mar 24, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><div align="center">
+<p><a href="https://www.xiebro.cool/io-the-wisp/" target="_blank"><img src="images/demo.gif" alt="https://www.xiebro.cool/io-the-wisp/" /></a></p>
+<p>DEMO ➫ <a href="https://www.xiebro.cool/io-the-wisp/">🔗 io-the-wisp</a></p>
+<p>Github ➫ <a href="https://github.com/guowei-xie/io-the-wisp">🔗 guowei-xie/io-the-wisp</a></p>
+</div>
+<hr>
+<h1 id="项目简介">项目简介</h1>
+<p>基于Rshiny+LLM开发的<strong>自然语言取数工具</strong>，通过调用<code>Gemini</code>的 API接口将自然语言转换为SQL指令，从数据库中提取数据并展示到前端。</p>
+<p><img src="images/framework.jpg" alt=""></p>
+<hr>
+<h1 id="使用流程">使用流程</h1>
+<h4 id="1-配置configyml">1. 配置<code>config.yml</code></h4>
+<p>配置主路径下的<code>config.yml</code>文件，具体参照如下示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">default</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">seed</span>: <span style="color:#ae81ff">123</span> <span style="color:#75715e"># no use</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 数据库连接配置，项目默认使用Mysql数据库，将“xxxx”替换为你的实际连接配置</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">database</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">host</span>: <span style="color:#ae81ff">xxxxxx </span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">user</span>: <span style="color:#ae81ff">xxxxxx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">pwd</span>: <span style="color:#ae81ff">xxxxxx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">database</span>: <span style="color:#ae81ff">xxxxxx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">xxxxxx</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 默认连接database中配置的数据库，进行建表和插入数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用于记录用户查询结果，方便后续有针对性的优化prompt</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">cache</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">dbname</span>: <span style="color:#ae81ff">xxxxxx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">tblname</span>: <span style="color:#e6db74">&#34;io_the_wisp_propmt&#34;</span> <span style="color:#75715e"># 默认的表名，也可以自定义</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模型参数配置</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">gemini</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">api_token</span>: <span style="color:#e6db74">&#34;xxxxx&#34;</span>  <span style="color:#75715e"># 替换为你的Gemini API token</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">domain</span>: <span style="color:#e6db74">&#34;https://generativelanguage.googleapis.com/v1beta/models/&#34;</span>  <span style="color:#75715e"># Gemini接口</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">text_model</span>: <span style="color:#e6db74">&#34;gemini-pro:generateContent&#34;</span>  <span style="color:#75715e"># 选用文本生成模型</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">temperature</span>: <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">topK</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">topP</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">maxOutputTokens</span>: <span style="color:#ae81ff">2048</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">embedding_model</span>: <span style="color:#e6db74">&#34;embedding-001:embedContent&#34;</span> <span style="color:#75715e"># 选用embedding模型</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># prompt模板相关配置</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">folder</span>: <span style="color:#ae81ff">templates</span> <span style="color:#75715e"># prompt模板存放位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">embeddings</span>: <span style="color:#ae81ff">embeddings.csv </span> <span style="color:#75715e"># prompt模板embeding后的存储文件格式（默认在主目录）</span>
+</span></span></code></pre></div><hr>
+<h4 id="2-配置prompt模板">2. 配置prompt模板</h4>
+<p>prompt模板存储在<code>templates/</code>路径下，每个<code>xxx.txt</code>文件是一个模板，它将作为<code>查询问题</code>的上文一起提交给模型，为了让模型生成理想的SQL语句，我们需要告诉它每个数据表中的字段含义以及一些查询示例，比如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>任务目标：理解以下mysql表中的字段信息以及查询语句示例，根据Query写出sql代码。
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>数据表名称: datasets_io_the_wisp_channel,该表中记录了渠道获客数据
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>字段名称: date,city,channel,browser,trade
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>字段含义：日期=date,城市或地区=city,渠道=channel,浏览用户量或UV=browser,获客用户量或支付用户量=trade
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Query: 从渠道获客统计表，统计各个渠道在2024年1月份的获客数量以及转化率CVR，按CVR降序排序
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>SQL: SELECT channel, SUM(trade) as total_trade, SUM(trade)/SUM(browser) AS cvr FROM datasets_io_the_wisp_channel WHERE date &gt;= &#39;2024-01-01&#39; and date &lt;= &#39;2024-01-31&#39;  GROUP BY channel ORDER BY SUM(trade)/SUM(browser)  DESC;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Query: 从渠道获客统计表，查出转化率前三的渠道
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>SQL: SELECT channel, SUM(trade) / SUM(browser) AS cvr FROM datasets_io_the_wisp_channel GROUP BY channel ORDER BY SUM(trade) / SUM(browser) DESC LIMIT 3;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Query: {prompt}
+</span></span><span style="display:flex;"><span>SQL: 
+</span></span></code></pre></div><ul>
+<li>后续我们可以通过分析捕获到的用户查询结果有针对性的优化prompt模板或者提供更多的查询示例，来让结果达到满意状态</li>
+<li>用户的每次查询结果已经被存储到了数据库表中（即<code>config.yml</code>中配置的<code>cache</code>:<code>tblname</code>）</li>
+</ul>
+<hr>
+<h4 id="3-prompt模板创建和更新">3. Prompt模板创建和更新</h4>
+<p>如你所见，一个prompt模板只对一张数据表进行解释说明，所以你需要根据自身数据表建设情况，对每张数据表都创建一个prompt模板，这样设计的优点和缺点：</p>
+<ul>
+<li>
+<p><strong>优点</strong></p>
+<ul>
+<li>当查询场景和数据表较多时，分成多个模板可以避免提示词长度受限；</li>
+<li>提供较短但与问题强相关的上文（对单表的解释）比提供全面但缺乏针对性的上文（对多表的解释）更有利于模型理解问题并给出相对准确的结果</li>
+</ul>
+</li>
+<li>
+<p><strong>缺点</strong></p>
+<ul>
+<li>问题与模板的匹配是基于语义相似度，有时会找不准模板</li>
+</ul>
+</li>
+</ul>
+<h5 id="mark注意mark"><mark>注意</mark>：</h5>
+<ul>
+<li>
+<p>每次创建模板或更新模板后，都需要运行<code>update.R</code>脚本，作用是将模板内容进行embedding后存储到<code>embedding.csv</code>文件</p>
+</li>
+<li>
+<p>创建prompt模板时，<code>.txt</code>的文件名也很重要，它会作为内容标题输入embedding模型，所以文件名最好是对模板内容的概要性总结，例如<code>渠道获客统计.txt</code></p>
+</li>
+</ul>
+<hr>
+<h4 id="4-项目启动">4. 项目启动</h4>
+<p>在终端内，项目路径下执行shell命令：<code>sh run.sh</code>，或Rstudio中运行<code>app.R</code>脚本</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/%E7%8E%A9ai"
+      >玩AI</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/shiny"
+      >Shiny</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/llm"
+      >LLM</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/twofactor/"
+      ><span>因果推断：两种结构比率归因方法</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >数据之道  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -89,12 +89,12 @@ git stash list             # 显示所有工作现场
 git stash apply stash@{0}  # 选择要恢复的工作现场
 
 # .gitignore配置 ---------------------------------------------------------------
-
 *.a            # 忽略所有.a结尾的文件
 !lib.a         # 但跟踪所有的lib.a，即便之前忽略了.a文件
 build/         # 忽略任何目录下名为build的文件夹
 doc/*.txt      # 忽略doc/file.txt，但不会忽略doc/document/file.txt
 doc/**/*.pdf   # 忽略doc/目录及其所有子目录下的.pdf文件
+
 ```
 [A collection of .gitignore templates](https://github.com/github/gitignore/)
 
