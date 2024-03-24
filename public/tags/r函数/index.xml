@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R函数 on 蟹不肉的浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/r%E5%87%BD%E6%95%B0/</link>
+    <description>Recent content in R函数 on 蟹不肉的浑身蟹数</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 03 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/tags/r%E5%87%BD%E6%95%B0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Maximum-Curvature：找到函数曲线上的最大曲率点</title>
+      <link>https://www.xiebro.cool/post/maximum-curvature/</link>
+      <pubDate>Sun, 03 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/maximum-curvature/</guid>
+      <description>在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个拐点来解释性质变化。那么，如何才能精确地找到这个拐点？&#xA;比如： 这里介绍R语言soilphysics包中的maxcurv()函数，来帮我们计算出函数曲线上的最大曲率点。&#xA;它的一般用法：&#xA;maxcurv(x.range, fun, method = c(&amp;#34;fd&amp;#34;, &amp;#34;pd&amp;#34;), graph = TRUE) # x.range: x 范围，一个包含两个元素的向量，表示曲线的取值范围。 # fun: 要计算曲率的函数，必须是一个可调用的 R 函数。 # method: 计算曲率的方法，可以是 &amp;#34;fd&amp;#34;（有限差分法）或 &amp;#34;pd&amp;#34;（抛物线拟合法）。 # graph: 是否显示计算过程的图形，默认为 TRUE。 返回值是一个列表，包含以下元素：&#xA;# x0: 最大曲率点的 x 坐标。 # y0: 最大曲率点的 y 坐标。 # curvature: 最大曲率点处的曲率值 原理：&#xA;对于给定的函数，首先在指定范围内生成足够密集的点。 根据指定的方法（有限差分法或抛物线拟合法），计算每个点处的曲率值。 找到曲率值最大的点，即为最大曲率点。 返回最大曲率点的坐标和曲率值。 示例1:&#xA;x_min = 1 x_max = 20 mc &amp;lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_max), fun = f, method = &amp;#34;pd&amp;#34;, graph = FALSE ) } # cubic cube &amp;lt;- \(x) 7424243 + (1.</description>
+    </item>
+  </channel>
+</rss>

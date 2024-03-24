@@ -5,7 +5,7 @@ DefaultContentLanguage: en
 enableInlineShortcodes: yes
 ignoreErrors: error-remote-getjson
 theme: hugo-paper
-title: 数据之道
+title: 蟹不肉的浑身蟹数
 params:
   sub_title: Home
   avatar: https://avatars.githubusercontent.com/u/160246290?v=4

@@ -52,7 +52,7 @@
   />
 
   
-  <title>网站搭建：用R语言blogdown搭建博客站点 - 数据之道</title>
+  <title>Blog搭建：为了一口醋，包了一顿饺子。 - 蟹不肉的浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -132,7 +132,7 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
   
   
   
-  <meta itemprop="name" content="网站搭建：用R语言blogdown搭建博客站点">
+  <meta itemprop="name" content="Blog搭建：为了一口醋，包了一顿饺子。">
 <meta itemprop="description" content="搭建这个Blog的起因是这样的&hellip;
 有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
 二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
@@ -145,9 +145,9 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
 三、网站部署 服务器登录 ssh username@xxx.xxx.xxx.xxx 上传站点 把public目录上传到服务器的/data/wwwroot/目录下 scp -r yourpath/public/ yourname@xxx.xxx.xxx.xxx:/data/wwwroot # 如果服务器没有该目录，需要先创建 # 切到根目录后 sudo mkdir data/wwwroot 这一步也可以使用git把项目clone到服务器目录，之后修改内容会更加方便一些 Nginx sudo权限下安装nginx sudo apt install nginx 启动nginx服务 sudo systemctl start nginx 验证安装：打开Web浏览器，并访问服务器的IP地址，如果看到Nginx的欢迎页面，那么Nginx已经成功安装并运行。"><meta itemprop="datePublished" content="2024-02-25T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-02-25T00:00:00+00:00" />
 <meta itemprop="wordCount" content="115">
-<meta itemprop="keywords" content="Website,linux,R编程," />
+<meta itemprop="keywords" content="Website,linux,nginx," />
   
-  <meta property="og:title" content="网站搭建：用R语言blogdown搭建博客站点" />
+  <meta property="og:title" content="Blog搭建：为了一口醋，包了一顿饺子。" />
 <meta property="og:description" content="搭建这个Blog的起因是这样的&hellip;
 有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
 二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
@@ -165,7 +165,7 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="网站搭建：用R语言blogdown搭建博客站点"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Blog搭建：为了一口醋，包了一顿饺子。"/>
 <meta name="twitter:description" content="搭建这个Blog的起因是这样的&hellip;
 有次无意中刷到下面这个阿里云的活动，99元1年的云服务器，这个羊毛怎能有不薅的道理！？2核2G虽然干不了重活，但搭个blog绰绰有余，所以，为了这口醋，咱们今天就来包顿饺子(从服务器购买到网站上线)。 一、服务器准备 购买服务器 登录阿里云去购买云服务器，可以选择“99元活动产品”也可以根据自己的要求配置。 注意系统镜像选择Ubuntu，因为本教程是基于Ubuntu系统 安全组配置 在“选配”时或购买成功后进入“云服务器ECS”控制台-点击“实例名称”-“安全组”-“管理规则”-“快速添加” 添加安全组规则，开放必要的端口 账号权限配置 打开本地终端，ssh连接登录root账号 ssh root@xxx.xxx.xxx.xxx # xxx替换为你的服务器ip 创建一个用户(比如我的用户名：guowei) adduser guowei 设置用户密码 passwd guowei 分配管理员权限 # 进入权限配置文件 visudo 将用户添加到root下，配置与root相同权限并保存 退出root连接，之后可以使用新创建的用户登录
 二、制作网站 在Rstudio中，使用blogdown包来快速建站，具体可以阅读blogdown说明文档，这里我们直接使用，不对包方法做详细解释，另外的前提假定是你已经有了一定的R语言编程基础。
@@ -284,7 +284,7 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">网站搭建：用R语言blogdown搭建博客站点</h1>
+    <h1 class="!my-0 pb-2.5">Blog搭建：为了一口醋，包了一顿饺子。</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -485,8 +485,8 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/r%E7%BC%96%E7%A8%8B"
-      >R编程</a
+      href="https://www.xiebro.cool/tags/nginx"
+      >nginx</a
     >
     
   </footer>
@@ -498,11 +498,17 @@ blogdown::build_site() 如果看到类似上图的输出，说明站点已经生
   
   <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
     
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/only-want-boy/"
+      ><span class="mr-1.5">←</span><span>Monte-Carlo：“重男轻女”是否会导致男女比例失衡？</span></a
+    >
+    
     
     <a
       class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://www.xiebro.cool/post/twofactor/"
-      ><span>因果推断：两种结构比率归因方法</span><span class="ml-1.5">→</span></a
+      href="https://www.xiebro.cool/post/survival-analysis/"
+      ><span>Kaplan-Meier：用户生存曲线</span><span class="ml-1.5">→</span></a
     >
     
   </nav>

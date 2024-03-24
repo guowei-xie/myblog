@@ -1,16 +1,16 @@
 ---
-title: 网站搭建：用R语言blogdown搭建博客站点
+title: Blog搭建：为了一口醋，包了一顿饺子。
 author: Xiebro
 date: '2024-02-25'
 slug: []
 categories:
-  - 网站搭建
+  - R
 tags:
   - Website
   - linux
-  - R编程
+  - nginx
 
-weight: 10
+# weight: 10
 ---
 
 搭建这个Blog的起因是这样的...  

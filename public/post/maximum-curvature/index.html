@@ -52,7 +52,7 @@
   />
 
   
-  <title>R可视化：找到函数曲线上的最大曲率点 - 数据之道</title>
+  <title>Maximum-Curvature：找到函数曲线上的最大曲率点 - 蟹不肉的浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -61,7 +61,7 @@
   
   
   
-  <meta name="description" content="在某些数据分析任务中，我们通常需要将数据拟合成曲线，并试图确定一个拐点以解释性质的变化。通常，我们会通过肉眼观察来确定大致范围，但如何才能准确地找到这个拐点呢？
+  <meta name="description" content="在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个拐点来解释性质变化。那么，如何才能精确地找到这个拐点？
 比如： 这里介绍R语言soilphysics包中的maxcurv()函数，来帮我们计算出函数曲线上的最大曲率点。
 它的一般用法：
 maxcurv(x.range, fun, method = c(&#34;fd&#34;, &#34;pd&#34;), graph = TRUE) # x.range: x 范围，一个包含两个元素的向量，表示曲线的取值范围。 # fun: 要计算曲率的函数，必须是一个可调用的 R 函数。 # method: 计算曲率的方法，可以是 &#34;fd&#34;（有限差分法）或 &#34;pd&#34;（抛物线拟合法）。 # graph: 是否显示计算过程的图形，默认为 TRUE。 返回值是一个列表，包含以下元素：
@@ -129,8 +129,8 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
   
   
   
-  <meta itemprop="name" content="R可视化：找到函数曲线上的最大曲率点">
-<meta itemprop="description" content="在某些数据分析任务中，我们通常需要将数据拟合成曲线，并试图确定一个拐点以解释性质的变化。通常，我们会通过肉眼观察来确定大致范围，但如何才能准确地找到这个拐点呢？
+  <meta itemprop="name" content="Maximum-Curvature：找到函数曲线上的最大曲率点">
+<meta itemprop="description" content="在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个拐点来解释性质变化。那么，如何才能精确地找到这个拐点？
 比如： 这里介绍R语言soilphysics包中的maxcurv()函数，来帮我们计算出函数曲线上的最大曲率点。
 它的一般用法：
 maxcurv(x.range, fun, method = c(&#34;fd&#34;, &#34;pd&#34;), graph = TRUE) # x.range: x 范围，一个包含两个元素的向量，表示曲线的取值范围。 # fun: 要计算曲率的函数，必须是一个可调用的 R 函数。 # method: 计算曲率的方法，可以是 &#34;fd&#34;（有限差分法）或 &#34;pd&#34;（抛物线拟合法）。 # graph: 是否显示计算过程的图形，默认为 TRUE。 返回值是一个列表，包含以下元素：
@@ -139,10 +139,10 @@ maxcurv(x.range, fun, method = c(&#34;fd&#34;, &#34;pd&#34;), graph = TRUE) # x.
 x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_max), fun = f, method = &#34;pd&#34;, graph = FALSE ) } # cubic cube &lt;- \(x) 7424243 &#43; (1."><meta itemprop="datePublished" content="2024-03-03T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-03T00:00:00+00:00" />
 <meta itemprop="wordCount" content="136">
-<meta itemprop="keywords" content="R可视化," />
+<meta itemprop="keywords" content="R函数," />
   
-  <meta property="og:title" content="R可视化：找到函数曲线上的最大曲率点" />
-<meta property="og:description" content="在某些数据分析任务中，我们通常需要将数据拟合成曲线，并试图确定一个拐点以解释性质的变化。通常，我们会通过肉眼观察来确定大致范围，但如何才能准确地找到这个拐点呢？
+  <meta property="og:title" content="Maximum-Curvature：找到函数曲线上的最大曲率点" />
+<meta property="og:description" content="在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个拐点来解释性质变化。那么，如何才能精确地找到这个拐点？
 比如： 这里介绍R语言soilphysics包中的maxcurv()函数，来帮我们计算出函数曲线上的最大曲率点。
 它的一般用法：
 maxcurv(x.range, fun, method = c(&#34;fd&#34;, &#34;pd&#34;), graph = TRUE) # x.range: x 范围，一个包含两个元素的向量，表示曲线的取值范围。 # fun: 要计算曲率的函数，必须是一个可调用的 R 函数。 # method: 计算曲率的方法，可以是 &#34;fd&#34;（有限差分法）或 &#34;pd&#34;（抛物线拟合法）。 # graph: 是否显示计算过程的图形，默认为 TRUE。 返回值是一个列表，包含以下元素：
@@ -156,8 +156,8 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="R可视化：找到函数曲线上的最大曲率点"/>
-<meta name="twitter:description" content="在某些数据分析任务中，我们通常需要将数据拟合成曲线，并试图确定一个拐点以解释性质的变化。通常，我们会通过肉眼观察来确定大致范围，但如何才能准确地找到这个拐点呢？
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Maximum-Curvature：找到函数曲线上的最大曲率点"/>
+<meta name="twitter:description" content="在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个拐点来解释性质变化。那么，如何才能精确地找到这个拐点？
 比如： 这里介绍R语言soilphysics包中的maxcurv()函数，来帮我们计算出函数曲线上的最大曲率点。
 它的一般用法：
 maxcurv(x.range, fun, method = c(&#34;fd&#34;, &#34;pd&#34;), graph = TRUE) # x.range: x 范围，一个包含两个元素的向量，表示曲线的取值范围。 # fun: 要计算曲率的函数，必须是一个可调用的 R 函数。 # method: 计算曲率的方法，可以是 &#34;fd&#34;（有限差分法）或 &#34;pd&#34;（抛物线拟合法）。 # graph: 是否显示计算过程的图形，默认为 TRUE。 返回值是一个列表，包含以下元素：
@@ -272,7 +272,7 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">R可视化：找到函数曲线上的最大曲率点</h1>
+    <h1 class="!my-0 pb-2.5">Maximum-Curvature：找到函数曲线上的最大曲率点</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -289,7 +289,7 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
     
   </header>
 
-  <section><p>在某些数据分析任务中，我们通常需要将数据拟合成曲线，并试图确定一个<em><strong>拐点</strong></em>以解释性质的变化。通常，我们会通过肉眼观察来确定大致范围，但如何才能准确地找到这个拐点呢？</p>
+  <section><p>在一些数据分析任务中，我们有时需要将数据拟合成曲线，并试图确定一个<em><strong>拐点</strong></em>来解释性质变化。那么，如何才能精确地找到这个拐点？</p>
 <p>比如：
 <img src="https://www.xiebro.cool/post/maximum-curvature/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>这里介绍R语言<code>soilphysics</code>包中的<code>maxcurv()</code>函数，来帮我们计算出函数曲线上的最大曲率点。</p>
@@ -347,8 +347,8 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96"
-      >R可视化</a
+      href="https://www.xiebro.cool/tags/r%E5%87%BD%E6%95%B0"
+      >R函数</a
     >
     
   </footer>
@@ -370,7 +370,7 @@ x_min = 1 x_max = 20 mc &lt;- \(f) { soilphysics::maxcurv( x.range = c(x_min, x_
     <a
       class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
       href="https://www.xiebro.cool/post/only-want-boy/"
-      ><span>蒙特卡洛模拟：“重男轻女”是否会导致男女比例失衡？</span><span class="ml-1.5">→</span></a
+      ><span>Monte-Carlo：“重男轻女”是否会导致男女比例失衡？</span><span class="ml-1.5">→</span></a
     >
     
   </nav>

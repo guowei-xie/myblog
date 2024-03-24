@@ -1,10 +1,10 @@
 ---
-title: 蒙特卡洛模拟：“重男轻女”是否会导致男女比例失衡？
+title: Monte-Carlo：“重男轻女”是否会导致男女比例失衡？
 author: Package Build
 date: '2024-03-03'
 slug: only-want-boy
 categories:
-  - 蒙特卡洛模拟
+  - Monte-Carlo
 tags:
   - Monte-Carlo
 ---

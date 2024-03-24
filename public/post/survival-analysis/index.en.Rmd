@@ -1,13 +1,13 @@
 ---
-title: R可视化：用户生存分析
+title: Kaplan-Meier：用户生存曲线
 author: xiebro
 date: '2024-02-25'
 slug: survival-analysis
 categories:
-  - R可视化
+  - R
 tags:
   - R可视化
-  - 生存分析
+  - Kaplan-Meier
 
 ---
 

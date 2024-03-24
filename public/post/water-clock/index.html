@@ -52,7 +52,7 @@
   />
 
   
-  <title>玩AI：趣味定时器，帮助同事喝水减肥 - 数据之道</title>
+  <title>玩AI：趣味定时器，帮助同事喝水减肥 - 蟹不肉的浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -63,9 +63,9 @@
   
   <meta name="description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
-设置触发提醒的时间，在这些时间点才会触发喝水提醒
+配置文件 使用飞书自定义机器人来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照&raquo;飞书API文档
+调用Gemini的文本生成模型，因此需要配置自己的api_key &raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发消息提醒
 config.yml
 default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !" />
@@ -133,22 +133,22 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
   <meta itemprop="name" content="玩AI：趣味定时器，帮助同事喝水减肥">
 <meta itemprop="description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
-设置触发提醒的时间，在这些时间点才会触发喝水提醒
+配置文件 使用飞书自定义机器人来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照&raquo;飞书API文档
+调用Gemini的文本生成模型，因此需要配置自己的api_key &raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发消息提醒
 config.yml
 default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !"><meta itemprop="datePublished" content="2024-03-04T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-04T00:00:00+00:00" />
-<meta itemprop="wordCount" content="233">
+<meta itemprop="wordCount" content="234">
 <meta itemprop="keywords" content="玩AI,LLM," />
   
   <meta property="og:title" content="玩AI：趣味定时器，帮助同事喝水减肥" />
 <meta property="og:description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
-设置触发提醒的时间，在这些时间点才会触发喝水提醒
+配置文件 使用飞书自定义机器人来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照&raquo;飞书API文档
+调用Gemini的文本生成模型，因此需要配置自己的api_key &raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发消息提醒
 config.yml
 default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !" />
@@ -162,9 +162,9 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
   <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="玩AI：趣味定时器，帮助同事喝水减肥"/>
 <meta name="twitter:description" content="我的同事们立志要“喝水减肥”，为了实现每天8杯水的目标，他们需要一个“定时提醒”。但只是提醒时间的话那未免有点太单调，如果接入大语言模型会不会让喝水这件事变得更加有趣，比如：
 接下来，用R语言实现这个趣味定时器&hellip;
-配置文件 这里使用的是飞书自定义机器人，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;飞书API文档
-这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;申请地址
-设置触发提醒的时间，在这些时间点才会触发喝水提醒
+配置文件 使用飞书自定义机器人来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照&raquo;飞书API文档
+调用Gemini的文本生成模型，因此需要配置自己的api_key &raquo;申请地址
+设置触发提醒的时间，在这些时间点才会触发消息提醒
 config.yml
 default: # Gemini返回失败时的最大重复尝试次数 trials: 10 # 允许提醒的时间 crontab: - 10:00:00 - 11:00:00 - 14:00:00 - 15:00:00 - 16:00:00 - 17:00:00 - 18:00:00 - 19:00:00 - 20:00:00 webhook: # 替换成你自己的 - https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx gemini: api: &#34;https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=&#34; token: &#34;xxxxxxxxxxxxx&#34; # 替换成你自己的key prompt: &#34;用幽默有趣的方式,简短表达这段话：现在的时间是{current_time}，该喝一杯水了&#34; R脚本 clock.R
 library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ url &lt;- paste0(cnf$api, cnf$token) headers &lt;- c(&#39;Content-Type&#39; = &#39;application/json&#39;) body &lt;- list( contents = list( list( parts = list( list( text = prompt ) ) ) ) ) response &lt;- POST(url, body = body, encode = &#34;json&#34;, verbose()) msg &lt;- content(response)[[&#34;candidates&#34;]][[1]][[&#34;content&#34;]][[&#34;parts&#34;]][[1]][[&#34;text&#34;]] return(msg) } send_msg &lt;- function(msg, webhook){ print(msg) body &lt;- list( msg_type = &#34;text&#34;, content = list(text = msg) ) response &lt;- httr::POST(url = webhook, body = list(msg_type = &#34;text&#34;, content = list(text = msg)), encode = &#34;json&#34;, add_headers(&#34;Content-Type&#34; = &#34;application/json&#34;)) if(response$status_code !"/>
@@ -300,13 +300,13 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
 <h2 id="配置文件">配置文件</h2>
 <ul>
 <li>
-<p>这里使用的是飞书<strong>自定义机器人</strong>，因此需要在群聊中创建机器人并获得webhook_url，具体可参照&raquo;<a href="https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot">飞书API文档</a></p>
+<p>使用飞书<strong>自定义机器人</strong>来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照&raquo;<a href="https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot">飞书API文档</a></p>
 </li>
 <li>
-<p>这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成&raquo;<a href="https://aistudio.google.com/app/apikey">申请地址</a></p>
+<p>调用Gemini的文本生成模型，因此需要配置自己的api_key &raquo;<a href="https://aistudio.google.com/app/apikey">申请地址</a></p>
 </li>
 <li>
-<p>设置触发提醒的时间，在这些时间点才会触发喝水提醒</p>
+<p>设置触发提醒的时间，在这些时间点才会触发消息提醒</p>
 </li>
 </ul>
 <p><code>config.yml</code></p>
@@ -470,7 +470,7 @@ library(config) library(httr) library(tidyverse) gemini &lt;- function(prompt){ 
     <a
       class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
       href="https://www.xiebro.cool/post/maximum-curvature/"
-      ><span>R可视化：找到函数曲线上的最大曲率点</span><span class="ml-1.5">→</span></a
+      ><span>Maximum-Curvature：找到函数曲线上的最大曲率点</span><span class="ml-1.5">→</span></a
     >
     
   </nav>

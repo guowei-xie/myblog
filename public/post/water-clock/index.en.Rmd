@@ -18,11 +18,11 @@ tags:
 接下来，用R语言实现这个趣味定时器...
 ## 配置文件
 
-- 这里使用的是飞书**自定义机器人**（因为办公摸鱼都在飞书），因此需要在群聊中创建机器人并获得webhook_url，具体可参照>>[飞书API文档](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)
+- 使用飞书**自定义机器人**来推送提醒消息，因此需要在群聊中创建机器人并获得webhook_url，具体参照>>[飞书API文档](https://open.feishu.cn/document/client-docs/bot-v3/add-custom-bot)
 
-- 这里调用的是Gemini的文本生成模型（因为免费）,因此需要配置你自己的api_key，如果没有可以去这里生成>>[申请地址](https://aistudio.google.com/app/apikey)
+- 调用Gemini的文本生成模型，因此需要配置自己的api_key >>[申请地址](https://aistudio.google.com/app/apikey)
 
-- 设置触发提醒的时间，在这些时间点才会触发喝水提醒
+- 设置触发提醒的时间，在这些时间点才会触发消息提醒
 
   
 `config.yml`

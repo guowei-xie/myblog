@@ -1,10 +1,10 @@
 ---
-title: 蒙特卡洛模拟：猜猜篮子里有多少个苹果
+title: Monte-Carlo：猜猜篮子里有多少个苹果
 author: Xiebro
 date: '2024-02-25'
 slug: apple basket
 categories:
-  - 蒙特卡洛模拟
+  - Monte-Carlo
 tags:
   - Monte-Carlo
 ---
