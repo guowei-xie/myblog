@@ -23,7 +23,7 @@
       <description>在一些工作场景当中，比如渠道广告投放，假如这月与上月相比，总投放转化率出现了差异，那么，作为指导业务决策的数据分析师，我们需要讲清楚：两次投放转化率的差异，有多少是来自于渠道占比变化的结果，又有多少是来自渠道本身转化率波动的结果。&#xA;构造一份演示数据：&#xA;dat &amp;lt;- data.frame( dim = c(&amp;#34;A&amp;#34;, &amp;#34;B&amp;#34;, &amp;#34;C&amp;#34;, &amp;#34;D&amp;#34;, &amp;#34;E&amp;#34;), # 渠道名称 base_prop = c(0.2, 0.3, 0.1, 0.2, 0.2), # 上月(基期)各渠道用户数量占比 base_rate = c(0.1, 0.2, 0.15, 0.12, 0.05), # 上月(基期)各渠道用户转化率 curr_prop = c(0.25, 0.25, 0.15, 0.2, 0.15), # 本月(现期)各渠道用户数量占比 curr_rate = c(0.08, 0.15, 0.09, 0.1, 0.07) # 本月(现期)各渠道用户转化率 ) dat |&amp;gt; knitr::kable() dim base_prop base_rate curr_prop curr_rate A 0.2 0.10 0.25 0.08 B 0.3 0.20 0.25 0.15 C 0.</description>
     </item>
     <item>
-      <title>LMDI用于漏斗指标归因</title>
+      <title>漏斗指标归因</title>
       <link>https://www.xiebro.cool/post/lmdi/</link>
       <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/lmdi/</guid>
