@@ -1,0 +1,122 @@
+---
+title: PSM倾向性得分匹配
+author: Xiebro
+date: '2024-03-31'
+slug: psm
+categories:
+  - R
+tags:
+  - PSM
+  - AB test
+---
+## 背景目标
+- A为对照组，B为实验组;
+- A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test显著性检验;
+- 使用PSM消除A与B的特征差异，处理成可以直接进行显著性检验的样本
+
+## 模拟数据集
+```{r}
+set.seed(123)
+
+# generate group A
+n_a <- 1500
+dat_A <- 
+  data.frame(age = rnorm(n_a, mean = 50, sd = 10),
+             gender = sample(c("Male", "Female"), size = n_a, replace = TRUE),
+             health = rnorm(n_a, mean = 0, sd = 1),
+             income = rnorm(n_a, mean = 50000, sd = 10000),
+             education = sample(c("High School", "Bachelor's Degree", "Master's Degree", "PhD"), size = n_a, replace = TRUE),
+             treatment = rep(0, n_a)  # A组均未参与实验
+  )
+             
+# generate group B
+n_b <- 500
+dat_B <- 
+  data.frame(age = rnorm(n_b, mean = 47, sd = 12),
+             gender = sample(c("Male", "Female"), size = n_b, replace = TRUE),
+             health = rnorm(n_b, mean = 0.2, sd = 1),
+             income = rnorm(n_b, mean = 52000, sd = 12000),
+             education = sample(c("Bachelor's Degree", "Master's Degree", "PhD"), size = n_b, replace = TRUE),
+             treatment = rep(1, n_b)  # B组全部参与实验
+  )
+
+dat <- rbind(dat_A, dat_B)
+
+head(dat, 5)
+```
+## 数据现状
+AB组样本特征差异对比
+```{r}
+library(tableone)
+
+strt <- CreateTableOne(data = dat,
+                       vars = names(dat),
+                       strata='treatment',
+                       test = TRUE)
+
+print(strt, smd = TRUE)
+```
+## PSM匹配
+由上图可见，AB组样本中的`age`、`health`、`income`、`education`特征存在显著性差异，接下来基于PSM方法将AB组样本特征拉齐（在A中找到与B最相似的样本子集）
+
+```{r}
+library(MatchIt)
+psm_matchit <- 
+  matchit(data = dat,
+          treatment ~ age + gender + health + income + education, 
+          method = 'nearest', # 近邻匹配
+          ratio = 1, # 匹配数量
+          replace = F, # 不放回
+          caliper = 0.2)
+
+summary(psm_matchit)
+```
+## 平衡性检验
+- SMD < 0.1?
+```{r, warning=FALSE, message=FALSE}
+library(cobalt)
+bal.tab(psm_matchit,m.threshold = 0.1, un = FALSE)
+```
+
+- 匹配与未匹配样本的倾向性得分差异
+```{r, warning=FALSE, message=FALSE}
+plot(psm_matchit, type = "jitter")
+```
+
+- 匹配与未匹配样本的倾向性得分分布
+```{r, warning=FALSE, message=FALSE}
+plot(psm_matchit, type = "hist")
+```
+
+- 匹配前后的特征分布对比
+```{r, warning=FALSE, message=FALSE}
+cowplot::plot_grid(
+  ncol = 2,
+  bal.plot(psm_matchit, var.name = "age", which = "both", grid = TRUE),
+  bal.plot(psm_matchit, var.name = "gender", which = "both", grid = TRUE),
+  bal.plot(psm_matchit, var.name = "health", which = "both", grid = TRUE),
+  bal.plot(psm_matchit, var.name = "income", which = "both", grid = TRUE),
+  bal.plot(psm_matchit, var.name = "education", which = "both", grid = TRUE))
+```
+
+## 匹配后样本
+- 获取结果样本
+```{r}
+psm_matchit_dat <- 
+  match.data(psm_matchit) |> 
+  as.data.frame()
+  
+```
+- 结果样本AB差异
+```{r}
+strt <- 
+  CreateTableOne(data = psm_matchit_dat,
+                 vars = names(dat),
+                 strata='treatment',
+                 test = TRUE)
+
+print(strt, smd = TRUE)
+```
+
+
+

@@ -6,8 +6,15 @@
     <description>Recent content in R on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 24 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 31 Mar 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PSM倾向性得分匹配</title>
+      <link>https://www.xiebro.cool/post/psm/</link>
+      <pubDate>Sun, 31 Mar 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/psm/</guid>
+      <description>背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &amp;lt;- 1500 dat_A &amp;lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&amp;#34;Male&amp;#34;, &amp;#34;Female&amp;#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&amp;#34;High School&amp;#34;, &amp;#34;Bachelor&amp;#39;s Degree&amp;#34;, &amp;#34;Master&amp;#39;s Degree&amp;#34;, &amp;#34;PhD&amp;#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &amp;lt;- 500 dat_B &amp;lt;- data.</description>
+    </item>
     <item>
       <title>异常值检测</title>
       <link>https://www.xiebro.cool/post/anomaly-detection/</link>
