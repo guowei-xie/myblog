@@ -1,5 +1,5 @@
 ---
-title: Machine-Learning：用于检测异常值的几种方法
+title: 异常值检测
 author: Xiebro
 date: '2024-03-24'
 slug: Anomaly Detection
@@ -120,11 +120,11 @@ isofit <- dat |> select(-outlier) |> iso$fit()
 ```
 
 ```
-## INFO  [19:34:14.734] Building Isolation Forest ...
-## INFO  [19:34:15.113] done
-## INFO  [19:34:15.115] Computing depth of terminal nodes ...
-## INFO  [19:34:15.262] done
-## INFO  [19:34:15.273] Completed growing isolation forest
+## INFO  [21:35:06.549] Building Isolation Forest ...
+## INFO  [21:35:06.981] done
+## INFO  [21:35:06.984] Computing depth of terminal nodes ...
+## INFO  [21:35:07.224] done
+## INFO  [21:35:07.234] Completed growing isolation forest
 ```
 
 ```r

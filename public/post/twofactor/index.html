@@ -52,7 +52,7 @@
   />
 
   
-  <title>Causal-Inference：两种结构比率归因的方法 - 浑身蟹数</title>
+  <title>结构比率归因 - 浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -125,7 +125,7 @@ dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;
   
   
   
-  <meta itemprop="name" content="Causal-Inference：两种结构比率归因的方法">
+  <meta itemprop="name" content="结构比率归因">
 <meta itemprop="description" content="在一些工作场景当中，比如渠道广告投放，假如这月与上月相比，总投放转化率出现了差异，那么，作为指导业务决策的数据分析师，我们需要讲清楚：两次投放转化率的差异，有多少是来自于渠道占比变化的结果，又有多少是来自渠道本身转化率波动的结果。
 构造一份演示数据：
 dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;, &#34;E&#34;), # 渠道名称 base_prop = c(0.2, 0.3, 0.1, 0.2, 0.2), # 上月(基期)各渠道用户数量占比 base_rate = c(0.1, 0.2, 0.15, 0.12, 0.05), # 上月(基期)各渠道用户转化率 curr_prop = c(0.25, 0.25, 0.15, 0.2, 0.15), # 本月(现期)各渠道用户数量占比 curr_rate = c(0.08, 0.15, 0.09, 0.1, 0.07) # 本月(现期)各渠道用户转化率 ) dat |&gt; knitr::kable() dim base_prop base_rate curr_prop curr_rate A 0.2 0.10 0.25 0.08 B 0.3 0.20 0.25 0.15 C 0."><meta itemprop="datePublished" content="2024-03-16T00:00:00+00:00" />
@@ -133,7 +133,7 @@ dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;
 <meta itemprop="wordCount" content="382">
 <meta itemprop="keywords" content="Causal-Inference," />
   
-  <meta property="og:title" content="Causal-Inference：两种结构比率归因的方法" />
+  <meta property="og:title" content="结构比率归因" />
 <meta property="og:description" content="在一些工作场景当中，比如渠道广告投放，假如这月与上月相比，总投放转化率出现了差异，那么，作为指导业务决策的数据分析师，我们需要讲清楚：两次投放转化率的差异，有多少是来自于渠道占比变化的结果，又有多少是来自渠道本身转化率波动的结果。
 构造一份演示数据：
 dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;, &#34;E&#34;), # 渠道名称 base_prop = c(0.2, 0.3, 0.1, 0.2, 0.2), # 上月(基期)各渠道用户数量占比 base_rate = c(0.1, 0.2, 0.15, 0.12, 0.05), # 上月(基期)各渠道用户转化率 curr_prop = c(0.25, 0.25, 0.15, 0.2, 0.15), # 本月(现期)各渠道用户数量占比 curr_rate = c(0.08, 0.15, 0.09, 0.1, 0.07) # 本月(现期)各渠道用户转化率 ) dat |&gt; knitr::kable() dim base_prop base_rate curr_prop curr_rate A 0.2 0.10 0.25 0.08 B 0.3 0.20 0.25 0.15 C 0." />
@@ -144,7 +144,7 @@ dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Causal-Inference：两种结构比率归因的方法"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="结构比率归因"/>
 <meta name="twitter:description" content="在一些工作场景当中，比如渠道广告投放，假如这月与上月相比，总投放转化率出现了差异，那么，作为指导业务决策的数据分析师，我们需要讲清楚：两次投放转化率的差异，有多少是来自于渠道占比变化的结果，又有多少是来自渠道本身转化率波动的结果。
 构造一份演示数据：
 dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;, &#34;E&#34;), # 渠道名称 base_prop = c(0.2, 0.3, 0.1, 0.2, 0.2), # 上月(基期)各渠道用户数量占比 base_rate = c(0.1, 0.2, 0.15, 0.12, 0.05), # 上月(基期)各渠道用户转化率 curr_prop = c(0.25, 0.25, 0.15, 0.2, 0.15), # 本月(现期)各渠道用户数量占比 curr_rate = c(0.08, 0.15, 0.09, 0.1, 0.07) # 本月(现期)各渠道用户转化率 ) dat |&gt; knitr::kable() dim base_prop base_rate curr_prop curr_rate A 0.2 0.10 0.25 0.08 B 0.3 0.20 0.25 0.15 C 0."/>
@@ -256,7 +256,7 @@ dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Causal-Inference：两种结构比率归因的方法</h1>
+    <h1 class="!my-0 pb-2.5">结构比率归因</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -550,15 +550,15 @@ dat &lt;- data.frame( dim = c(&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;
     
     <a
       class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://www.xiebro.cool/post/io-the-wisp/"
-      ><span class="mr-1.5">←</span><span>玩AI：基于Rshiny&#43;LLM开发的自然语言取数工具</span></a
+      href="https://www.xiebro.cool/post/anomaly-detection/"
+      ><span class="mr-1.5">←</span><span>异常值检测</span></a
     >
     
     
     <a
       class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
       href="https://www.xiebro.cool/post/lmdi/"
-      ><span>Causal-Inference：LMDI乘积因子拆解，漏斗指标归因</span><span class="ml-1.5">→</span></a
+      ><span>LMDI用于漏斗指标归因</span><span class="ml-1.5">→</span></a
     >
     
   </nav>

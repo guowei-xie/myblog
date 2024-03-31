@@ -52,7 +52,7 @@
   />
 
   
-  <title>Machine-Learning：用于检测异常值的几种方法 - 浑身蟹数</title>
+  <title>异常值检测 - 浑身蟹数</title>
 
   
   <meta name="theme-color" />
@@ -123,13 +123,13 @@
   
   
   
-  <meta itemprop="name" content="Machine-Learning：用于检测异常值的几种方法">
+  <meta itemprop="name" content="异常值检测">
 <meta itemprop="description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0."><meta itemprop="datePublished" content="2024-03-24T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-24T00:00:00+00:00" />
 <meta itemprop="wordCount" content="367">
 <meta itemprop="keywords" content="Machine-Learning,Anomaly-Detection," />
   
-  <meta property="og:title" content="Machine-Learning：用于检测异常值的几种方法" />
+  <meta property="og:title" content="异常值检测" />
 <meta property="og:description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.xiebro.cool/post/anomaly-detection/" /><meta property="article:section" content="post" />
@@ -138,7 +138,7 @@
 
 
   
-  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Machine-Learning：用于检测异常值的几种方法"/>
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="异常值检测"/>
 <meta name="twitter:description" content="library(tidyverse) library(hrbrthemes) theme_set(theme_ipsum(base_family = &#34;Kai&#34;, base_size = 8)) Dummy Data with Outliers set.seed(1234) N = 1e3 x = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, -1, 1)) y = c(rnorm(N, 0, 0.5), rnorm(N * 0.05, 1, 1)) o = c(rep(0L, N), rep(1L, (N * 0.05))) mm &lt;- matrix(x, y, nrow = N * 1.05, ncol = 2) dat &lt;- tibble(x, y, outlier = o) dat |&gt; ggplot(aes(x, y, col = factor(o))) &#43; geom_vline(xintercept = 0) &#43; geom_hline(yintercept = 0) &#43; geom_point(alpha = 0."/>
 
   
@@ -248,7 +248,7 @@
 
 <article>
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Machine-Learning：用于检测异常值的几种方法</h1>
+    <h1 class="!my-0 pb-2.5">异常值检测</h1>
 
     
     <div class="text-sm antialiased opacity-60">
@@ -341,11 +341,11 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>iso <span style="color:#f92672">=</span> isolationForest<span style="color:#f92672">$</span><span style="color:#a6e22e">new</span>()
 </span></span><span style="display:flex;"><span>isofit <span style="color:#f92672">&lt;-</span> dat <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span>outlier) <span style="color:#f92672">|&gt;</span> iso<span style="color:#f92672">$</span><span style="color:#a6e22e">fit</span>()
-</span></span></code></pre></div><pre tabindex="0"><code>## INFO  [19:34:14.734] Building Isolation Forest ...
-## INFO  [19:34:15.113] done
-## INFO  [19:34:15.115] Computing depth of terminal nodes ...
-## INFO  [19:34:15.262] done
-## INFO  [19:34:15.273] Completed growing isolation forest
+</span></span></code></pre></div><pre tabindex="0"><code>## INFO  [21:35:06.549] Building Isolation Forest ...
+## INFO  [21:35:06.981] done
+## INFO  [21:35:06.984] Computing depth of terminal nodes ...
+## INFO  [21:35:07.224] done
+## INFO  [21:35:07.234] Completed growing isolation forest
 </code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> 
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">bind_cols</span>(iso<span style="color:#f92672">$</span><span style="color:#a6e22e">predict</span>(dat)) <span style="color:#f92672">|&gt;</span> 
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(is_outlier <span style="color:#f92672">=</span> anomaly_score <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.65</span>) <span style="color:#f92672">|&gt;</span> 
@@ -387,11 +387,17 @@
   
   <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
     
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/io-the-wisp/"
+      ><span class="mr-1.5">←</span><span>IO-THE-WISP，一款自然语言取数工具</span></a
+    >
+    
     
     <a
       class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
-      href="https://www.xiebro.cool/post/io-the-wisp/"
-      ><span>玩AI：基于Rshiny&#43;LLM开发的自然语言取数工具</span><span class="ml-1.5">→</span></a
+      href="https://www.xiebro.cool/post/twofactor/"
+      ><span>结构比率归因</span><span class="ml-1.5">→</span></a
     >
     
   </nav>

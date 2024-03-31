@@ -1,5 +1,5 @@
 ---
-title: Causal-Inference：两种结构比率归因的方法
+title: 结构比率归因
 author: Xiebro
 date: '2024-03-16'
 slug: twofactor

@@ -1,5 +1,5 @@
 ---
-title: 玩AI：基于Rshiny+LLM开发的自然语言取数工具
+title: IO-THE-WISP，一款自然语言取数工具
 author: Xiebro
 date: '2024-03-24'
 slug: io-the-wisp

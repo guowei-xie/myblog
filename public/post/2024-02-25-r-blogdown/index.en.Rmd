@@ -1,5 +1,5 @@
 ---
-title: Blog搭建：为了一口醋，包了一顿饺子
+title: 为了一口醋，包了一顿饺子
 author: Xiebro
 date: '2024-02-25'
 slug: []

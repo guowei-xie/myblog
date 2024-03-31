@@ -1,5 +1,5 @@
 ---
-title: Monte-Carlo：猜猜篮子里有多少个苹果
+title: 猜猜篮子里有多少苹果
 author: Xiebro
 date: '2024-02-25'
 slug: apple basket

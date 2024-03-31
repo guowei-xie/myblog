@@ -9,14 +9,14 @@
     <lastBuildDate>Sun, 03 Mar 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/tags/monte-carlo/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Monte-Carlo：“重男轻女”是否会导致男女比例失衡？</title>
+      <title>“重男轻女”是否会导致男女比例失衡？</title>
       <link>https://www.xiebro.cool/post/only-want-boy/</link>
       <pubDate>Sun, 03 Mar 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/only-want-boy/</guid>
       <description>在一个严重受到“重男轻女”思想影响的村庄里，父母渴望拥有男孩，因此每当生下女孩时，他们就会不断地生育，直到有一天生下男孩为止。由于计划生育政策的限制，一旦有了男孩，就不能再生了。&#xA;那么，在这个村庄里的男女比例应该是怎样的？是否会偏向男性？&#xA;我们可以通过使用蒙特卡洛方法来模拟现实场景，计算出该村庄的男女比例。&#xA;simulate_once &amp;lt;- function(N, prob = 0.5, verbose = FALSE) { # nobody has anything yet... boys = 0; girls = 0; print_vars &amp;lt;- function() { message(&amp;#34;Boy-to-Girl Ratio: &amp;#34;, boys, &amp;#34; / &amp;#34;, girls) message(&amp;#34;====================================&amp;#34;) } tryonemore &amp;lt;- function(x, msgON) { if(msgON) message(x) # terminal condition: all 1 (boys) if (all(x)) { boys &amp;lt;&amp;lt;- boys + sum(x) if (msgON) print_vars() return(1) } # assign to parent env so that we can keep track boys &amp;lt;&amp;lt;- boys + sum(x) girls &amp;lt;&amp;lt;- girls + sum(!</description>
     </item>
     <item>
-      <title>Monte-Carlo：猜猜篮子里有多少个苹果</title>
+      <title>猜猜篮子里有多少苹果</title>
       <link>https://www.xiebro.cool/post/apple-basket/</link>
       <pubDate>Sun, 25 Feb 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/apple-basket/</guid>

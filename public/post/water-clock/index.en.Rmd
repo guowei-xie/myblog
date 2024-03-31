@@ -1,5 +1,5 @@
 ---
-title: 玩AI：趣味定时器，帮助同事喝水减肥
+title: 用AI帮助同事喝水减肥
 author: Xiebro
 date: '2024-03-04'
 slug: water-clock

@@ -1,5 +1,5 @@
 ---
-title: Maximum-Curvature：找到函数曲线上的最大曲率点
+title: 函数上的最大曲率点
 author: Package Build
 date: '2024-03-03'
 slug: Maximum-Curvature

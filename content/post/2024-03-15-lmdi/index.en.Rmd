@@ -1,5 +1,5 @@
 ---
-title: Causal-Inference：LMDI乘积因子拆解，漏斗指标归因
+title: LMDI用于漏斗指标归因
 author: Xiebro
 date: '2024-03-15'
 slug: lmdi

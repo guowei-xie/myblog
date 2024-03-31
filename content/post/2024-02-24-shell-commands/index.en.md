@@ -1,5 +1,5 @@
 ---
-title: Commands：经常用但又经常忘的命令行
+title: 一些常用易忘的命令行
 author: Xiebro
 date: '2024-02-24'
 slug: [linux]

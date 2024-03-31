@@ -1,5 +1,5 @@
 ---
-title: Machine-Learning：用于检测异常值的几种方法
+title: 异常值检测
 author: Xiebro
 date: '2024-03-24'
 slug: Anomaly Detection
