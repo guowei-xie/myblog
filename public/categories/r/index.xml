@@ -6,8 +6,15 @@
     <description>Recent content in R on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 31 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Apr 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DID结果的显著性</title>
+      <link>https://www.xiebro.cool/post/2024-04-02-bootstrap-did/</link>
+      <pubDate>Tue, 02 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2024-04-02-bootstrap-did/</guid>
+      <description>构造演示数据 library(tidyverse) # Generate dummy data ---- set.seed(42) # number of observations enroll = 5000 generate_vector &amp;lt;- function(N, prob1, prob2) { term &amp;lt;- c(rep(&amp;#34;term1&amp;#34;, N), rep(&amp;#34;term2&amp;#34;, N)) befr &amp;lt;- rbinom(N, size = 1, prob = prob1) aftr &amp;lt;- rbinom(N, size = 1, prob = prob2) # return data.frame(term = term, renewal = c(befr, aftr)) } grpA &amp;lt;- generate_vector(enroll, .10, .11) grpB &amp;lt;- generate_vector(enroll, .11, .13) # working data frame df &amp;lt;- bind_rows(grpA, grpB, .</description>
+    </item>
     <item>
       <title>PSM倾向性得分匹配</title>
       <link>https://www.xiebro.cool/post/psm/</link>

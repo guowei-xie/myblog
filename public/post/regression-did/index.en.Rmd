@@ -1,0 +1,60 @@
+---
+title: 传统DID中的回归模型
+author: Package Build
+date: '2024-04-02'
+slug: regression-did
+categories:
+  - R
+tags:
+  - DID
+  - Regression
+---
+
+# 构造示例数据
+```{r, warning=FALSE, message=FALSE}
+# Generate dummy data ----
+library(tidyverse)
+
+set.seed(42)
+# number of observations
+enroll = 4500
+
+generate_vector <- function(N, prob1, prob2) {
+  term <- c(rep("term1", N), rep("term2", N))
+  befr <- rbinom(N, size = 1, prob = prob1)
+  aftr <- rbinom(N, size = 1, prob = prob2)
+  # return
+  data.frame(term = term, renewal = c(befr, aftr))
+}
+grpA <- generate_vector(enroll, .10, .11)
+grpB <- generate_vector(enroll, .11, .13)
+
+# working data frame
+df <- 
+  bind_rows(grpA, grpB, .id = "group") %>% 
+  mutate(group = if_else(group == 1, "A", "B")) %>% 
+  as_tibble()
+
+# data validation
+df |> sample_n(5)
+```
+# 构建模型
+```{r}
+library(estimatr)
+
+dat <- 
+  df %>% 
+  mutate(treated = ifelse(group == "B", 1L, 0L),
+         term = ifelse(term == "term2", 1L, 0L),
+         did = term * treated) |>
+  select(term, treated, did, renewal)
+
+
+# 进行DID估计，并使用稳健标准误
+fit <- lm_robust(renewal ~ term + treated + did, data = dat)
+
+summary(fit)
+
+```
+
+
