@@ -1,0 +1,111 @@
+---
+title: DID平行趋势检验
+author: Xiebro
+date: '2024-04-04'
+slug: MTP-DID
+categories:
+  - R
+tags:
+  - DID
+  - Model
+  - AB test
+---
+
+### 数据集
+采用普林斯顿大学OscarTorres-Reyna教授构建的DID虚拟数据集进行演示分析，该数据集假设1994年在E、F、G三个国家实施了一项政策，并与相似的A、B、C、D四个国家为控制组。数据集共包含country、year、y、x1、 x2、 x3、 opinion 7个变量，其中y为被解释变量，x1-x3为连续型的自变量，opinion为分类型自变量。
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+dat <- haven::read_dta("http://dss.princeton.edu/training/Panel101.dta")
+dat |> glimpse()
+```
+
+### DID回归模型
+```{r, message=FALSE, warning=FALSE}
+library(estimatr)
+dat <- 
+  dat %>%
+  # 生成实验期变量，1994年赋值为1，否则为0
+  mutate(time = (year >= 1994) & (!is.na(year)),
+         # 生成实验组变量，前4个国家为控制组，赋值为0，否则为1
+         treated = (country > 4) & (!is.na(country)),
+         # 生成交互项
+         did = time * treated)
+
+lm_robust(y ~ time + treated + did + x1 + x2 + x3 + factor(opinion), data = dat)
+```
+### 平行趋势检验
+平行趋势检验的主要目的是验证在政策实施前，实验组和控制组是否存在显著性差异，即与实验组特征相似才可以作为控制组。
+#### 方法一：趋势观察法
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+dat %>%
+  select(year, y, country, treated) %>%
+  ggplot(aes(x = year, y = y, group = country)) + 
+  geom_line(aes(group = country, col = treated)) +
+  geom_vline(aes(xintercept = 1994), lty = "dashed", size = .5)
+```
+
+#### 方法二：事件研究法
+
+即生成年份的虚拟变量后于treat变量做交互项，然后进行回归。如果政策实施前，每个交互项的系数不显著的异于0，则表示实验组与对照组不存在显著性差异。
+```{r}
+# 事件研究法
+dat <- 
+  dat |>
+  mutate(year = factor(year),
+         country = factor(country))
+
+# 将政策前第一期(1993年)作为基准组
+X <- 
+  model.matrix(y ~ country + year + year:treated, data = dat) |>
+  as_tibble() |>
+  select(-1, -`year1993:treatedTRUE`) # 避免多重共线性问题
+
+fit <- 
+  lm_robust(dat$y ~ ., data = X) |>
+  tidy()
+
+print(fit)
+```
+- 上述结果显示，1991至1993的交互项均不显著，表示实验组和控制组在政策实施前并无显著差异；  
+
+- 其次，1994年政策实施后，仅有1995的系数显著，表明政策效应仅出现在政策实施后一年，1996年及以后实验组和控制组未受到政策的影响。
+
+```{r}
+# 可视化：结果系数和置信区间
+fit %>%
+  tail(9) |>
+  mutate(year = 1990 + 0:(n()-1)) |>
+  ggplot(aes(x = year, y = estimate)) +
+  geom_point() + 
+  geom_line() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high, width = .2))  +
+  geom_vline(aes(xintercept = 1993), color = "blue", alpha = .4) + 
+  geom_hline(aes(yintercept = 0), color = "red")
+```
+
+### 安慰剂检验
+- 政策的实施确实产生了政策效应，且政策实施前实验组和控制组不存在显著性差异，但是通过DID估计出的政策效应是否受其他政策或因素的影响是未知的，因此需要进行安慰剂检验；  
+
+- 最常用的方法就是将研究样本缩小至政策实施前，并随机设定一个政策实施年份；  
+
+- 样本是1990-1999年，政策实施年份为1994年，故本次安慰剂假设政策时间发生在1994年以前。将研究样本设定在1990-1994间，并将政策年份设定在1992年。
+
+```{r}
+dat_new <- 
+  dat |>
+  mutate(year = as.character(year) |> as.numeric()) |>
+  filter(year <= 1994) |>
+  mutate(time_new = (year >= 1992),
+         did_new = time_new * treated)
+
+fit_new <- 
+  lm_robust(y ~ time_new + treated + did_new + x1 + x2 + x3 + factor(opinion),
+            dat = dat_new)
+
+summary(fit_new)
+```
+did_new的系数为负，但不显著，表明可以排除其他潜在的不可观测因素的影响，即模型估计出的政策效应是稳健的。
+
+

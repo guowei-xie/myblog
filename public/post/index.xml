@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 02 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Apr 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DID平行趋势检验</title>
+      <link>https://www.xiebro.cool/post/mtp-did/</link>
+      <pubDate>Thu, 04 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/mtp-did/</guid>
+      <description>数据集 采用普林斯顿大学OscarTorres-Reyna教授构建的DID虚拟数据集进行演示分析，该数据集假设1994年在E、F、G三个国家实施了一项政策，并与相似的A、B、C、D四个国家为控制组。数据集共包含country、year、y、x1、 x2、 x3、 opinion 7个变量，其中y为被解释变量，x1-x3为连续型的自变量，opinion为分类型自变量。&#xA;library(dplyr) dat &amp;lt;- haven::read_dta(&amp;#34;http://dss.princeton.edu/training/Panel101.dta&amp;#34;) dat |&amp;gt; glimpse() ## Rows: 70 ## Columns: 9 ## $ country &amp;lt;dbl+lbl&amp;gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2… ## $ year &amp;lt;dbl&amp;gt; 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 19… ## $ y &amp;lt;dbl&amp;gt; 1342787840, -1899660544, -11234363, 2645775360, 3008334848, 32… ## $ y_bin &amp;lt;dbl&amp;gt; 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0,… ## $ x1 &amp;lt;dbl&amp;gt; 0.</description>
+    </item>
     <item>
       <title>DID结果的显著性</title>
       <link>https://www.xiebro.cool/post/2024-04-02-bootstrap-did/</link>

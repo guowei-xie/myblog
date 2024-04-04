@@ -8,7 +8,8 @@ categories:
 tags:
   - DID
   - Bootstrap
-  - Regression
+  - Model
+  - AB test
 ---
 
 ### 构造演示数据

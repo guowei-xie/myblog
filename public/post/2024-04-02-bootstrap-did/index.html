@@ -127,7 +127,7 @@
 <meta itemprop="description" content="构造演示数据 library(tidyverse) # Generate dummy data ---- set.seed(42) # number of observations enroll = 5000 generate_vector &lt;- function(N, prob1, prob2) { term &lt;- c(rep(&#34;term1&#34;, N), rep(&#34;term2&#34;, N)) befr &lt;- rbinom(N, size = 1, prob = prob1) aftr &lt;- rbinom(N, size = 1, prob = prob2) # return data.frame(term = term, renewal = c(befr, aftr)) } grpA &lt;- generate_vector(enroll, .10, .11) grpB &lt;- generate_vector(enroll, .11, .13) # working data frame df &lt;- bind_rows(grpA, grpB, ."><meta itemprop="datePublished" content="2024-04-02T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-04-02T00:00:00+00:00" />
 <meta itemprop="wordCount" content="475">
-<meta itemprop="keywords" content="DID,Bootstrap,Regression," />
+<meta itemprop="keywords" content="DID,Bootstrap,Model,AB test," />
   
   <meta property="og:title" content="DID结果的显著性" />
 <meta property="og:description" content="构造演示数据 library(tidyverse) # Generate dummy data ---- set.seed(42) # number of observations enroll = 5000 generate_vector &lt;- function(N, prob1, prob2) { term &lt;- c(rep(&#34;term1&#34;, N), rep(&#34;term2&#34;, N)) befr &lt;- rbinom(N, size = 1, prob = prob1) aftr &lt;- rbinom(N, size = 1, prob = prob2) # return data.frame(term = term, renewal = c(befr, aftr)) } grpA &lt;- generate_vector(enroll, .10, .11) grpB &lt;- generate_vector(enroll, .11, .13) # working data frame df &lt;- bind_rows(grpA, grpB, ." />
@@ -409,8 +409,14 @@
      
     <a
       class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
-      href="https://www.xiebro.cool/tags/regression"
-      >Regression</a
+      href="https://www.xiebro.cool/tags/model"
+      >Model</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ab-test"
+      >AB test</a
     >
     
   </footer>
@@ -421,6 +427,12 @@
   
   
   <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/mtp-did/"
+      ><span class="mr-1.5">←</span><span>DID平行趋势检验</span></a
+    >
     
     
     <a
