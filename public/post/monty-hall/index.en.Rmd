@@ -1,0 +1,115 @@
+---
+title: “三门问题”模拟验证
+author: Xiebro
+date: '2024-04-14'
+slug: monty-hall
+categories:
+  - R
+tags:
+  - Monte-Carlo
+---
+
+- “三门问题”，也叫作“蒙提·霍尔” 悖论，源自美国的一个电视游戏节目《让我们做个交易》；
+- 游戏中，有三扇门供你选择，其中一扇门后面是一辆车（奖品），另外两扇门后面是山羊；
+- 主持人“蒙提·霍尔”知道所有门后的答案，当你选择一扇门后，他会打开另外的一扇门，你看到门后是一只山羊；
+- 此时他问你：“你想改变你最初的选择么？”  选择换门是否对你赢走奖品更有利？
+
+```{r}
+# play a game of Monty Hall
+monty_hall <- function(verbose = FALSE) {
+  doors <- c(1, 2, 3)
+  prize <- sample(doors, 1)
+  guess <- sample(doors, 1)
+  open <- doors[!doors %in% c(prize, guess)][1]
+  if (verbose) {
+    cat(paste("Prize:", prize, "/ Guess:", guess, "/ Open:", open, "\n"))
+  }
+  has_switch <- doors[!doors %in% c(guess, open)][1]
+  no_switch <- guess
+  
+  return(list("switch" = has_switch == prize, "noSwitch" = no_switch == prize))
+}
+
+monty_hall(TRUE)
+```
+```{r}
+set.seed(1234)
+
+N <- 1e4
+
+res <- 
+  1:N |>
+  purrr::map(~ monty_hall(verbose = FALSE))
+
+# 选择换门
+win_counts <- 
+  res |>
+  purrr::map_int(~ .x$switch) |>
+  sum()
+
+print(paste0("选择换门的获胜概率：", win_counts / length(res)))
+
+# 选择不换门
+win_counts <- 
+  res |>
+  purrr::map_int(~ .x$noSwitch) |>
+  sum()
+
+print(paste0("选择不换门的获胜概率：", win_counts / length(res)))
+
+```
+
+从以上模拟结果可见，选择“换”的中奖概率是选择“不换”的两倍，这个结果似乎有些违背直觉：“为什么不是相等的？”  
+
+解决这一悖论的关键是，我们不仅需要考虑数据（主持人打开某个特定门的事实），而且要注意数据生成的过程（也就是游戏规则），当主持人打开一扇不是汽车的门时，其实也是向你传递了另一扇门更有可能是汽车的信息，所以，所有的概率就都变成了关于这一信息的条件概率。  
+
+那么，假如游戏规则做了改变，当主持人也不知道门后的答案时，选择换与不换的中奖概率是否依然有差别？  
+
+```{r}
+# change the rules of the game
+monty_hall_change <- function(verbose = FALSE) {
+  doors <- c(1, 2, 3)
+  prize <- sample(doors, 1)
+  guess <- sample(doors, 1)
+  open <- doors[!doors %in% c(guess)][1]
+  if (verbose) {
+    cat(paste("Prize:", prize, "/ Guess:", guess, "/ Open:", open, "\n"))
+  }
+  has_switch <- doors[!doors %in% c(guess, open)][1]
+  no_switch <- guess
+  
+  return(list("switch" = has_switch == prize, "noSwitch" = no_switch == prize))
+}
+
+monty_hall_change(TRUE)
+
+```
+```{r}
+set.seed(1234)
+
+N <- 1e4
+
+res <- 
+  1:N |>
+  purrr::map(~ monty_hall_change(verbose = FALSE))
+
+# 选择换门
+win_counts <- 
+  res |>
+  purrr::map_int(~ .x$switch) |>
+  sum()
+
+print(paste0("选择换门的获胜概率：", win_counts / length(res)))
+
+# 选择不换门
+win_counts <- 
+  res |>
+  purrr::map_int(~ .x$noSwitch) |>
+  sum()
+
+print(paste0("选择不换门的获胜概率：", win_counts / length(res)))
+```
+
+结果可见，当主持人也不知道哪扇门会中奖时，他就无法向你传递“哪扇门更有可能会中奖”的信息，所以，所有的概率都是独立的，选择“换”与“不换”的中奖概率也就相等了。
+
+

@@ -1,0 +1,525 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>SDID合成双重差分法 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="数据集 california_prop99.csv.csv
+1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &lt;- read.csv(&#34;datasets/california_prop99.csv&#34;) dat &lt;- dat |&gt; pivot_wider(id_cols = &#34;Year&#34;, names_from = &#34;State&#34;, values_from = &#34;PacksPerCapita&#34;) dat |&gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &lt;int&gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &lt;dbl&gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &lt;dbl&gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &lt;dbl&gt; 124." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="SDID合成双重差分法">
+<meta itemprop="description" content="数据集 california_prop99.csv.csv
+1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &lt;- read.csv(&#34;datasets/california_prop99.csv&#34;) dat &lt;- dat |&gt; pivot_wider(id_cols = &#34;Year&#34;, names_from = &#34;State&#34;, values_from = &#34;PacksPerCapita&#34;) dat |&gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &lt;int&gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &lt;dbl&gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &lt;dbl&gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &lt;dbl&gt; 124."><meta itemprop="datePublished" content="2024-04-14T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-04-14T00:00:00+00:00" />
+<meta itemprop="wordCount" content="884">
+<meta itemprop="keywords" content="DID,AB test," />
+  
+  <meta property="og:title" content="SDID合成双重差分法" />
+<meta property="og:description" content="数据集 california_prop99.csv.csv
+1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &lt;- read.csv(&#34;datasets/california_prop99.csv&#34;) dat &lt;- dat |&gt; pivot_wider(id_cols = &#34;Year&#34;, names_from = &#34;State&#34;, values_from = &#34;PacksPerCapita&#34;) dat |&gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &lt;int&gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &lt;dbl&gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &lt;dbl&gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &lt;dbl&gt; 124." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/sdid/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-04-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-04-14T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="SDID合成双重差分法"/>
+<meta name="twitter:description" content="数据集 california_prop99.csv.csv
+1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &lt;- read.csv(&#34;datasets/california_prop99.csv&#34;) dat &lt;- dat |&gt; pivot_wider(id_cols = &#34;Year&#34;, names_from = &#34;State&#34;, values_from = &#34;PacksPerCapita&#34;) dat |&gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &lt;int&gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &lt;dbl&gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &lt;dbl&gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &lt;dbl&gt; 124."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/sdid/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">SDID合成双重差分法</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Apr 14, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="数据集">数据集</h3>
+<p><a href="datasets/california_prop99.csv">california_prop99.csv.csv</a></p>
+<ul>
+<li>1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法；</li>
+<li>美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">read.csv</span>(<span style="color:#e6db74">&#34;datasets/california_prop99.csv&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  dat <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">pivot_wider</span>(id_cols <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Year&#34;</span>, 
+</span></span><span style="display:flex;"><span>              names_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;State&#34;</span>, 
+</span></span><span style="display:flex;"><span>              values_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;PacksPerCapita&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">glimpse</span>()
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 31
+## Columns: 40
+## $ Year             &lt;int&gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,…
+## $ Alabama          &lt;dbl&gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,…
+## $ Arkansas         &lt;dbl&gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.…
+## $ Colorado         &lt;dbl&gt; 124.8, 125.5, 134.3, 137.9, 132.8, 131.0, 134.2, 132.…
+## $ Connecticut      &lt;dbl&gt; 120.0, 117.6, 110.8, 109.3, 112.4, 110.2, 113.4, 117.…
+## $ Delaware         &lt;dbl&gt; 155.0, 161.1, 156.3, 154.7, 151.3, 147.6, 153.0, 153.…
+## $ Georgia          &lt;dbl&gt; 109.9, 115.7, 117.0, 119.8, 123.7, 122.9, 125.9, 127.…
+## $ Idaho            &lt;dbl&gt; 102.4, 108.5, 126.1, 121.8, 125.6, 123.3, 125.1, 125.…
+## $ Illinois         &lt;dbl&gt; 124.8, 125.6, 126.6, 124.4, 131.9, 131.8, 134.4, 134.…
+## $ Indiana          &lt;dbl&gt; 134.6, 139.3, 149.2, 156.0, 159.6, 162.4, 166.6, 173.…
+## $ Iowa             &lt;dbl&gt; 108.5, 108.4, 109.4, 110.6, 116.1, 120.5, 124.4, 125.…
+## $ Kansas           &lt;dbl&gt; 114.0, 102.8, 111.0, 115.2, 118.6, 123.4, 127.7, 127.…
+## $ Kentucky         &lt;dbl&gt; 155.8, 163.5, 179.4, 201.9, 212.4, 223.0, 230.9, 229.…
+## $ Louisiana        &lt;dbl&gt; 115.9, 119.8, 125.3, 126.7, 129.9, 133.6, 139.6, 140.…
+## $ Maine            &lt;dbl&gt; 128.5, 133.2, 136.5, 138.0, 142.1, 140.7, 144.9, 145.…
+## $ Minnesota        &lt;dbl&gt; 104.3, 116.4, 96.8, 106.8, 110.6, 111.5, 116.7, 117.2…
+## $ Mississippi      &lt;dbl&gt; 93.4, 105.4, 112.1, 115.0, 117.1, 116.8, 120.9, 122.1…
+## $ Missouri         &lt;dbl&gt; 121.3, 127.6, 130.0, 132.1, 135.4, 135.6, 139.5, 140.…
+## $ Montana          &lt;dbl&gt; 111.2, 115.6, 122.2, 119.9, 121.9, 123.7, 124.9, 127.…
+## $ Nebraska         &lt;dbl&gt; 108.1, 108.6, 104.9, 106.6, 110.5, 114.1, 118.1, 117.…
+## $ Nevada           &lt;dbl&gt; 189.5, 190.5, 198.6, 201.5, 204.7, 205.2, 201.4, 190.…
+## $ `New Hampshire`  &lt;dbl&gt; 265.7, 278.0, 296.2, 279.0, 269.8, 269.1, 290.5, 278.…
+## $ `New Mexico`     &lt;dbl&gt; 90.0, 92.6, 99.3, 98.9, 100.3, 103.1, 102.4, 102.4, 1…
+## $ `North Carolina` &lt;dbl&gt; 172.4, 187.6, 214.1, 226.5, 227.3, 226.0, 230.2, 217.…
+## $ `North Dakota`   &lt;dbl&gt; 93.8, 98.5, 103.8, 108.7, 110.5, 117.9, 125.4, 122.2,…
+## $ Ohio             &lt;dbl&gt; 121.6, 124.6, 124.4, 120.5, 122.1, 122.5, 124.6, 127.…
+## $ Oklahoma         &lt;dbl&gt; 108.4, 115.4, 121.7, 124.1, 130.5, 132.9, 138.6, 140.…
+## $ Pennsylvania     &lt;dbl&gt; 107.3, 106.3, 109.0, 110.7, 114.2, 114.6, 118.8, 120.…
+## $ `Rhode Island`   &lt;dbl&gt; 123.9, 123.2, 134.4, 142.0, 146.1, 154.7, 150.2, 148.…
+## $ `South Carolina` &lt;dbl&gt; 103.6, 115.0, 118.7, 125.5, 129.7, 130.5, 136.8, 137.…
+## $ `South Dakota`   &lt;dbl&gt; 92.7, 96.7, 103.0, 103.5, 108.4, 113.5, 116.7, 115.6,…
+## $ Tennessee        &lt;dbl&gt; 99.8, 106.3, 111.5, 109.7, 114.8, 117.4, 121.7, 124.6…
+## $ Texas            &lt;dbl&gt; 106.4, 108.9, 108.6, 110.4, 114.7, 116.0, 121.4, 124.…
+## $ Utah             &lt;dbl&gt; 65.5, 67.7, 71.3, 72.7, 75.6, 75.8, 77.9, 78.0, 79.6,…
+## $ Vermont          &lt;dbl&gt; 122.6, 124.4, 138.0, 146.8, 151.8, 155.5, 171.1, 169.…
+## $ Virginia         &lt;dbl&gt; 124.3, 128.4, 137.0, 143.1, 149.6, 152.7, 158.1, 157.…
+## $ `West Virginia`  &lt;dbl&gt; 114.5, 111.5, 117.5, 116.6, 119.9, 123.2, 129.7, 133.…
+## $ Wisconsin        &lt;dbl&gt; 106.4, 105.4, 108.8, 109.5, 111.8, 113.5, 115.4, 117.…
+## $ Wyoming          &lt;dbl&gt; 132.2, 131.7, 140.0, 141.2, 145.8, 160.7, 161.5, 160.…
+## $ California       &lt;dbl&gt; 123.0, 121.0, 123.5, 124.4, 126.7, 127.1, 128.0, 126.…
+</code></pre><h3 id="sdid">SDID</h3>
+<p>即Synthetic Difference In Differences，是一种利用合成控制组的方式来评估政策干预效果的分析方法。其基本原理是将政策实施地区的观测结果与一个合成控制组进行比较，以便更准确地衡量政策效果。</p>
+<ul>
+<li>选择一个与政策实施地区在政策实施前相似的合成控制组；</li>
+<li>使用控制组的数据建立预测模型来估计政策实施地区在政策实施前的预期结果；</li>
+<li>然后比较政策实施地区的观测结果与合成控制组的预测结果，评估政策干预效果。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(glmnet)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用法按实施前(即1989年前)的样本进行拟合</span>
+</span></span><span style="display:flex;"><span>dat_sub <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">subset</span>(dat, Year <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1989</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 以California作为Y(因变量)，其它州作为X(自变量)，进行Lasso回归</span>
+</span></span><span style="display:flex;"><span>Y <span style="color:#f92672">&lt;-</span> dat_sub <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">pull</span>(California)
+</span></span><span style="display:flex;"><span>X <span style="color:#f92672">&lt;-</span> dat_sub <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span><span style="color:#a6e22e">c</span>(Year, California)) <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">as.matrix</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>glm <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">cv.glmnet</span>(y <span style="color:#f92672">=</span> Y,
+</span></span><span style="display:flex;"><span>                 x <span style="color:#f92672">=</span> X,
+</span></span><span style="display:flex;"><span>                 family <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;gaussian&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">print</span>(glm)
+</span></span></code></pre></div><pre tabindex="0"><code>## 
+## Call:  cv.glmnet(x = X, y = Y, family = &#34;gaussian&#34;) 
+## 
+## Measure: Mean-Squared Error 
+## 
+##     Lambda Index Measure    SE Nonzero
+## min 0.1089   100   4.091 1.841      11
+## 1se 0.8831    55   5.797 2.762       6
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 提取交叉验证中选择的最佳Lambda值对应的模型系数</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">coef</span>(glm, s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lambda.min&#34;</span>) <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">round</span>(<span style="color:#ae81ff">2</span>)
+</span></span></code></pre></div><pre tabindex="0"><code>## 39 x 1 sparse Matrix of class &#34;dgCMatrix&#34;
+##                   s1
+## (Intercept)     6.59
+## Alabama         .   
+## Arkansas        .   
+## Colorado        0.05
+## Connecticut     0.17
+## Delaware        .   
+## Georgia         .   
+## Idaho           0.04
+## Illinois        0.16
+## Indiana         .   
+## Iowa            .   
+## Kansas          .   
+## Kentucky        .   
+## Louisiana       .   
+## Maine           .   
+## Minnesota       .   
+## Mississippi     .   
+## Missouri        .   
+## Montana         0.14
+## Nebraska        0.14
+## Nevada          0.17
+## New Hampshire   0.01
+## New Mexico      .   
+## North Carolina  .   
+## North Dakota    .   
+## Ohio            .   
+## Oklahoma        .   
+## Pennsylvania    .   
+## Rhode Island    .   
+## South Carolina  .   
+## South Dakota    .   
+## Tennessee      -0.24
+## Texas           .   
+## Utah            0.22
+## Vermont         .   
+## Virginia        .   
+## West Virginia   0.07
+## Wisconsin       .   
+## Wyoming         .
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 合成控制组</span>
+</span></span><span style="display:flex;"><span>X_all <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  dat <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span><span style="color:#a6e22e">c</span>(Year, California)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">as.matrix</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lambda_min <span style="color:#f92672">&lt;-</span> glm<span style="color:#f92672">$</span>lambda.min
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat_new <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">data.frame</span>(
+</span></span><span style="display:flex;"><span>    Year <span style="color:#f92672">=</span> dat<span style="color:#f92672">$</span>Year,
+</span></span><span style="display:flex;"><span>    California_real <span style="color:#f92672">=</span> dat<span style="color:#f92672">$</span>California,
+</span></span><span style="display:flex;"><span>    California_pred <span style="color:#f92672">=</span> <span style="color:#a6e22e">predict</span>(glm, newx <span style="color:#f92672">=</span> X_all, s <span style="color:#f92672">=</span> lambda_min)[,<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">gather</span>(<span style="color:#e6db74">&#34;Type&#34;</span>, <span style="color:#e6db74">&#34;PacksPerCapita&#34;</span>, <span style="color:#f92672">-</span>Year)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">head</span>(dat_new, <span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><pre tabindex="0"><code>##    Year            Type PacksPerCapita
+## 1  1970 California_real          123.0
+## 2  1971 California_real          121.0
+## 3  1972 California_real          123.5
+## 4  1973 California_real          124.4
+## 5  1974 California_real          126.7
+## 6  1975 California_real          127.1
+## 7  1976 California_real          128.0
+## 8  1977 California_real          126.4
+## 9  1978 California_real          126.1
+## 10 1979 California_real          121.9
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 可视化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(hrbrthemes)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">theme_set</span>(<span style="color:#a6e22e">theme_ipsum</span>(base_family <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Kai&#34;</span>,
+</span></span><span style="display:flex;"><span>                      base_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat_new <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Year, y <span style="color:#f92672">=</span> PacksPerCapita)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_line</span>(<span style="color:#a6e22e">aes</span>(col <span style="color:#f92672">=</span> Type)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_rect</span>(xmin <span style="color:#f92672">=</span> <span style="color:#ae81ff">1970</span>,
+</span></span><span style="display:flex;"><span>            xmax <span style="color:#f92672">=</span> <span style="color:#ae81ff">1988</span>,
+</span></span><span style="display:flex;"><span>            ymin <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#66d9ef">Inf</span>,
+</span></span><span style="display:flex;"><span>            ymax <span style="color:#f92672">=</span> <span style="color:#66d9ef">Inf</span>,
+</span></span><span style="display:flex;"><span>            fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>,
+</span></span><span style="display:flex;"><span>            alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggtitle</span>(<span style="color:#e6db74">&#34;California在1989年实施的99号控烟法案对人均消费卷烟数的影响&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/sdid/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/did"
+      >DID</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ab-test"
+      >AB test</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/monty-hall/"
+      ><span class="mr-1.5">←</span><span>“三门问题”模拟验证</span></a
+    >
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/mtp-did/"
+      ><span>DID平行趋势检验</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

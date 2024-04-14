@@ -61,7 +61,7 @@
   
   
   
-  <meta name="description" content="背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data." />
+  <meta name="description" content="背景目标 A为对照组，B为实验组; A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验; 利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data." />
   <meta name="author" content="Xiebro" />
   
 
@@ -124,13 +124,13 @@
   
   
   <meta itemprop="name" content="PSM倾向性得分匹配">
-<meta itemprop="description" content="背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data."><meta itemprop="datePublished" content="2024-03-31T00:00:00+00:00" />
+<meta itemprop="description" content="背景目标 A为对照组，B为实验组; A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验; 利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data."><meta itemprop="datePublished" content="2024-03-31T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-03-31T00:00:00+00:00" />
 <meta itemprop="wordCount" content="1081">
 <meta itemprop="keywords" content="PSM,AB test," />
   
   <meta property="og:title" content="PSM倾向性得分匹配" />
-<meta property="og:description" content="背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data." />
+<meta property="og:description" content="背景目标 A为对照组，B为实验组; A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验; 利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.xiebro.cool/post/psm/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2024-03-31T00:00:00+00:00" />
@@ -139,7 +139,7 @@
 
   
   <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="PSM倾向性得分匹配"/>
-<meta name="twitter:description" content="背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data."/>
+<meta name="twitter:description" content="背景目标 A为对照组，B为实验组; A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验; 利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。 模拟数据集 set.seed(123) # generate group A n_a &lt;- 1500 dat_A &lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&#34;Male&#34;, &#34;Female&#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&#34;High School&#34;, &#34;Bachelor&#39;s Degree&#34;, &#34;Master&#39;s Degree&#34;, &#34;PhD&#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &lt;- 500 dat_B &lt;- data."/>
 
   
   
@@ -268,8 +268,8 @@
   <section><h2 id="背景目标">背景目标</h2>
 <ul>
 <li>A为对照组，B为实验组;</li>
-<li>A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验;</li>
-<li>使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本</li>
+<li>A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验;</li>
+<li>利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。</li>
 </ul>
 <h2 id="模拟数据集">模拟数据集</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">123</span>)

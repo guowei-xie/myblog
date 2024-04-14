@@ -6,8 +6,22 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>“三门问题”模拟验证</title>
+      <link>https://www.xiebro.cool/post/monty-hall/</link>
+      <pubDate>Sun, 14 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/monty-hall/</guid>
+      <description>“三门问题”，也叫作“蒙提·霍尔” 悖论，源自美国的一个电视游戏节目《让我们做个交易》； 游戏中，有三扇门供你选择，其中一扇门后面是一辆车（奖品），另外两扇门后面是山羊； 主持人“蒙提·霍尔”知道所有门后的答案，当你选择一扇门后，他会打开另外的一扇门，你看到门后是一只山羊； 此时他问你：“你想改变你最初的选择么？” 选择换门是否对你赢走奖品更有利？ # play a game of Monty Hall monty_hall &amp;lt;- function(verbose = FALSE) { doors &amp;lt;- c(1, 2, 3) prize &amp;lt;- sample(doors, 1) guess &amp;lt;- sample(doors, 1) open &amp;lt;- doors[!doors %in% c(prize, guess)][1] if (verbose) { cat(paste(&amp;#34;Prize:&amp;#34;, prize, &amp;#34;/ Guess:&amp;#34;, guess, &amp;#34;/ Open:&amp;#34;, open, &amp;#34;\n&amp;#34;)) } has_switch &amp;lt;- doors[!doors %in% c(guess, open)][1] no_switch &amp;lt;- guess return(list(&amp;#34;switch&amp;#34; = has_switch == prize, &amp;#34;noSwitch&amp;#34; = no_switch == prize)) } monty_hall(TRUE) ## Prize: 2 / Guess: 2 / Open: 1 ## $switch ## [1] FALSE ## ## $noSwitch ## [1] TRUE set.</description>
+    </item>
+    <item>
+      <title>SDID合成双重差分法</title>
+      <link>https://www.xiebro.cool/post/sdid/</link>
+      <pubDate>Sun, 14 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/sdid/</guid>
+      <description>数据集 california_prop99.csv.csv&#xA;1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &amp;lt;- read.csv(&amp;#34;datasets/california_prop99.csv&amp;#34;) dat &amp;lt;- dat |&amp;gt; pivot_wider(id_cols = &amp;#34;Year&amp;#34;, names_from = &amp;#34;State&amp;#34;, values_from = &amp;#34;PacksPerCapita&amp;#34;) dat |&amp;gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &amp;lt;int&amp;gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &amp;lt;dbl&amp;gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &amp;lt;dbl&amp;gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &amp;lt;dbl&amp;gt; 124.</description>
+    </item>
     <item>
       <title>DID平行趋势检验</title>
       <link>https://www.xiebro.cool/post/mtp-did/</link>
@@ -27,7 +41,7 @@
       <link>https://www.xiebro.cool/post/psm/</link>
       <pubDate>Sun, 31 Mar 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/psm/</guid>
-      <description>背景目标 A为对照组，B为实验组; A和B的部分特征存在显著性差异，所以无法直接进行常规的AB-test随机化显著性检验; 使用PSM消除A与B的特征差异，处理成可以直接进行随机化显著性检验的样本 模拟数据集 set.seed(123) # generate group A n_a &amp;lt;- 1500 dat_A &amp;lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&amp;#34;Male&amp;#34;, &amp;#34;Female&amp;#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&amp;#34;High School&amp;#34;, &amp;#34;Bachelor&amp;#39;s Degree&amp;#34;, &amp;#34;Master&amp;#39;s Degree&amp;#34;, &amp;#34;PhD&amp;#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &amp;lt;- 500 dat_B &amp;lt;- data.</description>
+      <description>背景目标 A为对照组，B为实验组; A组和B组样本的特征分布不均匀，无法直接使用随机对照实验中的显著性检验; 利用PSM方法消除A组与B组样本的差异（只能在已知特征范围内），近似地创造随机对照实验环境。 模拟数据集 set.seed(123) # generate group A n_a &amp;lt;- 1500 dat_A &amp;lt;- data.frame(age = rnorm(n_a, mean = 50, sd = 10), gender = sample(c(&amp;#34;Male&amp;#34;, &amp;#34;Female&amp;#34;), size = n_a, replace = TRUE), health = rnorm(n_a, mean = 0, sd = 1), income = rnorm(n_a, mean = 50000, sd = 10000), education = sample(c(&amp;#34;High School&amp;#34;, &amp;#34;Bachelor&amp;#39;s Degree&amp;#34;, &amp;#34;Master&amp;#39;s Degree&amp;#34;, &amp;#34;PhD&amp;#34;), size = n_a, replace = TRUE), treatment = rep(0, n_a) # A组均未参与实验 ) # generate group B n_b &amp;lt;- 500 dat_B &amp;lt;- data.</description>
     </item>
     <item>
       <title>IO-THE-WISP，一款自然语言取数工具</title>

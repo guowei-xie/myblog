@@ -6,8 +6,15 @@
     <description>Recent content in DID on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/tags/did/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SDID合成双重差分法</title>
+      <link>https://www.xiebro.cool/post/sdid/</link>
+      <pubDate>Sun, 14 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/sdid/</guid>
+      <description>数据集 california_prop99.csv.csv&#xA;1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法； 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。 library(tidyverse) dat &amp;lt;- read.csv(&amp;#34;datasets/california_prop99.csv&amp;#34;) dat &amp;lt;- dat |&amp;gt; pivot_wider(id_cols = &amp;#34;Year&amp;#34;, names_from = &amp;#34;State&amp;#34;, values_from = &amp;#34;PacksPerCapita&amp;#34;) dat |&amp;gt; glimpse() ## Rows: 31 ## Columns: 40 ## $ Year &amp;lt;int&amp;gt; 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978,… ## $ Alabama &amp;lt;dbl&amp;gt; 89.8, 95.4, 101.1, 102.9, 108.2, 111.7, 116.2, 117.1,… ## $ Arkansas &amp;lt;dbl&amp;gt; 100.3, 104.1, 103.9, 108.0, 109.7, 114.8, 119.1, 122.… ## $ Colorado &amp;lt;dbl&amp;gt; 124.</description>
+    </item>
     <item>
       <title>DID平行趋势检验</title>
       <link>https://www.xiebro.cool/post/mtp-did/</link>

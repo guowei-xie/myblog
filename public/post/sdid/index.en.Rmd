@@ -1,0 +1,93 @@
+---
+title: SDID合成双重差分法
+author: Xiebro
+date: '2024-04-14'
+slug: sdid
+categories:
+  - R
+tags:
+  - DID
+  - AB test
+---
+
+### 数据集
+[california_prop99.csv.csv](datasets/california_prop99.csv)
+- 1989年，California实行了一项名为“99号提案”的选民倡议，该提案是美国第一个现代大规模烟草控制项目，该法案在后续引发了一系列关于室内清洁空气的地方立法；
+- 美国各州从 1970 年开始有完整的香烟消费的数据，随着健康理念的深入，到2000 年大部分州也实施了禁烟措施。因此该案例的观察周期是从1970年至2000年之间。出于研究准确性的考虑，删除了部分州的数据，最后样本池中剩下38个州，数据集中包含了年份（Year），人均消费卷烟数（PacksPerCapita）。
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+dat <- read.csv("datasets/california_prop99.csv")
+
+dat <- 
+  dat |> 
+  pivot_wider(id_cols = "Year", 
+              names_from = "State", 
+              values_from = "PacksPerCapita")
+
+dat |> glimpse()
+```
+### SDID
+即Synthetic Difference In Differences，是一种利用合成控制组的方式来评估政策干预效果的分析方法。其基本原理是将政策实施地区的观测结果与一个合成控制组进行比较，以便更准确地衡量政策效果。
+- 选择一个与政策实施地区在政策实施前相似的合成控制组；
+- 使用控制组的数据建立预测模型来估计政策实施地区在政策实施前的预期结果；
+- 然后比较政策实施地区的观测结果与合成控制组的预测结果，评估政策干预效果。
+
+
+```{r, message=FALSE, warning=FALSE}
+library(glmnet)
+# 使用法按实施前(即1989年前)的样本进行拟合
+dat_sub <- subset(dat, Year < 1989)
+
+# 以California作为Y(因变量)，其它州作为X(自变量)，进行Lasso回归
+Y <- dat_sub |> pull(California)
+X <- dat_sub |> select(-c(Year, California)) |> as.matrix()
+
+glm <- cv.glmnet(y = Y,
+                 x = X,
+                 family = "gaussian")
+
+print(glm)
+
+
+# 提取交叉验证中选择的最佳Lambda值对应的模型系数
+coef(glm, s = "lambda.min") |> round(2)
+
+# 合成控制组
+X_all <- 
+  dat |>
+  select(-c(Year, California)) |>
+  as.matrix()
+
+lambda_min <- glm$lambda.min
+
+dat_new <- 
+  data.frame(
+    Year = dat$Year,
+    California_real = dat$California,
+    California_pred = predict(glm, newx = X_all, s = lambda_min)[,1]
+  ) |>
+  gather("Type", "PacksPerCapita", -Year)
+
+head(dat_new, 10)
+```
+
+```{r}
+# 可视化
+library(hrbrthemes)
+theme_set(theme_ipsum(base_family = "Kai",
+                      base_size = 8))
+
+dat_new |>
+  ggplot(aes(x = Year, y = PacksPerCapita)) +
+  geom_line(aes(col = Type)) +
+  geom_rect(xmin = 1970,
+            xmax = 1988,
+            ymin = -Inf,
+            ymax = Inf,
+            fill = "lightblue",
+            alpha = 0.01) +
+  ggtitle("California在1989年实施的99号控烟法案对人均消费卷烟数的影响")
+```
+
+
+
