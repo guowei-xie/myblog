@@ -71,7 +71,7 @@ monty_hall_change <- function(verbose = FALSE) {
   doors <- c(1, 2, 3)
   prize <- sample(doors, 1)
   guess <- sample(doors, 1)
-  open <- doors[!doors %in% c(guess)][1]
+  open <- doors[!doors %in% c(guess)] |> sample(1)
   if (verbose) {
     cat(paste("Prize:", prize, "/ Guess:", guess, "/ Open:", open, "\n"))
   }

@@ -35,15 +35,15 @@ monty_hall(TRUE)
 ```
 
 ```
-## Prize: 2 / Guess: 2 / Open: 1
+## Prize: 2 / Guess: 3 / Open: 1
 ```
 
 ```
 ## $switch
-## [1] FALSE
+## [1] TRUE
 ## 
 ## $noSwitch
-## [1] TRUE
+## [1] FALSE
 ```
 
 ```r
@@ -95,7 +95,7 @@ monty_hall_change <- function(verbose = FALSE) {
   doors <- c(1, 2, 3)
   prize <- sample(doors, 1)
   guess <- sample(doors, 1)
-  open <- doors[!doors %in% c(guess)][1]
+  open <- doors[!doors %in% c(guess)] |> sample(1)
   if (verbose) {
     cat(paste("Prize:", prize, "/ Guess:", guess, "/ Open:", open, "\n"))
   }
@@ -139,7 +139,7 @@ print(paste0("选择换门的获胜概率：", win_counts / length(res)))
 ```
 
 ```
-## [1] "选择换门的获胜概率：0.3308"
+## [1] "选择换门的获胜概率：0.3296"
 ```
 
 ```r
@@ -153,7 +153,7 @@ print(paste0("选择不换门的获胜概率：", win_counts / length(res)))
 ```
 
 ```
-## [1] "选择不换门的获胜概率：0.3378"
+## [1] "选择不换门的获胜概率：0.3392"
 ```
 
 结果可见，当主持人也不知道哪扇门会中奖时，他就无法向你传递“哪扇门更有可能会中奖”的信息，所以，所有的概率都是独立的，选择“换”与“不换”的中奖概率也就相等了。
