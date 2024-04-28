@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/linux/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/shiny-server/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/%E5%B7%A5%E7%A8%8B%E5%8C%96/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/monty-hall/</loc>
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/ab-test/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/</loc>
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/did/</loc>
@@ -24,12 +42,6 @@
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/sdid/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/mtp-did/</loc>
@@ -105,9 +117,6 @@
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/survival-analysis/</loc>
-    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/linux/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/nginx/</loc>

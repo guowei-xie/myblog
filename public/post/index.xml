@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 14 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Apr 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Shiny-Server部署</title>
+      <link>https://www.xiebro.cool/post/shiny-server/</link>
+      <pubDate>Sun, 28 Apr 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/shiny-server/</guid>
+      <description>Download 本文基于ubuntu系统对shiny-server进行服务器部署&#xA;# 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838&#xA;例如：xxx.xxx.xxx.xxx:3838&#xA;可访问shiny-server的demo页面（前提是该端口已经在控制台开放）&#xA;Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权限下编辑并保存配置文件 sudo vim shiny-server.conf 配置文件内容如下：&#xA;# Instruct Shiny Server to run applications as the user &amp;#34;shiny&amp;#34; run_as shiny; # Define a server that listens on port 3838 server { listen 3838; # Define a location at the base URL location / { # Host the directory of Shiny Apps stored in this directory site_dir /srv/shiny-server; # Log all Shiny output to files in this directory log_dir /var/log/shiny-server; # When a user visits the base URL rather than a particular application, # an index of the applications available in this directory will be shown.</description>
+    </item>
     <item>
       <title>“三门问题”模拟验证</title>
       <link>https://www.xiebro.cool/post/monty-hall/</link>
