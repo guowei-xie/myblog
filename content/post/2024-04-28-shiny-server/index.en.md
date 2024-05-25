@@ -10,8 +10,7 @@ tags:
   - linux
 ---
 
-## Download
-本文基于ubuntu系统对[shiny-server](https://posit.co/download/shiny-server/)进行服务器部署
+在ubuntu系统部署[shiny-server](https://posit.co/download/shiny-server/)的流程记录
 
 ```bash
 # 登录服务器后，进入根目录下的/srv路径
@@ -85,7 +84,6 @@ chmod -w /etc/sudoers
 
 ## 部署Shiny应用
 - 将已完成的shiny项目上传(移动或git克隆到)```srv/shiny-server/```路径下，当shiny-server服务启动后，会默认以项目文件名称作为访问路径，例如：xxx.xxx.xxx.xxx:3838/My-app
-- 示例`My-app`文件中的app.R文件会在用户访问该路径时被调起运行，当所有用户连接断开后，Shiny-server会自动停止运行shiny应用（有效节省内存）
 
 ## Shiny-Server服务控制
 ```bash
@@ -97,7 +95,10 @@ sudo systemctl stop shiny-server
 sudo systemctl restart shiny-server 
 ```
 
-
+## Shiny-Sever服务日志
+```
+cd /var/log/shiny-sever/
+```
 
 
 

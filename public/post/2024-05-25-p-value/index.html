@@ -1,0 +1,453 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>P-Value的可靠性模拟 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：
+当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？
+进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &lt;- 0.10 grp_A &lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &lt;- rnorm(nsize, mean = base_mean &#43; mudiff, sd = sigma) obs &lt;- mean(grp_A) - mean(grp_B) dat &lt;- tibble(grp_A, grp_B) |&gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&gt; pivot_longer(cols = -id, names_to = &#34;grp&#34;, values_to = &#34;score&#34;) df &lt;- dat |&gt; specify(score ~ grp) |&gt; hypothesise(null = &#34;independence&#34;) |&gt; generate(reps = 1000, type = &#34;permute&#34;) |&gt; calculate(stat = &#34;diff in means&#34;, order = c(&#34;grp_A&#34;, &#34;grp_B&#34;)) re &lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &#34;left&#34;)[[&#34;p_value&#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0." />
+  <meta name="author" content="Xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="P-Value的可靠性模拟">
+<meta itemprop="description" content="要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：
+当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？
+进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &lt;- 0.10 grp_A &lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &lt;- rnorm(nsize, mean = base_mean &#43; mudiff, sd = sigma) obs &lt;- mean(grp_A) - mean(grp_B) dat &lt;- tibble(grp_A, grp_B) |&gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&gt; pivot_longer(cols = -id, names_to = &#34;grp&#34;, values_to = &#34;score&#34;) df &lt;- dat |&gt; specify(score ~ grp) |&gt; hypothesise(null = &#34;independence&#34;) |&gt; generate(reps = 1000, type = &#34;permute&#34;) |&gt; calculate(stat = &#34;diff in means&#34;, order = c(&#34;grp_A&#34;, &#34;grp_B&#34;)) re &lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &#34;left&#34;)[[&#34;p_value&#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0."><meta itemprop="datePublished" content="2024-05-25T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-05-25T00:00:00+00:00" />
+<meta itemprop="wordCount" content="280">
+<meta itemprop="keywords" content="Monte-Carlo,Bootstrap,R可视化," />
+  
+  <meta property="og:title" content="P-Value的可靠性模拟" />
+<meta property="og:description" content="要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：
+当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？
+进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &lt;- 0.10 grp_A &lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &lt;- rnorm(nsize, mean = base_mean &#43; mudiff, sd = sigma) obs &lt;- mean(grp_A) - mean(grp_B) dat &lt;- tibble(grp_A, grp_B) |&gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&gt; pivot_longer(cols = -id, names_to = &#34;grp&#34;, values_to = &#34;score&#34;) df &lt;- dat |&gt; specify(score ~ grp) |&gt; hypothesise(null = &#34;independence&#34;) |&gt; generate(reps = 1000, type = &#34;permute&#34;) |&gt; calculate(stat = &#34;diff in means&#34;, order = c(&#34;grp_A&#34;, &#34;grp_B&#34;)) re &lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &#34;left&#34;)[[&#34;p_value&#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2024-05-25-p-value/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-05-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-25T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="P-Value的可靠性模拟"/>
+<meta name="twitter:description" content="要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：
+当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？
+进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &lt;- 0.10 grp_A &lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &lt;- rnorm(nsize, mean = base_mean &#43; mudiff, sd = sigma) obs &lt;- mean(grp_A) - mean(grp_B) dat &lt;- tibble(grp_A, grp_B) |&gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&gt; pivot_longer(cols = -id, names_to = &#34;grp&#34;, values_to = &#34;score&#34;) df &lt;- dat |&gt; specify(score ~ grp) |&gt; hypothesise(null = &#34;independence&#34;) |&gt; generate(reps = 1000, type = &#34;permute&#34;) |&gt; calculate(stat = &#34;diff in means&#34;, order = c(&#34;grp_A&#34;, &#34;grp_B&#34;)) re &lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &#34;left&#34;)[[&#34;p_value&#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2024-05-25-p-value/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">P-Value的可靠性模拟</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>May 25, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="要验证的问题">要验证的问题：</h2>
+<p>在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？
+举个例子，假如以下都是正态分布的样本：</p>
+<ul>
+<li>当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？</li>
+<li>当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？</li>
+<li>&hellip;</li>
+</ul>
+<p>当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？</p>
+<h2 id="进行模拟">进行模拟</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(infer)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(furrr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(hrbrthemes)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">theme_set</span>(<span style="color:#a6e22e">theme_ipsum_rc</span>())
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plan</span>(multisession, workers <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 模拟两个分布并进行置换检验，得到均值差异和P值</span>
+</span></span><span style="display:flex;"><span>run_simulate <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(nsize, mudiff, sigma, seed){
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">set.seed</span>(seed)
+</span></span><span style="display:flex;"><span>  base_mean <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0.10</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  grp_A <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(nsize, mean <span style="color:#f92672">=</span> base_mean, sd <span style="color:#f92672">=</span> sigma)
+</span></span><span style="display:flex;"><span>  grp_B <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(nsize, mean <span style="color:#f92672">=</span> base_mean <span style="color:#f92672">+</span> mudiff, sd <span style="color:#f92672">=</span> sigma)
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  obs <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mean</span>(grp_A) <span style="color:#f92672">-</span> <span style="color:#a6e22e">mean</span>(grp_B)
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  dat <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">tibble</span>(grp_A, grp_B) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(id <span style="color:#f92672">=</span> ids<span style="color:#f92672">::</span><span style="color:#a6e22e">random_id</span>(n <span style="color:#f92672">=</span> <span style="color:#a6e22e">n</span>(), bytes <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pivot_longer</span>(cols <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>id,
+</span></span><span style="display:flex;"><span>                 names_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grp&#34;</span>,
+</span></span><span style="display:flex;"><span>                 values_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;score&#34;</span>)
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  df <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>    dat <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">specify</span>(score <span style="color:#f92672">~</span> grp) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">hypothesise</span>(null <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;independence&#34;</span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">generate</span>(reps <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>, type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;permute&#34;</span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">calculate</span>(stat <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;diff in means&#34;</span>, order <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;grp_A&#34;</span>, <span style="color:#e6db74">&#34;grp_B&#34;</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>  re <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">list</span>(
+</span></span><span style="display:flex;"><span>    diff_in_means <span style="color:#f92672">=</span> <span style="color:#a6e22e">mean</span>(df<span style="color:#f92672">$</span>stat),
+</span></span><span style="display:flex;"><span>    p_value <span style="color:#f92672">=</span> <span style="color:#a6e22e">get_p_value</span>(df, obs_stat <span style="color:#f92672">=</span> obs, direction <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;left&#34;</span>)[[<span style="color:#e6db74">&#34;p_value&#34;</span>]]
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span>(re)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="先模拟两次">先模拟两次</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">run_simulate</span>(nsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>, mudiff <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>, sigma <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.03</span>, seed <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>)
+</span></span></code></pre></div><pre tabindex="0"><code>## $diff_in_means
+## [1] 4.721894e-05
+## 
+## $p_value
+## [1] 0.802
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">run_simulate</span>(nsize <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>, mudiff <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>, sigma <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.03</span>, seed <span style="color:#f92672">=</span> <span style="color:#ae81ff">123</span>)
+</span></span></code></pre></div><pre tabindex="0"><code>## $diff_in_means
+## [1] -0.0005003721
+## 
+## $p_value
+## [1] 0.008
+</code></pre><p>从上述两次模拟结果中可见，在固定的示例参数下仅仅改变了随机种子，所得到的P值是相当不稳定的。</p>
+<h3 id="多次模拟">多次模拟</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 多次模拟分布的参数</span>
+</span></span><span style="display:flex;"><span>pars <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">expand_grid</span>(
+</span></span><span style="display:flex;"><span>  nsize  <span style="color:#f92672">=</span> <span style="color:#a6e22e">seq</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">15</span>),
+</span></span><span style="display:flex;"><span>  mudiff <span style="color:#f92672">=</span> <span style="color:#a6e22e">seq</span>(<span style="color:#ae81ff">0.01</span>, <span style="color:#ae81ff">0.05</span>, <span style="color:#ae81ff">0.01</span>),
+</span></span><span style="display:flex;"><span>  sigma  <span style="color:#f92672">=</span> <span style="color:#a6e22e">seq</span>(<span style="color:#ae81ff">0.01</span>, <span style="color:#ae81ff">0.05</span>, <span style="color:#ae81ff">0.01</span>),
+</span></span><span style="display:flex;"><span>  seed   <span style="color:#f92672">=</span> <span style="color:#a6e22e">sample</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">9999</span>, <span style="color:#ae81ff">10</span>, replace <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>res <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">future_pmap</span>(pars, <span style="color:#f92672">~</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">run_simulate</span>(nsize <span style="color:#f92672">=</span> <span style="color:#66d9ef">..1</span>, mudiff <span style="color:#f92672">=</span> <span style="color:#66d9ef">..2</span>, sigma <span style="color:#f92672">=</span> <span style="color:#66d9ef">..3</span>, seed <span style="color:#f92672">=</span> <span style="color:#66d9ef">..4</span>)
+</span></span><span style="display:flex;"><span>      })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">&lt;-</span> 
+</span></span><span style="display:flex;"><span>  res <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">bind_rows</span>() <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">bind_cols</span>(pars)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 参数对P值稳定性的影响</span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">|&gt;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(nsize, p_value)) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_jitter</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">aes</span>(fill <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(seed)),
+</span></span><span style="display:flex;"><span>        col    <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>,
+</span></span><span style="display:flex;"><span>        shape  <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>,
+</span></span><span style="display:flex;"><span>        width  <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>        height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>,
+</span></span><span style="display:flex;"><span>        alpha  <span style="color:#f92672">=</span> <span style="color:#ae81ff">.7</span>,
+</span></span><span style="display:flex;"><span>        size   <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    ) <span style="color:#f92672">+</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_fill_brewer</span>(palette <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Set3&#34;</span>, guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">facet_grid</span>(sigma <span style="color:#f92672">~</span> mudiff, labeller <span style="color:#f92672">=</span> label_both) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">theme_linedraw</span>() <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">labs</span>(x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Sample Size&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;P Value&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2024-05-25-p-value/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/monte-carlo"
+      >Monte-Carlo</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/bootstrap"
+      >Bootstrap</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96"
+      >R可视化</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/shiny-server/"
+      ><span>Shiny-Server部署</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

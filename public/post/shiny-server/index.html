@@ -61,7 +61,7 @@
   
   
   
-  <meta name="description" content="Download 本文基于ubuntu系统对shiny-server进行服务器部署
+  <meta name="description" content="在ubuntu系统部署shiny-server的流程记录
 # 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838
 例如：xxx.xxx.xxx.xxx:3838
 可访问shiny-server的demo页面（前提是该端口已经在控制台开放）
@@ -129,18 +129,18 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
   
   
   <meta itemprop="name" content="Shiny-Server部署">
-<meta itemprop="description" content="Download 本文基于ubuntu系统对shiny-server进行服务器部署
+<meta itemprop="description" content="在ubuntu系统部署shiny-server的流程记录
 # 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838
 例如：xxx.xxx.xxx.xxx:3838
 可访问shiny-server的demo页面（前提是该端口已经在控制台开放）
 Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权限下编辑并保存配置文件 sudo vim shiny-server.conf 配置文件内容如下：
 # Instruct Shiny Server to run applications as the user &#34;shiny&#34; run_as shiny; # Define a server that listens on port 3838 server { listen 3838; # Define a location at the base URL location / { # Host the directory of Shiny Apps stored in this directory site_dir /srv/shiny-server; # Log all Shiny output to files in this directory log_dir /var/log/shiny-server; # When a user visits the base URL rather than a particular application, # an index of the applications available in this directory will be shown."><meta itemprop="datePublished" content="2024-04-28T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2024-04-28T00:00:00+00:00" />
-<meta itemprop="wordCount" content="186">
+<meta itemprop="wordCount" content="187">
 <meta itemprop="keywords" content="工程化,linux," />
   
   <meta property="og:title" content="Shiny-Server部署" />
-<meta property="og:description" content="Download 本文基于ubuntu系统对shiny-server进行服务器部署
+<meta property="og:description" content="在ubuntu系统部署shiny-server的流程记录
 # 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838
 例如：xxx.xxx.xxx.xxx:3838
 可访问shiny-server的demo页面（前提是该端口已经在控制台开放）
@@ -154,7 +154,7 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
 
   
   <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Shiny-Server部署"/>
-<meta name="twitter:description" content="Download 本文基于ubuntu系统对shiny-server进行服务器部署
+<meta name="twitter:description" content="在ubuntu系统部署shiny-server的流程记录
 # 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838
 例如：xxx.xxx.xxx.xxx:3838
 可访问shiny-server的demo页面（前提是该端口已经在控制台开放）
@@ -285,8 +285,7 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
     
   </header>
 
-  <section><h2 id="download">Download</h2>
-<p>本文基于ubuntu系统对<a href="https://posit.co/download/shiny-server/">shiny-server</a>进行服务器部署</p>
+  <section><p>在ubuntu系统部署<a href="https://posit.co/download/shiny-server/">shiny-server</a>的流程记录</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 登录服务器后，进入根目录下的/srv路径</span>
 </span></span><span style="display:flex;"><span>cd /srv
 </span></span><span style="display:flex;"><span>
@@ -347,7 +346,6 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
 </code></pre><h2 id="部署shiny应用">部署Shiny应用</h2>
 <ul>
 <li>将已完成的shiny项目上传(移动或git克隆到)<code>srv/shiny-server/</code>路径下，当shiny-server服务启动后，会默认以项目文件名称作为访问路径，例如：xxx.xxx.xxx.xxx:3838/My-app</li>
-<li>示例<code>My-app</code>文件中的app.R文件会在用户访问该路径时被调起运行，当所有用户连接断开后，Shiny-server会自动停止运行shiny应用（有效节省内存）</li>
 </ul>
 <h2 id="shiny-server服务控制">Shiny-Server服务控制</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 启动</span>
@@ -356,7 +354,9 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
 </span></span><span style="display:flex;"><span>sudo systemctl stop shiny-server 
 </span></span><span style="display:flex;"><span><span style="color:#75715e"># 重启</span>
 </span></span><span style="display:flex;"><span>sudo systemctl restart shiny-server 
-</span></span></code></pre></div></section>
+</span></span></code></pre></div><h2 id="shiny-sever服务日志">Shiny-Sever服务日志</h2>
+<pre tabindex="0"><code>cd /var/log/shiny-sever/
+</code></pre></section>
 
   
   
@@ -382,6 +382,12 @@ Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权�
   
   
   <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    <a
+      class="flex w-1/2 items-center rounded-l-md p-6 pr-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2024-05-25-p-value/"
+      ><span class="mr-1.5">←</span><span>P-Value的可靠性模拟</span></a
+    >
     
     
     <a

@@ -3,10 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/bootstrap/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
-    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/2024-05-25-p-value/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/r/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/linux/</loc>
     <lastmod>2024-04-28T00:00:00+00:00</lastmod>
@@ -14,16 +38,10 @@
     <loc>https://www.xiebro.cool/post/shiny-server/</loc>
     <lastmod>2024-04-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/%E5%B7%A5%E7%A8%8B%E5%8C%96/</loc>
     <lastmod>2024-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/</loc>
-    <lastmod>2024-04-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2024-04-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/monty-hall/</loc>
@@ -35,12 +53,6 @@
     <loc>https://www.xiebro.cool/tags/did/</loc>
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/r/</loc>
-    <lastmod>2024-04-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/post/sdid/</loc>
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
@@ -49,9 +61,6 @@
   </url><url>
     <loc>https://www.xiebro.cool/tags/model/</loc>
     <lastmod>2024-04-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/bootstrap/</loc>
-    <lastmod>2024-04-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2024-04-02-bootstrap-did/</loc>
     <lastmod>2024-04-02T00:00:00+00:00</lastmod>
@@ -101,9 +110,6 @@
     <loc>https://www.xiebro.cool/post/only-want-boy/</loc>
     <lastmod>2024-03-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
-    <lastmod>2024-03-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/r%E5%87%BD%E6%95%B0/</loc>
     <lastmod>2024-03-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -120,9 +126,6 @@
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/nginx/</loc>
-    <lastmod>2024-02-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/r%E5%8F%AF%E8%A7%86%E5%8C%96/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/website/</loc>

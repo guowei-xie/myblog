@@ -6,14 +6,21 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 28 Apr 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 May 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>P-Value的可靠性模拟</title>
+      <link>https://www.xiebro.cool/post/2024-05-25-p-value/</link>
+      <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2024-05-25-p-value/</guid>
+      <description>要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：&#xA;当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &amp;hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？&#xA;进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &amp;lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &amp;lt;- 0.10 grp_A &amp;lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &amp;lt;- rnorm(nsize, mean = base_mean + mudiff, sd = sigma) obs &amp;lt;- mean(grp_A) - mean(grp_B) dat &amp;lt;- tibble(grp_A, grp_B) |&amp;gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&amp;gt; pivot_longer(cols = -id, names_to = &amp;#34;grp&amp;#34;, values_to = &amp;#34;score&amp;#34;) df &amp;lt;- dat |&amp;gt; specify(score ~ grp) |&amp;gt; hypothesise(null = &amp;#34;independence&amp;#34;) |&amp;gt; generate(reps = 1000, type = &amp;#34;permute&amp;#34;) |&amp;gt; calculate(stat = &amp;#34;diff in means&amp;#34;, order = c(&amp;#34;grp_A&amp;#34;, &amp;#34;grp_B&amp;#34;)) re &amp;lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &amp;#34;left&amp;#34;)[[&amp;#34;p_value&amp;#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0.</description>
+    </item>
     <item>
       <title>Shiny-Server部署</title>
       <link>https://www.xiebro.cool/post/shiny-server/</link>
       <pubDate>Sun, 28 Apr 2024 00:00:00 +0000</pubDate>
       <guid>https://www.xiebro.cool/post/shiny-server/</guid>
-      <description>Download 本文基于ubuntu系统对shiny-server进行服务器部署&#xA;# 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838&#xA;例如：xxx.xxx.xxx.xxx:3838&#xA;可访问shiny-server的demo页面（前提是该端口已经在控制台开放）&#xA;Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权限下编辑并保存配置文件 sudo vim shiny-server.conf 配置文件内容如下：&#xA;# Instruct Shiny Server to run applications as the user &amp;#34;shiny&amp;#34; run_as shiny; # Define a server that listens on port 3838 server { listen 3838; # Define a location at the base URL location / { # Host the directory of Shiny Apps stored in this directory site_dir /srv/shiny-server; # Log all Shiny output to files in this directory log_dir /var/log/shiny-server; # When a user visits the base URL rather than a particular application, # an index of the applications available in this directory will be shown.</description>
+      <description>在ubuntu系统部署shiny-server的流程记录&#xA;# 登录服务器后，进入根目录下的/srv路径 cd /srv # 按照官网提供的方法进行安装, 依次执行： sudo apt-get install gdebi-core sudo wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.22.1017-amd64.deb sudo gdebi shiny-server-1.5.22.1017-amd64.deb 安装成功后，在本地浏览器访问shiny-server的默认监听端口3838&#xA;例如：xxx.xxx.xxx.xxx:3838&#xA;可访问shiny-server的demo页面（前提是该端口已经在控制台开放）&#xA;Config # 进入shiny-server的配置文件路径 cd /etc/shiny-server # sudo权限下编辑并保存配置文件 sudo vim shiny-server.conf 配置文件内容如下：&#xA;# Instruct Shiny Server to run applications as the user &amp;#34;shiny&amp;#34; run_as shiny; # Define a server that listens on port 3838 server { listen 3838; # Define a location at the base URL location / { # Host the directory of Shiny Apps stored in this directory site_dir /srv/shiny-server; # Log all Shiny output to files in this directory log_dir /var/log/shiny-server; # When a user visits the base URL rather than a particular application, # an index of the applications available in this directory will be shown.</description>
     </item>
     <item>
       <title>“三门问题”模拟验证</title>

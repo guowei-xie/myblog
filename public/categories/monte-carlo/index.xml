@@ -6,8 +6,15 @@
     <description>Recent content in Monte-Carlo on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 03 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 May 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/monte-carlo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>P-Value的可靠性模拟</title>
+      <link>https://www.xiebro.cool/post/2024-05-25-p-value/</link>
+      <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2024-05-25-p-value/</guid>
+      <description>要验证的问题： 在不同的实验条件下，我们使用P值衡量两组样本的差异显著性，是否是可靠的？ 举个例子，假如以下都是正态分布的样本：&#xA;当样本量及参数(μ、σ)不变，仅改变随机种子，多次得到的P值结果是否是稳定的？ 当随机种子和样本参数(μ、σ)均不变，仅改变样本量，所得到P值结果是否是稳定的？ &amp;hellip; 当改变了样本的样本量、参数、以及随机种子时，分别对P值的影响如何？&#xA;进行模拟 library(tidyverse) library(infer) library(furrr) library(hrbrthemes) theme_set(theme_ipsum_rc()) plan(multisession, workers = 10) # 模拟两个分布并进行置换检验，得到均值差异和P值 run_simulate &amp;lt;- function(nsize, mudiff, sigma, seed){ set.seed(seed) base_mean &amp;lt;- 0.10 grp_A &amp;lt;- rnorm(nsize, mean = base_mean, sd = sigma) grp_B &amp;lt;- rnorm(nsize, mean = base_mean + mudiff, sd = sigma) obs &amp;lt;- mean(grp_A) - mean(grp_B) dat &amp;lt;- tibble(grp_A, grp_B) |&amp;gt; mutate(id = ids::random_id(n = n(), bytes = 2)) |&amp;gt; pivot_longer(cols = -id, names_to = &amp;#34;grp&amp;#34;, values_to = &amp;#34;score&amp;#34;) df &amp;lt;- dat |&amp;gt; specify(score ~ grp) |&amp;gt; hypothesise(null = &amp;#34;independence&amp;#34;) |&amp;gt; generate(reps = 1000, type = &amp;#34;permute&amp;#34;) |&amp;gt; calculate(stat = &amp;#34;diff in means&amp;#34;, order = c(&amp;#34;grp_A&amp;#34;, &amp;#34;grp_B&amp;#34;)) re &amp;lt;- list( diff_in_means = mean(df$stat), p_value = get_p_value(df, obs_stat = obs, direction = &amp;#34;left&amp;#34;)[[&amp;#34;p_value&amp;#34;]] ) return(re) } 先模拟两次 run_simulate(nsize = 30, mudiff = 0.</description>
+    </item>
     <item>
       <title>“重男轻女”是否会导致男女比例失衡？</title>
       <link>https://www.xiebro.cool/post/only-want-boy/</link>
