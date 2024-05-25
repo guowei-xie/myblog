@@ -11,6 +11,12 @@
     <loc>https://www.xiebro.cool/categories/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://www.xiebro.cool/post/kullback-leibler/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/machine-learning/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -81,9 +87,6 @@
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/llm/</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/machine-learning/</loc>
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/shiny/</loc>

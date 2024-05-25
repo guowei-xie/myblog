@@ -9,6 +9,13 @@
     <lastBuildDate>Sat, 25 May 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/r/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>KL散度模拟</title>
+      <link>https://www.xiebro.cool/post/kullback-leibler/</link>
+      <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/kullback-leibler/</guid>
+      <description>从采样角度出发对KL散度进行直观解释,即：KL散度描述了我们用分布Q来估计数据的真实分布P的信息(编码)损失。&#xA;附：一篇关于Kullback-Leibler Divergence 基本介绍的blog&#xA;验证问题 假如真实样本P已知，Q是对P的随机采样样本，那么Q相对于P的信息损失是否与采样样本量呈线性关系？&#xA;换句话讲，假如Q的样本量与P相等，那么Q可以100%程度表述P的信息，假如Q的样本量是P的10%呢？此时是否会相较于前者损失90%的信息？即KL散度与样本量是否是线性的关系？&#xA;模拟验证 library(tidyverse) library(furrr) library(hrbrthemes) theme_set(theme_ipsum(base_family = &amp;#34;Kai&amp;#34;, base_size = 8)) plan(multisession, workers = 10) set.seed(42) # 模拟总体样本P P &amp;lt;- rbinom(10000, 1, 0.1) cat(paste0(&amp;#34;总体样本P的样本量：&amp;#34;, length(P),&amp;#34;, 均值:&amp;#34;, mean(P))) ## 总体样本P的样本量：10000, 均值:0.1031 # bootstrap估计P的均值分布 trials &amp;lt;- 10000 P_norm &amp;lt;- 1 : trials |&amp;gt; future_map_dbl(~ { P |&amp;gt; sample(replace = TRUE) |&amp;gt; mean() }) cat(paste0(&amp;#34;P的均值分布参数: μ = &amp;#34;, mean(P_norm), &amp;#34;, σ = &amp;#34;, sd(P_norm))) ## P的均值分布参数: μ = 0.</description>
+    </item>
+    <item>
       <title>P-Value的可靠性模拟</title>
       <link>https://www.xiebro.cool/post/2024-05-25-p-value/</link>
       <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>

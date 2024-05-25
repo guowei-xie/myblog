@@ -12,6 +12,7 @@ tags:
 
 在ubuntu系统部署[shiny-server](https://posit.co/download/shiny-server/)的流程记录
 
+## 安装
 ```bash
 # 登录服务器后，进入根目录下的/srv路径
 cd /srv
@@ -25,7 +26,7 @@ sudo gdebi shiny-server-1.5.22.1017-amd64.deb
 例如：xxx.xxx.xxx.xxx:3838  
 可访问shiny-server的demo页面（前提是该端口已经在控制台开放）
 
-## Config
+## 配置
 ```bash
 # 进入shiny-server的配置文件路径
 cd /etc/shiny-server
