@@ -1,0 +1,536 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>缺失值填充 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="library(tidyverse) library(titanic) library(patchwork) seed &lt;- 42 set.seed(seed) 演示数据 演示对Age列进行插值
+dat &lt;- titanic::titanic_train glimpse(dat) ## Rows: 891 ## Columns: 12 ## $ PassengerId &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,… ## $ Survived &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1… ## $ Pclass &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3… ## $ Name &lt;chr&gt; &#34;Braund, Mr." />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="缺失值填充">
+<meta itemprop="description" content="library(tidyverse) library(titanic) library(patchwork) seed &lt;- 42 set.seed(seed) 演示数据 演示对Age列进行插值
+dat &lt;- titanic::titanic_train glimpse(dat) ## Rows: 891 ## Columns: 12 ## $ PassengerId &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,… ## $ Survived &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1… ## $ Pclass &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3… ## $ Name &lt;chr&gt; &#34;Braund, Mr."><meta itemprop="datePublished" content="2024-09-27T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2024-09-27T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1102">
+<meta itemprop="keywords" content="特征工程," />
+  
+  <meta property="og:title" content="缺失值填充" />
+<meta property="og:description" content="library(tidyverse) library(titanic) library(patchwork) seed &lt;- 42 set.seed(seed) 演示数据 演示对Age列进行插值
+dat &lt;- titanic::titanic_train glimpse(dat) ## Rows: 891 ## Columns: 12 ## $ PassengerId &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,… ## $ Survived &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1… ## $ Pclass &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3… ## $ Name &lt;chr&gt; &#34;Braund, Mr." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/fill-missing-value/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2024-09-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-27T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="缺失值填充"/>
+<meta name="twitter:description" content="library(tidyverse) library(titanic) library(patchwork) seed &lt;- 42 set.seed(seed) 演示数据 演示对Age列进行插值
+dat &lt;- titanic::titanic_train glimpse(dat) ## Rows: 891 ## Columns: 12 ## $ PassengerId &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,… ## $ Survived &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1… ## $ Pclass &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3… ## $ Name &lt;chr&gt; &#34;Braund, Mr."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/fill-missing-value/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">缺失值填充</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Sep 27, 2024</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(titanic)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(patchwork)
+</span></span><span style="display:flex;"><span>seed <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">42</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(seed)
+</span></span></code></pre></div><h2 id="演示数据">演示数据</h2>
+<p>演示对Age列进行插值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> titanic<span style="color:#f92672">::</span>titanic_train
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">glimpse</span>(dat)
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 891
+## Columns: 12
+## $ PassengerId &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,…
+## $ Survived    &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1…
+## $ Pclass      &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3…
+## $ Name        &lt;chr&gt; &#34;Braund, Mr. Owen Harris&#34;, &#34;Cumings, Mrs. John Bradley (Fl…
+## $ Sex         &lt;chr&gt; &#34;male&#34;, &#34;female&#34;, &#34;female&#34;, &#34;female&#34;, &#34;male&#34;, &#34;male&#34;, &#34;mal…
+## $ Age         &lt;dbl&gt; 22, 38, 26, 35, 35, NA, 54, 2, 27, 14, 4, 58, 20, 39, 14, …
+## $ SibSp       &lt;int&gt; 1, 1, 0, 1, 0, 0, 0, 3, 0, 1, 1, 0, 0, 1, 0, 0, 4, 0, 1, 0…
+## $ Parch       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 0, 0, 5, 0, 0, 1, 0, 0, 0…
+## $ Ticket      &lt;chr&gt; &#34;A/5 21171&#34;, &#34;PC 17599&#34;, &#34;STON/O2. 3101282&#34;, &#34;113803&#34;, &#34;37…
+## $ Fare        &lt;dbl&gt; 7.2500, 71.2833, 7.9250, 53.1000, 8.0500, 8.4583, 51.8625,…
+## $ Cabin       &lt;chr&gt; &#34;&#34;, &#34;C85&#34;, &#34;&#34;, &#34;C123&#34;, &#34;&#34;, &#34;&#34;, &#34;E46&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;G6&#34;, &#34;C…
+## $ Embarked    &lt;chr&gt; &#34;S&#34;, &#34;C&#34;, &#34;S&#34;, &#34;S&#34;, &#34;S&#34;, &#34;Q&#34;, &#34;S&#34;, &#34;S&#34;, &#34;S&#34;, &#34;C&#34;, &#34;S&#34;, &#34;S&#34;…
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 原始数据Age分布</span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme</span>(axis.text.x <span style="color:#f92672">=</span> <span style="color:#a6e22e">element_text</span>(angle <span style="color:#f92672">=</span> <span style="color:#ae81ff">90</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distributio without NA Values&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<h2 id="线性插值填充">线性插值填充</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(zoo)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用线性插值法填充NA值</span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">arrange</span>(Age, Fare) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(Age <span style="color:#f92672">=</span> <span style="color:#a6e22e">na.approx</span>(Age, x <span style="color:#f92672">=</span> Fare, na.rm <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>)) <span style="color:#f92672">%&gt;%</span> <span style="color:#75715e"># 以Fare列作为相关变量</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#75715e"># 插值后分布</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#75715e"># 插值前分布</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Linear Interpolation&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+<h2 id="同类均值填充">同类均值填充</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 使用同类均值填充NA值</span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">group_by</span>(Sex, Pclass) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(Age <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(<span style="color:#a6e22e">is.na</span>(Age), <span style="color:#a6e22e">mean</span>(Age, na.rm <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>), Age)) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ungroup</span>() <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Filling NA with Group Mean&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<h2 id="同类邻近值填充">同类邻近值填充</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 分组排序后，使用邻近值填充</span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">arrange</span>(PassengerId) <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">group_by</span>(Sex, Pclass) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">fill</span>(Age, .direction <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;updown&#34;</span>) <span style="color:#f92672">%&gt;%</span> <span style="color:#75715e"># .direction可选参数：up/down/updown/downup</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ungroup</span>() <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Filling NA with Group Mean&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<h2 id="模型预测值填充">模型预测值填充</h2>
+<h3 id="回归法">回归法</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(ranger)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 构建随机森林预测模型</span>
+</span></span><span style="display:flex;"><span>dat_age <span style="color:#f92672">&lt;-</span>
+</span></span><span style="display:flex;"><span>  dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">select</span>(Age, Pclass, Sex, Fare, Parch, SibSp) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(Sex <span style="color:#f92672">=</span> <span style="color:#a6e22e">as.factor</span>(Sex))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>known_age <span style="color:#f92672">&lt;-</span> dat_age <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">filter</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">is.na</span>(Age)) <span style="color:#75715e"># 已知年龄</span>
+</span></span><span style="display:flex;"><span>unknown_age <span style="color:#f92672">&lt;-</span> dat_age <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">is.na</span>(Age)) <span style="color:#75715e"># 未知年龄</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>X_train <span style="color:#f92672">&lt;-</span> known_age <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span>Age) <span style="color:#75715e"># 训练集</span>
+</span></span><span style="display:flex;"><span>y_train <span style="color:#f92672">&lt;-</span> known_age<span style="color:#f92672">$</span>Age <span style="color:#75715e"># 目标label</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>X_test <span style="color:#f92672">&lt;-</span> unknown_age <span style="color:#f92672">%&gt;%</span> <span style="color:#a6e22e">select</span>(<span style="color:#f92672">-</span>Age) <span style="color:#75715e"># 测试集</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 训练随机森林模型</span>
+</span></span><span style="display:flex;"><span>rfr <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ranger</span>(Age <span style="color:#f92672">~</span> ., data <span style="color:#f92672">=</span> known_age, num.trees <span style="color:#f92672">=</span> <span style="color:#ae81ff">2000</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 预测未知年龄</span>
+</span></span><span style="display:flex;"><span>y_pred <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">predict</span>(rfr, X_test)<span style="color:#f92672">$</span>predictions
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 填充原缺失数据</span>
+</span></span><span style="display:flex;"><span>dat_fill <span style="color:#f92672">&lt;-</span>
+</span></span><span style="display:flex;"><span>  dat <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(Age <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(<span style="color:#a6e22e">is.na</span>(Age), y_pred, Age))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat_fill <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.3</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Filling NA with Ranger Model Prediction&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+<h3 id="最近距离邻法knn">最近距离邻法（KNN）</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(VIM)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用kNN进行缺失值插补</span>
+</span></span><span style="display:flex;"><span>imp <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">kNN</span>(dat, variable <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>, k <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>imp <span style="color:#f92672">%&gt;%</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Filling NA with KNN Model Prediction&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<h2 id="多重插补填充">多重插补填充</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(mice)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用 mice 进行多重插补</span>
+</span></span><span style="display:flex;"><span>imp <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mice</span>(titanic_train, m <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>, method <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pmm&#34;</span>, seed <span style="color:#f92672">=</span> seed, printFlag <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#75715e"># m 表示生成 m 个数据集</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>imp_dat <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">complete</span>(imp, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map</span>(<span style="color:#f92672">~</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">complete</span>(imp, .x)
+</span></span><span style="display:flex;"><span>  }) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map</span>(<span style="color:#f92672">~</span> {
+</span></span><span style="display:flex;"><span>    .x <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> Age)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">geom_histogram</span>(fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;skyblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;black&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">geom_histogram</span>(data <span style="color:#f92672">=</span> dat, fill <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lightblue&#34;</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;grey&#34;</span>, binwidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>        title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age Distribution after Multiple Imputation&#34;</span>,
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Age&#34;</span>,
+</span></span><span style="display:flex;"><span>        y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Count&#34;</span>
+</span></span><span style="display:flex;"><span>      ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">theme_minimal</span>() <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">theme</span>(plot.title <span style="color:#f92672">=</span> <span style="color:#a6e22e">element_text</span>(size <span style="color:#f92672">=</span> <span style="color:#ae81ff">12</span>))
+</span></span><span style="display:flex;"><span>  }) <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">wrap_plots</span>(ncol <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/fill-missing-value/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+<h2 id="哑变量填充">哑变量填充</h2>
+<p>演示对Sex列进行哑变量填充</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>titanic_train<span style="color:#f92672">$</span>Sex<span style="color:#a6e22e">[is.na</span>(titanic_train<span style="color:#f92672">$</span>Sex)] <span style="color:#f92672">&lt;-</span> <span style="color:#e6db74">&#34;NA&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 哑变量填充</span>
+</span></span><span style="display:flex;"><span>titanic_train <span style="color:#f92672">&lt;-</span> titanic_train <span style="color:#f92672">%&gt;%</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
+</span></span><span style="display:flex;"><span>    IS_SEX_MALE <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(Sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;male&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>    IS_SEX_FEMALE <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(Sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;female&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>    IS_SEX_NA <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(Sex <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;NA&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">glimpse</span>(titanic_train)
+</span></span></code></pre></div><pre tabindex="0"><code>## Rows: 891
+## Columns: 15
+## $ PassengerId   &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1…
+## $ Survived      &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0,…
+## $ Pclass        &lt;int&gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3,…
+## $ Name          &lt;chr&gt; &#34;Braund, Mr. Owen Harris&#34;, &#34;Cumings, Mrs. John Bradley (…
+## $ Sex           &lt;chr&gt; &#34;male&#34;, &#34;female&#34;, &#34;female&#34;, &#34;female&#34;, &#34;male&#34;, &#34;male&#34;, &#34;m…
+## $ Age           &lt;dbl&gt; 22, 38, 26, 35, 35, NA, 54, 2, 27, 14, 4, 58, 20, 39, 14…
+## $ SibSp         &lt;int&gt; 1, 1, 0, 1, 0, 0, 0, 3, 0, 1, 1, 0, 0, 1, 0, 0, 4, 0, 1,…
+## $ Parch         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 0, 0, 5, 0, 0, 1, 0, 0,…
+## $ Ticket        &lt;chr&gt; &#34;A/5 21171&#34;, &#34;PC 17599&#34;, &#34;STON/O2. 3101282&#34;, &#34;113803&#34;, &#34;…
+## $ Fare          &lt;dbl&gt; 7.2500, 71.2833, 7.9250, 53.1000, 8.0500, 8.4583, 51.862…
+## $ Cabin         &lt;chr&gt; &#34;&#34;, &#34;C85&#34;, &#34;&#34;, &#34;C123&#34;, &#34;&#34;, &#34;&#34;, &#34;E46&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;, &#34;G6&#34;, …
+## $ Embarked      &lt;chr&gt; &#34;S&#34;, &#34;C&#34;, &#34;S&#34;, &#34;S&#34;, &#34;S&#34;, &#34;Q&#34;, &#34;S&#34;, &#34;S&#34;, &#34;S&#34;, &#34;C&#34;, &#34;S&#34;, &#34;…
+## $ IS_SEX_MALE   &lt;dbl&gt; 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0,…
+## $ IS_SEX_FEMALE &lt;dbl&gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1,…
+## $ IS_SEX_NA     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+</code></pre></section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B"
+      >特征工程</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/kullback-leibler/"
+      ><span>KL散度模拟</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2024
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

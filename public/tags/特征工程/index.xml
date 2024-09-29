@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>特征工程 on 浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/</link>
+    <description>Recent content in 特征工程 on 浑身蟹数</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 27 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>缺失值填充</title>
+      <link>https://www.xiebro.cool/post/fill-missing-value/</link>
+      <pubDate>Fri, 27 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/fill-missing-value/</guid>
+      <description>library(tidyverse) library(titanic) library(patchwork) seed &amp;lt;- 42 set.seed(seed) 演示数据 演示对Age列进行插值&#xA;dat &amp;lt;- titanic::titanic_train glimpse(dat) ## Rows: 891 ## Columns: 12 ## $ PassengerId &amp;lt;int&amp;gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,… ## $ Survived &amp;lt;int&amp;gt; 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1… ## $ Pclass &amp;lt;int&amp;gt; 3, 1, 3, 1, 3, 3, 1, 3, 3, 2, 3, 1, 3, 3, 3, 2, 3, 2, 3, 3… ## $ Name &amp;lt;chr&amp;gt; &amp;#34;Braund, Mr.</description>
+    </item>
+  </channel>
+</rss>
