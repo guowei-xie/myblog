@@ -53,17 +53,15 @@ summary(pca_result)
 pca_scores <- 
   pca_result$x %>% # 提取主成分得分
   as.data.frame() %>% 
-  mutate(
-    店名 = dat$店名,
-    综合评分 = PC1 # 使用PC1作为综合评分
-  )
+  cbind(dat) %>% 
+  mutate(综合评分 = round(PC1, 1))
 
 # 店铺综合排名
 pca_scores %>% 
-  select(店名, 综合评分) %>% 
+  select(店名, contains("评分")) %>% 
   arrange(desc(综合评分)) %>% 
   mutate(综合排名 = 1:n()) %>% 
-  head(5) %>% 
+  head(10) %>% 
   knitr::kable()
 
 # 可视化PCA结果
