@@ -6,8 +6,15 @@
     <description>Recent content in R on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 27 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 Nov 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>PCA分析店铺综合排名</title>
+      <link>https://www.xiebro.cool/post/pca-rank/</link>
+      <pubDate>Sat, 02 Nov 2024 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/pca-rank/</guid>
+      <description>在美食推荐应用中，用户对店铺的评价通常有“环境”、“服务”和“味道”等多方面的评分。&#xA;那么，如何通过这些评分来计算出一个更能代表整体印象的“综合评分”？本次练习使用主成分分析（PCA）来实现店铺的综合排名。&#xA;数据集概览 library(dplyr) library(plotly) dat &amp;lt;- read.csv(&amp;#34;data/food.csv&amp;#34;) %&amp;gt;% filter(种类 == &amp;#34;咖啡厅&amp;#34;) # 结构概览 glimpse(dat) ## Rows: 717 ## Columns: 5 ## $ 店名 &amp;lt;chr&amp;gt; &amp;quot;YECLIP COFFEE 黄色回形针咖啡&amp;quot;, &amp;quot;hellopets·猪咖狗咖&amp;quot;, &amp;quot;格度猫… ## $ 种类 &amp;lt;chr&amp;gt; &amp;quot;咖啡厅&amp;quot;, &amp;quot;咖啡厅&amp;quot;, &amp;quot;咖啡厅&amp;quot;, &amp;quot;咖啡厅&amp;quot;, &amp;quot;咖啡厅&amp;quot;, &amp;quot;咖啡厅&amp;quot;, &amp;quot;… ## $ 环境评分 &amp;lt;dbl&amp;gt; 4.10, 4.50, 4.74, 4.11, 4.18, 4.14, 4.03, 4.94, 3.92, 4.38, 4… ## $ 服务评分 &amp;lt;dbl&amp;gt; 3.97, 4.17, 4.35, 4.75, 4.57, 4.12, 4.39, 4.60, 4.43, 4.</description>
+    </item>
     <item>
       <title>缺失值填充</title>
       <link>https://www.xiebro.cool/post/fill-missing-value/</link>

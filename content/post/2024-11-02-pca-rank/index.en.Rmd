@@ -1,0 +1,86 @@
+---
+title: PCA分析店铺综合排名
+author: xiebro
+date: '2024-11-02'
+slug: pca-rank
+categories:
+  - R
+tags:
+  - PCA
+---
+
+在美食推荐应用中，用户对店铺的评价通常有“环境”、“服务”和“味道”等多方面的评分。  
+那么，如何通过这些评分来计算出一个更能代表整体印象的“综合评分”？本次练习使用主成分分析（PCA）来实现店铺的综合排名。
+
+## 数据集概览
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(plotly)
+
+dat <- 
+  read.csv("data/food.csv") %>%
+  filter(种类 == "咖啡厅")
+
+# 结构概览
+glimpse(dat)
+
+# 分布概览
+plot_ly(
+  dat,
+  x = ~环境评分,
+  y = ~服务评分,
+  z = ~口味评分,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 1)
+)
+```
+## PCA分析
+```{r}
+# 标准化
+dat_scaled <- 
+  dat %>%
+  select(环境评分, 服务评分, 口味评分) %>%
+  scale()
+
+# PCA分析
+pca_result <- prcomp(dat_scaled, center = TRUE, scale. = TRUE)
+
+summary(pca_result)
+
+# 店铺综合评分结果
+pca_scores <- 
+  pca_result$x %>% # 提取主成分得分
+  as.data.frame() %>% 
+  mutate(
+    店名 = dat$店名,
+    综合评分 = PC1 # 使用PC1作为综合评分
+  )
+
+# 店铺综合排名
+pca_scores %>% 
+  select(店名, 综合评分) %>% 
+  arrange(desc(综合评分)) %>% 
+  mutate(综合排名 = 1:n()) %>% 
+  head(5) %>% 
+  knitr::kable()
+
+# 可视化PCA结果
+pca_scores %>% 
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point(alpha = .5) +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  theme_minimal()
+
+plot_ly(
+  pca_scores,
+  x = ~PC1,
+  y = ~PC2,
+  z = ~PC3,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 1)
+)
+
+```
