@@ -32,11 +32,11 @@ math: true
 
 
 $$
-P = \left(\frac{1}{2} \times \frac{1}{2} \times \dots \right) = \left(\frac{1}{2}\right)^{50}
+P = \left(\frac{1}{2} \times \frac{1}{2} \times \dots \right) = \left(\frac{1}{2}\right)^{100}
 $$
 
   
-计算结果为：`r format((1/2)^50, scientific = FALSE)`，几乎为零。  
+计算结果为：`r format((1/2)^100, scientific = FALSE)`，几乎为零。  
 
 # 策略  
 有一种基于“循环链”概念的策略可以将成功概率提高到30%以上：  
@@ -124,13 +124,13 @@ result <-
   as.data.frame() %>% 
   setNames("chain_length") %>% 
   mutate(
-    chain_type = ifelse(chain_length > 0.5 * N, "Fail", "Success"),
+    fill_type = ifelse(chain_length > 0.5 * N, "Fail", "Success"),
     boole_type = ifelse(chain_length > 0.5 * N, FALSE, TRUE)
   )
 
 result %>% 
   ggplot(aes(x = chain_length)) +
-  geom_bar(aes(fill = chain_type)) +
+  geom_bar(aes(fill = fill_type)) +
   theme_minimal() +
   labs(
     x = "",
