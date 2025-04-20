@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2024-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
-    <lastmod>2024-11-10T00:00:00+00:00</lastmod>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/rule-of-37/</loc>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/fun-questions/</loc>
     <lastmod>2024-11-10T00:00:00+00:00</lastmod>
@@ -14,13 +29,7 @@
     <loc>https://www.xiebro.cool/categories/r/</loc>
     <lastmod>2024-11-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2024-11-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/post/criminal-box/</loc>
-    <lastmod>2024-11-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2024-11-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/pca/</loc>
@@ -42,12 +51,6 @@
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/machine-learning/</loc>
-    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
-    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2024-05-25-p-value/</loc>

@@ -1,0 +1,436 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>最优停止策略 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="37%法则的智慧 当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。
+核心思想 观察期：拒绝前37%的选项（仅用于建立标准）。 选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。 如果后续没有更好的，则必须接受最后一个。 为什么是37%？ 数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。
+蒙特卡洛-模拟验证 library(tidyverse) library(scales) library(furrr) set.seed(42) plan(multisession, workers = availableCores() - 1) # 创建规则函数 ----------------------------------------------------------------- # 模拟1次策略执行的过程 # 参数： # glb_nums: 全局可选项 # obs_ratio: 观察期比例（例如0.37） # 返回： # boll, 是否选到全局最优 rule_func &lt;- function(glb_opts, obs_ratio) { n &lt;- length(glb_opts) # 全局最优选项 glb_best &lt;- max(glb_opts) # “观察期”最优选项 obs_n &lt;- floor(n * obs_ratio) obs_opts &lt;- glb_opts[1:obs_n] obs_best &lt;- max(obs_opts) # “选择期”选择结果 slct_opts &lt;- glb_opts[(obs_n &#43; 1):n] if (obs_best == glb_best) { # 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项 selected &lt;- tail(slct_opts, 1) }else{ # 否则，在“选择期”寻找第一个比“观察期最优”更好的值 for (i in seq_along(slct_opts)) { if (slct_opts[i] &gt; obs_best) { selected &lt;- slct_opts[i] break } } } # 返回是否选择了全局最优 selected == glb_best } # 执行模拟验证 ----------------------------------------------------------------- step &lt;- 0." />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="最优停止策略">
+<meta itemprop="description" content="37%法则的智慧 当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。
+核心思想 观察期：拒绝前37%的选项（仅用于建立标准）。 选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。 如果后续没有更好的，则必须接受最后一个。 为什么是37%？ 数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。
+蒙特卡洛-模拟验证 library(tidyverse) library(scales) library(furrr) set.seed(42) plan(multisession, workers = availableCores() - 1) # 创建规则函数 ----------------------------------------------------------------- # 模拟1次策略执行的过程 # 参数： # glb_nums: 全局可选项 # obs_ratio: 观察期比例（例如0.37） # 返回： # boll, 是否选到全局最优 rule_func &lt;- function(glb_opts, obs_ratio) { n &lt;- length(glb_opts) # 全局最优选项 glb_best &lt;- max(glb_opts) # “观察期”最优选项 obs_n &lt;- floor(n * obs_ratio) obs_opts &lt;- glb_opts[1:obs_n] obs_best &lt;- max(obs_opts) # “选择期”选择结果 slct_opts &lt;- glb_opts[(obs_n &#43; 1):n] if (obs_best == glb_best) { # 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项 selected &lt;- tail(slct_opts, 1) }else{ # 否则，在“选择期”寻找第一个比“观察期最优”更好的值 for (i in seq_along(slct_opts)) { if (slct_opts[i] &gt; obs_best) { selected &lt;- slct_opts[i] break } } } # 返回是否选择了全局最优 selected == glb_best } # 执行模拟验证 ----------------------------------------------------------------- step &lt;- 0."><meta itemprop="datePublished" content="2025-04-20T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2025-04-20T00:00:00+00:00" />
+<meta itemprop="wordCount" content="265">
+<meta itemprop="keywords" content="Monte-Carlo," />
+  
+  <meta property="og:title" content="最优停止策略" />
+<meta property="og:description" content="37%法则的智慧 当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。
+核心思想 观察期：拒绝前37%的选项（仅用于建立标准）。 选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。 如果后续没有更好的，则必须接受最后一个。 为什么是37%？ 数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。
+蒙特卡洛-模拟验证 library(tidyverse) library(scales) library(furrr) set.seed(42) plan(multisession, workers = availableCores() - 1) # 创建规则函数 ----------------------------------------------------------------- # 模拟1次策略执行的过程 # 参数： # glb_nums: 全局可选项 # obs_ratio: 观察期比例（例如0.37） # 返回： # boll, 是否选到全局最优 rule_func &lt;- function(glb_opts, obs_ratio) { n &lt;- length(glb_opts) # 全局最优选项 glb_best &lt;- max(glb_opts) # “观察期”最优选项 obs_n &lt;- floor(n * obs_ratio) obs_opts &lt;- glb_opts[1:obs_n] obs_best &lt;- max(obs_opts) # “选择期”选择结果 slct_opts &lt;- glb_opts[(obs_n &#43; 1):n] if (obs_best == glb_best) { # 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项 selected &lt;- tail(slct_opts, 1) }else{ # 否则，在“选择期”寻找第一个比“观察期最优”更好的值 for (i in seq_along(slct_opts)) { if (slct_opts[i] &gt; obs_best) { selected &lt;- slct_opts[i] break } } } # 返回是否选择了全局最优 selected == glb_best } # 执行模拟验证 ----------------------------------------------------------------- step &lt;- 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/rule-of-37/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2025-04-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2025-04-20T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="最优停止策略"/>
+<meta name="twitter:description" content="37%法则的智慧 当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。
+核心思想 观察期：拒绝前37%的选项（仅用于建立标准）。 选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。 如果后续没有更好的，则必须接受最后一个。 为什么是37%？ 数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。
+蒙特卡洛-模拟验证 library(tidyverse) library(scales) library(furrr) set.seed(42) plan(multisession, workers = availableCores() - 1) # 创建规则函数 ----------------------------------------------------------------- # 模拟1次策略执行的过程 # 参数： # glb_nums: 全局可选项 # obs_ratio: 观察期比例（例如0.37） # 返回： # boll, 是否选到全局最优 rule_func &lt;- function(glb_opts, obs_ratio) { n &lt;- length(glb_opts) # 全局最优选项 glb_best &lt;- max(glb_opts) # “观察期”最优选项 obs_n &lt;- floor(n * obs_ratio) obs_opts &lt;- glb_opts[1:obs_n] obs_best &lt;- max(obs_opts) # “选择期”选择结果 slct_opts &lt;- glb_opts[(obs_n &#43; 1):n] if (obs_best == glb_best) { # 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项 selected &lt;- tail(slct_opts, 1) }else{ # 否则，在“选择期”寻找第一个比“观察期最优”更好的值 for (i in seq_along(slct_opts)) { if (slct_opts[i] &gt; obs_best) { selected &lt;- slct_opts[i] break } } } # 返回是否选择了全局最优 selected == glb_best } # 执行模拟验证 ----------------------------------------------------------------- step &lt;- 0."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/rule-of-37/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">最优停止策略</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Apr 20, 2025</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="37法则的智慧">37%法则的智慧</h2>
+<p>当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。</p>
+<h3 id="核心思想">核心思想</h3>
+<ul>
+<li>观察期：拒绝前37%的选项（仅用于建立标准）。</li>
+<li>选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。</li>
+<li>如果后续没有更好的，则必须接受最后一个。</li>
+</ul>
+<p><img src="images/rule.png" alt=""></p>
+<h3 id="为什么是37">为什么是37%？</h3>
+<p>数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。</p>
+<h2 id="蒙特卡洛-模拟验证">蒙特卡洛-模拟验证</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(scales)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(furrr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">42</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plan</span>(multisession, workers <span style="color:#f92672">=</span> <span style="color:#a6e22e">availableCores</span>() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 创建规则函数 -----------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模拟1次策略执行的过程</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 参数：</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   glb_nums: 全局可选项</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   obs_ratio: 观察期比例（例如0.37）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 返回：</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#   boll, 是否选到全局最优</span>
+</span></span><span style="display:flex;"><span>rule_func <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(glb_opts, obs_ratio) {
+</span></span><span style="display:flex;"><span>  n <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">length</span>(glb_opts)
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 全局最优选项</span>
+</span></span><span style="display:flex;"><span>  glb_best <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">max</span>(glb_opts)
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># “观察期”最优选项</span>
+</span></span><span style="display:flex;"><span>  obs_n <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">floor</span>(n <span style="color:#f92672">*</span> obs_ratio)
+</span></span><span style="display:flex;"><span>  obs_opts <span style="color:#f92672">&lt;-</span> glb_opts[1<span style="color:#f92672">:</span>obs_n]
+</span></span><span style="display:flex;"><span>  obs_best <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">max</span>(obs_opts)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># “选择期”选择结果</span>
+</span></span><span style="display:flex;"><span>  slct_opts <span style="color:#f92672">&lt;-</span> glb_opts<span style="color:#a6e22e">[</span>(obs_n <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">:</span>n]
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (obs_best <span style="color:#f92672">==</span> glb_best) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项</span>
+</span></span><span style="display:flex;"><span>    selected <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tail</span>(slct_opts, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>  }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 否则，在“选择期”寻找第一个比“观察期最优”更好的值</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (i <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">seq_along</span>(slct_opts)) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (slct_opts[i] <span style="color:#f92672">&gt;</span> obs_best) {
+</span></span><span style="display:flex;"><span>        selected <span style="color:#f92672">&lt;-</span> slct_opts[i]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 返回是否选择了全局最优</span>
+</span></span><span style="display:flex;"><span>  selected <span style="color:#f92672">==</span> glb_best
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 执行模拟验证 -----------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span>step <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0.01</span> <span style="color:#75715e"># 模拟“观察期”比例的步长</span>
+</span></span><span style="display:flex;"><span>ratios <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">seq</span>(<span style="color:#ae81ff">0.01</span>, <span style="color:#ae81ff">0.99</span>, by <span style="color:#f92672">=</span> step) <span style="color:#75715e"># 模拟不同的“观察期”长度</span>
+</span></span><span style="display:flex;"><span>trials <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">100000</span> <span style="color:#75715e"># 对每个“观察期”的模拟次数</span>
+</span></span><span style="display:flex;"><span>opts <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#ae81ff">100</span> <span style="color:#75715e"># 全局选项（数字越大则代表越优）</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>res <span style="color:#f92672">&lt;-</span> ratios <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">future_map</span>(<span style="color:#f92672">~</span> {
+</span></span><span style="display:flex;"><span>    ratio <span style="color:#f92672">&lt;-</span> .x
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>trials <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">map_vec</span>(<span style="color:#f92672">~</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">rule_func</span>(glb_opts <span style="color:#f92672">=</span> <span style="color:#a6e22e">sample</span>(opts), obs_ratio <span style="color:#f92672">=</span> ratio)
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>  }, .progress <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">map_dbl</span>(mean)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>optimal_ratio <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">round</span>(ratios<span style="color:#a6e22e">[which.max</span>(res)], <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>optimal_success_rate <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">round</span>(<span style="color:#a6e22e">max</span>(res), <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 可视化 -----------------------------------------------------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">data.frame</span>(ratios <span style="color:#f92672">=</span> ratios, rate <span style="color:#f92672">=</span> res) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> ratios, y <span style="color:#f92672">=</span> rate)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_line</span>(linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;steelblue&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> optimal_ratio, lty <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;salmon&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> optimal_success_rate, lty <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>, col <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;salmon&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_x_continuous</span>(labels <span style="color:#f92672">=</span> scales<span style="color:#f92672">::</span>percent) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_y_continuous</span>(labels <span style="color:#f92672">=</span> scales<span style="color:#f92672">::</span><span style="color:#a6e22e">percent_format</span>(accuracy <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Observation Ratio&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Probability of Selecting the Best Option&#34;</span>,
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Optimal Stopping Strategy Success Rate Analysis&#34;</span>,
+</span></span><span style="display:flex;"><span>    subtitle <span style="color:#f92672">=</span> <span style="color:#a6e22e">sprintf</span>(
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">&#34;Optimal point: %.1f%% observation → %.1f%% success&#34;</span>,
+</span></span><span style="display:flex;"><span>      optimal_ratio <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>, optimal_success_rate <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/rule-of-37/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+<p>从模拟结果中看到，当选项数量为100个时，最优“观察期”长度是0.38（接近于37%），基于该“观察期”长度，选到最优选项的概率是0.372（也同样接近于37%，也许这就是&mdash;-数学之美）。</p>
+<p>37%法则的数学证明中提到：“当选项数量趋近于无穷时，最优“观察期”长度也将逼近37%(1/e)”。所以在不同选项数量的情况下，要酌情考虑是否使用37%作为“观察期”。</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/monte-carlo"
+      >Monte-Carlo</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/criminal-box/"
+      ><span>囚犯盒子问题</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2025
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

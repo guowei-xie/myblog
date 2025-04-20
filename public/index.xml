@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 10 Nov 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 20 Apr 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>最优停止策略</title>
+      <link>https://www.xiebro.cool/post/rule-of-37/</link>
+      <pubDate>Sun, 20 Apr 2025 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/rule-of-37/</guid>
+      <description>37%法则的智慧 当你面对一连串的选择（比如租房、招聘、甚至约会），如何在不回头的情况下最大化选到最佳选项的概率？最优停止理论给出了一个优雅的解决方案——37%法则。&#xA;核心思想 观察期：拒绝前37%的选项（仅用于建立标准）。 选择期：在剩下的选项中，选择第一个比观察期内所有选项都好的。 如果后续没有更好的，则必须接受最后一个。 为什么是37%？ 数学证明，当选项数量足够大时，37%（即1/e）是最优观察比例，并且能让你以约37%的概率选到最佳选项。这一策略平衡了探索（收集信息）和利用（做出选择），适用于许多现实决策场景。&#xA;蒙特卡洛-模拟验证 library(tidyverse) library(scales) library(furrr) set.seed(42) plan(multisession, workers = availableCores() - 1) # 创建规则函数 ----------------------------------------------------------------- # 模拟1次策略执行的过程 # 参数： # glb_nums: 全局可选项 # obs_ratio: 观察期比例（例如0.37） # 返回： # boll, 是否选到全局最优 rule_func &amp;lt;- function(glb_opts, obs_ratio) { n &amp;lt;- length(glb_opts) # 全局最优选项 glb_best &amp;lt;- max(glb_opts) # “观察期”最优选项 obs_n &amp;lt;- floor(n * obs_ratio) obs_opts &amp;lt;- glb_opts[1:obs_n] obs_best &amp;lt;- max(obs_opts) # “选择期”选择结果 slct_opts &amp;lt;- glb_opts[(obs_n + 1):n] if (obs_best == glb_best) { # 当全局最优结果已在“观察期”出现，则接受“选择期”的最后1个选项 selected &amp;lt;- tail(slct_opts, 1) }else{ # 否则，在“选择期”寻找第一个比“观察期最优”更好的值 for (i in seq_along(slct_opts)) { if (slct_opts[i] &amp;gt; obs_best) { selected &amp;lt;- slct_opts[i] break } } } # 返回是否选择了全局最优 selected == glb_best } # 执行模拟验证 ----------------------------------------------------------------- step &amp;lt;- 0.</description>
+    </item>
     <item>
       <title>囚犯盒子问题</title>
       <link>https://www.xiebro.cool/post/criminal-box/</link>
