@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 20 Apr 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 May 2025 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在Python中优雅调用R</title>
+      <link>https://www.xiebro.cool/post/2025-05-10-python-r/</link>
+      <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2025-05-10-python-r/</guid>
+      <description>准备 Python环境中安装rpy2包 R环境中安装lazyeval包 确认R语言安装环境目录（终端输入which R查看） Python调用R示例： import os import io import rpy2.robjects as ro ## R was initialized outside of rpy2 (R_NilValue != NULL). Trying to use it nevertheless. os.environ[&amp;#39;R_HOME&amp;#39;] = &amp;#39;/usr/local/bin/R&amp;#39; # 创建R环境 r = ro.r # 执行R代码 r(&amp;#39;&amp;#39;&amp;#39; df &amp;lt;- data.frame( x = c(1:10), y = c(1:10) ) &amp;#39;&amp;#39;&amp;#39;) # Python获取R变量 df = ro.globalenv[&amp;#39;df&amp;#39;] </description>
+    </item>
     <item>
       <title>最优停止策略</title>
       <link>https://www.xiebro.cool/post/rule-of-37/</link>
