@@ -140,7 +140,7 @@ library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showt
 每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 &#43; 噪声 实验期指标 Y（实验期完课用时）≈ 能力 &#43; 实验效应 &#43; 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped
 library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set."><meta itemprop="datePublished" content="2026-02-10T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2026-02-10T00:00:00+00:00" />
-<meta itemprop="wordCount" content="430">
+<meta itemprop="wordCount" content="443">
 <meta itemprop="keywords" content="AB test,Causal-Inference," />
   
   <meta property="og:title" content="AB实验方差缩减技术---CUPED" />
@@ -497,6 +497,15 @@ library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showt
 </span></span></code></pre></div><img src="https://www.xiebro.cool/post/ab-cuped/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" />
 <p>CUPED 在不改变组间期望差异的前提下，通过去除与实验无关的个体差异，显著降低组内方差，从而提升显著性检验的效率。</p>
 <p>“不动信号，只降噪声！”</p>
+<h2 id="三注意以下情况不可用">三、注意以下情况不可用</h2>
+<ol>
+<li>非随机分组</li>
+<li>𝑋不是实验前指标，或被实验机制影响（θ是用实验前的𝑋和实验期的𝑌做回归）</li>
+<li>幸存者偏差，只有完成实验期的人才有𝑋</li>
+<li>在组内分别估计 θ（正确做法是全样本估计）</li>
+<li>存在极端值时（建议先对 𝑋 和 𝑌 做变换，如 log）</li>
+<li>在指标波动本身小或历史指标相关性低的情况下，方差收益可能不明显</li>
+</ol>
 </section>
 
   
