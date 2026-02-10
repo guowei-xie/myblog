@@ -6,8 +6,15 @@
     <description>Recent content in Causal-Inference on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 16 Mar 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/tags/causal-inference/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AB实验方差缩减技术---CUPED</title>
+      <link>https://www.xiebro.cool/post/ab-cuped/</link>
+      <pubDate>Tue, 10 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/ab-cuped/</guid>
+      <description>CUPED（Controlled-experiment Using Pre-Experiment Data） 是一种在 A/B 实验 中利用 实验前数据 来 降低指标方差、提高统计功效 的方法。它本质上是一次 协变量调整（回归去噪）。&#xA;一、核心原理 问题背景&#xA;在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。 关键思想&#xA;如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么： X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等） 这些差异会无差别地混入实验期指标 𝑌 的噪声中 CUPED 的做法是： 把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。&#xA;二、场景示例 评估“新课程讲解方式”是否能缩短完课时间&#xA;实验目标（Y）：用户在实验期的「单元首次完课用时」 实验前指标（X）：同一用户在实验前的「历史平均完课用时」 示例设定：&#xA;每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 + 噪声 实验期指标 Y（实验期完课用时）≈ 能力 + 实验效应 + 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped&#xA;library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set.</description>
+    </item>
     <item>
       <title>结构比率归因</title>
       <link>https://www.xiebro.cool/post/twofactor/</link>

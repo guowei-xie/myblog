@@ -1,0 +1,574 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>AB实验方差缩减技术---CUPED - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="CUPED（Controlled-experiment Using Pre-Experiment Data） 是一种在 A/B 实验 中利用 实验前数据 来 降低指标方差、提高统计功效 的方法。它本质上是一次 协变量调整（回归去噪）。
+一、核心原理 问题背景
+在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。 关键思想
+如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么： X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等） 这些差异会无差别地混入实验期指标 𝑌 的噪声中 CUPED 的做法是： 把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。
+二、场景示例 评估“新课程讲解方式”是否能缩短完课时间
+实验目标（Y）：用户在实验期的「单元首次完课用时」 实验前指标（X）：同一用户在实验前的「历史平均完课用时」 示例设定：
+每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 &#43; 噪声 实验期指标 Y（实验期完课用时）≈ 能力 &#43; 实验效应 &#43; 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped
+library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set." />
+  <meta name="author" content="Package Build" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="AB实验方差缩减技术---CUPED">
+<meta itemprop="description" content="CUPED（Controlled-experiment Using Pre-Experiment Data） 是一种在 A/B 实验 中利用 实验前数据 来 降低指标方差、提高统计功效 的方法。它本质上是一次 协变量调整（回归去噪）。
+一、核心原理 问题背景
+在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。 关键思想
+如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么： X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等） 这些差异会无差别地混入实验期指标 𝑌 的噪声中 CUPED 的做法是： 把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。
+二、场景示例 评估“新课程讲解方式”是否能缩短完课时间
+实验目标（Y）：用户在实验期的「单元首次完课用时」 实验前指标（X）：同一用户在实验前的「历史平均完课用时」 示例设定：
+每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 &#43; 噪声 实验期指标 Y（实验期完课用时）≈ 能力 &#43; 实验效应 &#43; 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped
+library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set."><meta itemprop="datePublished" content="2026-02-10T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-02-10T00:00:00+00:00" />
+<meta itemprop="wordCount" content="430">
+<meta itemprop="keywords" content="AB test,Causal-Inference," />
+  
+  <meta property="og:title" content="AB实验方差缩减技术---CUPED" />
+<meta property="og:description" content="CUPED（Controlled-experiment Using Pre-Experiment Data） 是一种在 A/B 实验 中利用 实验前数据 来 降低指标方差、提高统计功效 的方法。它本质上是一次 协变量调整（回归去噪）。
+一、核心原理 问题背景
+在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。 关键思想
+如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么： X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等） 这些差异会无差别地混入实验期指标 𝑌 的噪声中 CUPED 的做法是： 把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。
+二、场景示例 评估“新课程讲解方式”是否能缩短完课时间
+实验目标（Y）：用户在实验期的「单元首次完课用时」 实验前指标（X）：同一用户在实验前的「历史平均完课用时」 示例设定：
+每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 &#43; 噪声 实验期指标 Y（实验期完课用时）≈ 能力 &#43; 实验效应 &#43; 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped
+library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/ab-cuped/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-02-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-02-10T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="AB实验方差缩减技术---CUPED"/>
+<meta name="twitter:description" content="CUPED（Controlled-experiment Using Pre-Experiment Data） 是一种在 A/B 实验 中利用 实验前数据 来 降低指标方差、提高统计功效 的方法。它本质上是一次 协变量调整（回归去噪）。
+一、核心原理 问题背景
+在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。 关键思想
+如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么： X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等） 这些差异会无差别地混入实验期指标 𝑌 的噪声中 CUPED 的做法是： 把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。
+二、场景示例 评估“新课程讲解方式”是否能缩短完课时间
+实验目标（Y）：用户在实验期的「单元首次完课用时」 实验前指标（X）：同一用户在实验前的「历史平均完课用时」 示例设定：
+每个用户有一个先天能力（不可观测） 实验前指标 X（历史完课用时）≈ 能力 &#43; 噪声 实验期指标 Y（实验期完课用时）≈ 能力 &#43; 实验效应 &#43; 噪声 实验组相对对照组 真实提升 = -2 分钟 对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped
+library(dplyr) library(tidyr) library(ggplot2) library(showtext) showtext::showtext_auto() set."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/ab-cuped/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">AB实验方差缩减技术---CUPED</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Feb 10, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>Package Build</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p><strong>CUPED（Controlled-experiment Using Pre-Experiment Data）</strong> 是一种在 <strong>A/B 实验</strong> 中利用 <strong>实验前数据</strong> 来 <strong>降低指标方差</strong>、<strong>提高统计功效</strong> 的方法。它本质上是一次 <strong>协变量调整（回归去噪）</strong>。</p>
+<h2 id="一核心原理">一、核心原理</h2>
+<ol>
+<li>问题背景<br>
+在 A/B 实验中，核心指标 𝑌（如转化率、完课用时）通常波动较大，需要更长时间或更大样本量才能检验出差异。</li>
+<li>关键思想<br>
+如果存在一个实验前的历史指标 𝑋 且它与实验期指标 𝑌 高度相关，那么：</li>
+</ol>
+<ul>
+<li>X 中包含了用户“先天差异”（活跃度、消费能力、学习能力等）</li>
+<li>这些差异会无差别地混入实验期指标 𝑌 的噪声中</li>
+</ul>
+<p>CUPED 的做法是：
+把 𝑌 中可由 𝑋 解释的那一部分“减掉”，只保留更“干净”的随机波动。</p>
+<h2 id="二场景示例">二、场景示例</h2>
+<p>评估“新课程讲解方式”是否能缩短完课时间</p>
+<ul>
+<li>实验目标（Y）：用户在实验期的「单元首次完课用时」</li>
+<li>实验前指标（X）：同一用户在实验前的「历史平均完课用时」</li>
+</ul>
+<p>示例设定：</p>
+<ul>
+<li>每个用户有一个先天能力（不可观测）</li>
+<li>实验前指标 X（历史完课用时）≈ 能力 + 噪声</li>
+<li>实验期指标 Y（实验期完课用时）≈ 能力 + 实验效应 + 噪声</li>
+<li>实验组相对对照组 真实提升 = -2 分钟</li>
+</ul>
+<p>对比：原始指标 Y vs. CUPED 调整后指标 Y_cuped</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(dplyr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(ggplot2)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(showtext)
+</span></span><span style="display:flex;"><span>showtext<span style="color:#f92672">::</span><span style="color:#a6e22e">showtext_auto</span>()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">123</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. 构造模拟数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span>n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(
+</span></span><span style="display:flex;"><span>  user_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>n,
+</span></span><span style="display:flex;"><span>  group <span style="color:#f92672">=</span> <span style="color:#a6e22e">sample</span>(<span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;control&#34;</span>, <span style="color:#e6db74">&#34;treat&#34;</span>), n, replace <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用户先天能力（不可观测）</span>
+</span></span><span style="display:flex;"><span>ability <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(n, mean <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>, sd <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 实验前指标 X</span>
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">$</span>X <span style="color:#f92672">&lt;-</span> ability <span style="color:#f92672">+</span> <span style="color:#a6e22e">rnorm</span>(n, sd <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 实验真实效果（treat 缩短 1）</span>
+</span></span><span style="display:flex;"><span>treatment_effect <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ifelse</span>(df<span style="color:#f92672">$</span>group <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;treat&#34;</span>, <span style="color:#ae81ff">-2</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 实验期指标 Y</span>
+</span></span><span style="display:flex;"><span>df<span style="color:#f92672">$</span>Y <span style="color:#f92672">&lt;-</span> ability <span style="color:#f92672">+</span> treatment_effect <span style="color:#f92672">+</span> <span style="color:#a6e22e">rnorm</span>(n, sd <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. CUPED 调整</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span>theta <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">cov</span>(df<span style="color:#f92672">$</span>Y, df<span style="color:#f92672">$</span>X) <span style="color:#f92672">/</span> <span style="color:#a6e22e">var</span>(df<span style="color:#f92672">$</span>X)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 或者使用线性回归：</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># model &lt;- lm(Y ~ X, data = df)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># theta &lt;- coef(model)[&#34;X&#34;]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">&lt;-</span> df <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
+</span></span><span style="display:flex;"><span>    Y_cuped <span style="color:#f92672">=</span> Y <span style="color:#f92672">-</span> theta <span style="color:#f92672">*</span> (X <span style="color:#f92672">-</span> <span style="color:#a6e22e">mean</span>(X))
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3.1 数值结果对比（打印）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span>summary_tbl <span style="color:#f92672">&lt;-</span> df <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">group_by</span>(group) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">summarise</span>(
+</span></span><span style="display:flex;"><span>    mean_Y <span style="color:#f92672">=</span> <span style="color:#a6e22e">mean</span>(Y),
+</span></span><span style="display:flex;"><span>    var_Y  <span style="color:#f92672">=</span> <span style="color:#a6e22e">var</span>(Y),
+</span></span><span style="display:flex;"><span>    mean_Y_cuped <span style="color:#f92672">=</span> <span style="color:#a6e22e">mean</span>(Y_cuped),
+</span></span><span style="display:flex;"><span>    var_Y_cuped  <span style="color:#f92672">=</span> <span style="color:#a6e22e">var</span>(Y_cuped),
+</span></span><span style="display:flex;"><span>    .groups <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;drop&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(<span style="color:#a6e22e">across</span>(<span style="color:#a6e22e">where</span>(is.numeric), round, <span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>knitr<span style="color:#f92672">::</span><span style="color:#a6e22e">kable</span>(summary_tbl, caption <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A/B 组指标对比（原始 vs CUPED）&#34;</span>, format <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;html&#34;</span>)
+</span></span></code></pre></div><table>
+<caption><span id="tab:unnamed-chunk-1"></span>Table 1: A/B 组指标对比（原始 vs CUPED）</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> group </th>
+   <th style="text-align:right;"> mean_Y </th>
+   <th style="text-align:right;"> var_Y </th>
+   <th style="text-align:right;"> mean_Y_cuped </th>
+   <th style="text-align:right;"> var_Y_cuped </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> control </td>
+   <td style="text-align:right;"> 49.88 </td>
+   <td style="text-align:right;"> 205.86 </td>
+   <td style="text-align:right;"> 49.88 </td>
+   <td style="text-align:right;"> 116.38 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> treat </td>
+   <td style="text-align:right;"> 48.38 </td>
+   <td style="text-align:right;"> 187.12 </td>
+   <td style="text-align:right;"> 48.38 </td>
+   <td style="text-align:right;"> 114.74 </td>
+  </tr>
+</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3.2 显著性检验（Raw vs CUPED）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 原始指标 t 检验</span>
+</span></span><span style="display:flex;"><span>t_raw <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">t.test</span>(
+</span></span><span style="display:flex;"><span>  Y <span style="color:#f92672">~</span> group,
+</span></span><span style="display:flex;"><span>  data <span style="color:#f92672">=</span> df
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># CUPED 指标 t 检验</span>
+</span></span><span style="display:flex;"><span>t_cuped <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">t.test</span>(
+</span></span><span style="display:flex;"><span>  Y_cuped <span style="color:#f92672">~</span> group,
+</span></span><span style="display:flex;"><span>  data <span style="color:#f92672">=</span> df
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pval_tbl <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(
+</span></span><span style="display:flex;"><span>  metric <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Raw&#34;</span>, <span style="color:#e6db74">&#34;CUPED&#34;</span>),
+</span></span><span style="display:flex;"><span>  mean_diff <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">diff</span>(t_raw<span style="color:#f92672">$</span>estimate),
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">diff</span>(t_cuped<span style="color:#f92672">$</span>estimate)
+</span></span><span style="display:flex;"><span>  ),
+</span></span><span style="display:flex;"><span>  p_value <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(
+</span></span><span style="display:flex;"><span>    t_raw<span style="color:#f92672">$</span>p.value,
+</span></span><span style="display:flex;"><span>    t_cuped<span style="color:#f92672">$</span>p.value
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
+</span></span><span style="display:flex;"><span>    mean_diff <span style="color:#f92672">=</span> <span style="color:#a6e22e">round</span>(mean_diff, <span style="color:#ae81ff">3</span>),
+</span></span><span style="display:flex;"><span>    p_value <span style="color:#f92672">=</span> <span style="color:#a6e22e">signif</span>(p_value, <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>knitr<span style="color:#f92672">::</span><span style="color:#a6e22e">kable</span>(
+</span></span><span style="display:flex;"><span>  pval_tbl,
+</span></span><span style="display:flex;"><span>  caption <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;显著性检验结果对比（Raw vs CUPED）&#34;</span>,
+</span></span><span style="display:flex;"><span>  format <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;html&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><table>
+<caption><span id="tab:unnamed-chunk-1"></span>Table 1: 显著性检验结果对比（Raw vs CUPED）</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> metric </th>
+   <th style="text-align:right;"> mean_diff </th>
+   <th style="text-align:right;"> p_value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Raw </td>
+   <td style="text-align:right;"> -1.501 </td>
+   <td style="text-align:right;"> 0.0908 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> CUPED </td>
+   <td style="text-align:right;"> -1.506 </td>
+   <td style="text-align:right;"> 0.0270 </td>
+  </tr>
+</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 4. 可视化 ：整体分布对比</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -----------------------------</span>
+</span></span><span style="display:flex;"><span>df <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">select</span>(group, Y, Y_cuped) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">pivot_longer</span>(
+</span></span><span style="display:flex;"><span>    cols <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(Y, Y_cuped),
+</span></span><span style="display:flex;"><span>    names_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;metric&#34;</span>,
+</span></span><span style="display:flex;"><span>    values_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;value&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
+</span></span><span style="display:flex;"><span>    metric <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(
+</span></span><span style="display:flex;"><span>      metric,
+</span></span><span style="display:flex;"><span>      levels <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Y&#34;</span>, <span style="color:#e6db74">&#34;Y_cuped&#34;</span>),
+</span></span><span style="display:flex;"><span>      labels <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Raw&#34;</span>, <span style="color:#e6db74">&#34;CUPED&#34;</span>)
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(x <span style="color:#f92672">=</span> group, y <span style="color:#f92672">=</span> value, fill <span style="color:#f92672">=</span> group)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_boxplot</span>(
+</span></span><span style="display:flex;"><span>    width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.6</span>,
+</span></span><span style="display:flex;"><span>    outlier.alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">facet_wrap</span>(<span style="color:#f92672">~</span> metric) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(
+</span></span><span style="display:flex;"><span>    title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;原始指标 vs CUPED 调整后指标分布对比&#34;</span>,
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>    y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;完课用时&#34;</span>
+</span></span><span style="display:flex;"><span>  ) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_minimal</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/ab-cuped/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" />
+<p>CUPED 在不改变组间期望差异的前提下，通过去除与实验无关的个体差异，显著降低组内方差，从而提升显著性检验的效率。</p>
+<p>“不动信号，只降噪声！”</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ab-test"
+      >AB test</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/causal-inference"
+      >Causal-Inference</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2025-05-10-python-r/"
+      ><span>在Python中优雅调用R</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>
