@@ -6,8 +6,15 @@
     <description>Recent content in R on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 10 Feb 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 25 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/categories/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>岭回归、Lasso回归和弹性网络</title>
+      <link>https://www.xiebro.cool/post/2026-02-25-lasso/</link>
+      <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2026-02-25-lasso/</guid>
+      <description>岭回归（Ridge）、LASSO回归（Lasso）和弹性网络（ElasticNet）都是带正则化（regularization）的线性回归方法，核心目的是：解决多重共线性、过拟合，并控制模型复杂度。&#xA;它们的区别本质在于：对模型参数施加不同的惩罚方式。&#xA;在线教育场景下，我们经常需要回答这样的问题：哪些学习行为真正影响用户成绩？哪些只是噪声？&#xA;普通线性回归在这种场景下往往表现不稳定，而正则化回归（Ridge / LASSO / Elastic Net）正是为此设计。&#xA;场景假设 假设，我们需要通过用户在平台上的行为来预测其最终考试成绩（score），用户行为特征如下：&#xA;特征 含义 study_time 学习时长 video_watch 视频观看量 practice_rate 练习完成度 login_days 登录天数 homework_score 作业成绩 数据集 模拟 我们构造一个包含潜在学习能力的模拟数据。&#xA;让study_time与video_watch高度相关、部分变量对成绩无真实贡献、并且存在噪声。&#xA;library(tidyverse) set.seed(123) n &amp;lt;- 500 # 潜在学习能力（不可观测） ability &amp;lt;- rnorm(n) # 构造相关特征 study_time &amp;lt;- 10 + 3*ability + rnorm(n) video_watch &amp;lt;- study_time*0.8 + rnorm(n, 0, 0.5) practice_rate &amp;lt;- 0.6*ability + rnorm(n, 0, 0.8) login_days &amp;lt;- 5 + 1.5*ability + rnorm(n) homework_score &amp;lt;- 70 + 10*ability + rnorm(n, 0, 3) # 真实成绩（只有部分变量真正影响） score &amp;lt;- 60 + 4*study_time + 2*practice_rate + 3*homework_score + rnorm(n, 0, 10) df &amp;lt;- data.</description>
+    </item>
     <item>
       <title>AB实验方差缩减技术---CUPED</title>
       <link>https://www.xiebro.cool/post/ab-cuped/</link>

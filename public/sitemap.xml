@@ -3,7 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/machine-learning/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/model/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/r/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/2026-02-25-lasso/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/ab-test/</loc>
     <lastmod>2026-02-10T00:00:00+00:00</lastmod>
@@ -11,19 +32,7 @@
     <loc>https://www.xiebro.cool/post/ab-cuped/</loc>
     <lastmod>2026-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/categories/</loc>
-    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/causal-inference/</loc>
-    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/r/</loc>
-    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2026-02-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2026-02-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2025-05-10-python-r/</loc>
@@ -68,9 +77,6 @@
     <loc>https://www.xiebro.cool/post/kullback-leibler/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/machine-learning/</loc>
-    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/post/2024-05-25-p-value/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -93,9 +99,6 @@
     <lastmod>2024-04-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/mtp-did/</loc>
-    <lastmod>2024-04-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/model/</loc>
     <lastmod>2024-04-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2024-04-02-bootstrap-did/</loc>
