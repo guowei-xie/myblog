@@ -1,0 +1,521 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>基于IRT的习题推荐系统构思 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="背景 简单讲，就是我们要把“⽤⼾能⼒”与“题⽬难度”建⽴在同⼀把标尺下，从⽽实现“人题自动匹配”的系统。
+例如：能⼒为 0.7 的⽤⼾ → 推荐难度为 0.7 的题⽬； 能⼒和难度不是简单的分为“⾼、中、低”，⽽是相同数轴下可⽐较的“连续值”。 解决什么问题？
+优化用户体验：调节用户做题难度（实现千人千题） 评估教学效果：使教学效果量化可比 优化题库：为题目建立优化指标（难度/区分度） 简单介绍一下IRT模型 IRT（Item ResponseTheory，项目反应理论）是一种在心理测量与教育评估领域广泛使用的概率模型，用于刻画用户作答结果与其潜在能力之间的关系。
+核心思想是：用户是否答对一道题，既取决于题目的难度，也取决于用户的能力；模型能够同时对两者进行估计。
+结合我们的业务场景，可利用历史作答样本离线训练模型，对新作答用户在线预测。
+训练模型可以得到以下关键参数：
+用户潜在能力（θ）：个体未直接观测到的能力指标，例如数学能力、理解能力 题目参数（a/b/c）： 难度（b）：题目所要求的能力阈值，θ=b时答对概率为50% 区分度（a）：题目对能力差异的敏感程度，a越大，题目越能区分高、低能力个体 猜题率（c）：能力极低的用户仍能答对该题的概率（主要用于选择题场景）
+基于3PL模型，某个体答对某题目的概率可表示为： $$ P(\text{答对}\mid\theta)=c&#43;(1-c)\frac{1}{1&#43;e^{-a(\theta-b)}} $$
+补充解释： 难度(b)与区分度(a)的区别？ 难度指的是题目有多难（谁能做对），区分度指的是题目有多会“分人”（强弱差异有多明显）。
+题目 低能力正确率 高能力正确率 结论 2 &#43; 3 = ? 95% 99% 难度低，区分度低 12 × 17 = ? 30% 80% 难度中等，区分度高 微积分证明题 2% 10% 难度高，区分度低 注意模型局限性：
+由于IRT模型有局限性和风险，所以不能“拿来就用”，需要通过系统设计来规避
+基于局部独立假设：题目作答相互独立，作答顺序不影响正确率； 需要大样本稳定估计：新题无足够作答样本，导致参数估计不稳定； 选择带来的样本偏差：对不同能力用户有选择性的推题，会导致样本选择偏差，不能直接用来训练迭代模型； θ不是绝对能力：是相对尺度，与题库绑定，不同题库的θ不可直接比较。 通过系统设计规避 如何解决样本有偏?
+当系统持续根据难度b≈能力θ推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样； 因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。 如何解决新题参数估计？
+问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。" />
+  <meta name="author" content="R Build" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="基于IRT的习题推荐系统构思">
+<meta itemprop="description" content="背景 简单讲，就是我们要把“⽤⼾能⼒”与“题⽬难度”建⽴在同⼀把标尺下，从⽽实现“人题自动匹配”的系统。
+例如：能⼒为 0.7 的⽤⼾ → 推荐难度为 0.7 的题⽬； 能⼒和难度不是简单的分为“⾼、中、低”，⽽是相同数轴下可⽐较的“连续值”。 解决什么问题？
+优化用户体验：调节用户做题难度（实现千人千题） 评估教学效果：使教学效果量化可比 优化题库：为题目建立优化指标（难度/区分度） 简单介绍一下IRT模型 IRT（Item ResponseTheory，项目反应理论）是一种在心理测量与教育评估领域广泛使用的概率模型，用于刻画用户作答结果与其潜在能力之间的关系。
+核心思想是：用户是否答对一道题，既取决于题目的难度，也取决于用户的能力；模型能够同时对两者进行估计。
+结合我们的业务场景，可利用历史作答样本离线训练模型，对新作答用户在线预测。
+训练模型可以得到以下关键参数：
+用户潜在能力（θ）：个体未直接观测到的能力指标，例如数学能力、理解能力 题目参数（a/b/c）： 难度（b）：题目所要求的能力阈值，θ=b时答对概率为50% 区分度（a）：题目对能力差异的敏感程度，a越大，题目越能区分高、低能力个体 猜题率（c）：能力极低的用户仍能答对该题的概率（主要用于选择题场景）
+基于3PL模型，某个体答对某题目的概率可表示为： $$ P(\text{答对}\mid\theta)=c&#43;(1-c)\frac{1}{1&#43;e^{-a(\theta-b)}} $$
+补充解释： 难度(b)与区分度(a)的区别？ 难度指的是题目有多难（谁能做对），区分度指的是题目有多会“分人”（强弱差异有多明显）。
+题目 低能力正确率 高能力正确率 结论 2 &#43; 3 = ? 95% 99% 难度低，区分度低 12 × 17 = ? 30% 80% 难度中等，区分度高 微积分证明题 2% 10% 难度高，区分度低 注意模型局限性：
+由于IRT模型有局限性和风险，所以不能“拿来就用”，需要通过系统设计来规避
+基于局部独立假设：题目作答相互独立，作答顺序不影响正确率； 需要大样本稳定估计：新题无足够作答样本，导致参数估计不稳定； 选择带来的样本偏差：对不同能力用户有选择性的推题，会导致样本选择偏差，不能直接用来训练迭代模型； θ不是绝对能力：是相对尺度，与题库绑定，不同题库的θ不可直接比较。 通过系统设计规避 如何解决样本有偏?
+当系统持续根据难度b≈能力θ推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样； 因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。 如何解决新题参数估计？
+问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。"><meta itemprop="datePublished" content="2026-03-05T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-03-05T00:00:00+00:00" />
+<meta itemprop="wordCount" content="119">
+<meta itemprop="keywords" content="" />
+  
+  <meta property="og:title" content="基于IRT的习题推荐系统构思" />
+<meta property="og:description" content="背景 简单讲，就是我们要把“⽤⼾能⼒”与“题⽬难度”建⽴在同⼀把标尺下，从⽽实现“人题自动匹配”的系统。
+例如：能⼒为 0.7 的⽤⼾ → 推荐难度为 0.7 的题⽬； 能⼒和难度不是简单的分为“⾼、中、低”，⽽是相同数轴下可⽐较的“连续值”。 解决什么问题？
+优化用户体验：调节用户做题难度（实现千人千题） 评估教学效果：使教学效果量化可比 优化题库：为题目建立优化指标（难度/区分度） 简单介绍一下IRT模型 IRT（Item ResponseTheory，项目反应理论）是一种在心理测量与教育评估领域广泛使用的概率模型，用于刻画用户作答结果与其潜在能力之间的关系。
+核心思想是：用户是否答对一道题，既取决于题目的难度，也取决于用户的能力；模型能够同时对两者进行估计。
+结合我们的业务场景，可利用历史作答样本离线训练模型，对新作答用户在线预测。
+训练模型可以得到以下关键参数：
+用户潜在能力（θ）：个体未直接观测到的能力指标，例如数学能力、理解能力 题目参数（a/b/c）： 难度（b）：题目所要求的能力阈值，θ=b时答对概率为50% 区分度（a）：题目对能力差异的敏感程度，a越大，题目越能区分高、低能力个体 猜题率（c）：能力极低的用户仍能答对该题的概率（主要用于选择题场景）
+基于3PL模型，某个体答对某题目的概率可表示为： $$ P(\text{答对}\mid\theta)=c&#43;(1-c)\frac{1}{1&#43;e^{-a(\theta-b)}} $$
+补充解释： 难度(b)与区分度(a)的区别？ 难度指的是题目有多难（谁能做对），区分度指的是题目有多会“分人”（强弱差异有多明显）。
+题目 低能力正确率 高能力正确率 结论 2 &#43; 3 = ? 95% 99% 难度低，区分度低 12 × 17 = ? 30% 80% 难度中等，区分度高 微积分证明题 2% 10% 难度高，区分度低 注意模型局限性：
+由于IRT模型有局限性和风险，所以不能“拿来就用”，需要通过系统设计来规避
+基于局部独立假设：题目作答相互独立，作答顺序不影响正确率； 需要大样本稳定估计：新题无足够作答样本，导致参数估计不稳定； 选择带来的样本偏差：对不同能力用户有选择性的推题，会导致样本选择偏差，不能直接用来训练迭代模型； θ不是绝对能力：是相对尺度，与题库绑定，不同题库的θ不可直接比较。 通过系统设计规避 如何解决样本有偏?
+当系统持续根据难度b≈能力θ推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样； 因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。 如何解决新题参数估计？
+问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2026-03-05-irt/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-03-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-03-05T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="基于IRT的习题推荐系统构思"/>
+<meta name="twitter:description" content="背景 简单讲，就是我们要把“⽤⼾能⼒”与“题⽬难度”建⽴在同⼀把标尺下，从⽽实现“人题自动匹配”的系统。
+例如：能⼒为 0.7 的⽤⼾ → 推荐难度为 0.7 的题⽬； 能⼒和难度不是简单的分为“⾼、中、低”，⽽是相同数轴下可⽐较的“连续值”。 解决什么问题？
+优化用户体验：调节用户做题难度（实现千人千题） 评估教学效果：使教学效果量化可比 优化题库：为题目建立优化指标（难度/区分度） 简单介绍一下IRT模型 IRT（Item ResponseTheory，项目反应理论）是一种在心理测量与教育评估领域广泛使用的概率模型，用于刻画用户作答结果与其潜在能力之间的关系。
+核心思想是：用户是否答对一道题，既取决于题目的难度，也取决于用户的能力；模型能够同时对两者进行估计。
+结合我们的业务场景，可利用历史作答样本离线训练模型，对新作答用户在线预测。
+训练模型可以得到以下关键参数：
+用户潜在能力（θ）：个体未直接观测到的能力指标，例如数学能力、理解能力 题目参数（a/b/c）： 难度（b）：题目所要求的能力阈值，θ=b时答对概率为50% 区分度（a）：题目对能力差异的敏感程度，a越大，题目越能区分高、低能力个体 猜题率（c）：能力极低的用户仍能答对该题的概率（主要用于选择题场景）
+基于3PL模型，某个体答对某题目的概率可表示为： $$ P(\text{答对}\mid\theta)=c&#43;(1-c)\frac{1}{1&#43;e^{-a(\theta-b)}} $$
+补充解释： 难度(b)与区分度(a)的区别？ 难度指的是题目有多难（谁能做对），区分度指的是题目有多会“分人”（强弱差异有多明显）。
+题目 低能力正确率 高能力正确率 结论 2 &#43; 3 = ? 95% 99% 难度低，区分度低 12 × 17 = ? 30% 80% 难度中等，区分度高 微积分证明题 2% 10% 难度高，区分度低 注意模型局限性：
+由于IRT模型有局限性和风险，所以不能“拿来就用”，需要通过系统设计来规避
+基于局部独立假设：题目作答相互独立，作答顺序不影响正确率； 需要大样本稳定估计：新题无足够作答样本，导致参数估计不稳定； 选择带来的样本偏差：对不同能力用户有选择性的推题，会导致样本选择偏差，不能直接用来训练迭代模型； θ不是绝对能力：是相对尺度，与题库绑定，不同题库的θ不可直接比较。 通过系统设计规避 如何解决样本有偏?
+当系统持续根据难度b≈能力θ推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样； 因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。 如何解决新题参数估计？
+问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。"/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2026-03-05-irt/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">基于IRT的习题推荐系统构思</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Mar 5, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>R Build</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="背景">背景</h2>
+<p>简单讲，就是我们要把“⽤⼾能⼒”与“题⽬难度”建⽴在同⼀把标尺下，从⽽实现“人题自动匹配”的系统。</p>
+<ul>
+<li>例如：能⼒为 0.7 的⽤⼾ → 推荐难度为 0.7 的题⽬；</li>
+<li>能⼒和难度不是简单的分为“⾼、中、低”，⽽是相同数轴下可⽐较的“连续值”。</li>
+</ul>
+<p>解决什么问题？</p>
+<ul>
+<li>优化用户体验：调节用户做题难度（实现千人千题）</li>
+<li>评估教学效果：使教学效果量化可比</li>
+<li>优化题库：为题目建立优化指标（难度/区分度）</li>
+</ul>
+<h2 id="简单介绍一下irt模型">简单介绍一下IRT模型</h2>
+<p>IRT（Item ResponseTheory，项目反应理论）是一种在心理测量与教育评估领域广泛使用的概率模型，用于刻画用户作答结果与其潜在能力之间的关系。<br>
+<strong>核心思想是</strong>：用户是否答对一道题，既取决于题目的难度，也取决于用户的能力；模型能够同时对两者进行估计。</p>
+<p>结合我们的业务场景，可利用历史作答样本离线训练模型，对新作答用户在线预测。<br>
+<img src="images/overview.jpg" alt=""></p>
+<p>训练模型可以得到以下关键参数：</p>
+<ul>
+<li><strong>用户潜在能力（θ）</strong>：个体未直接观测到的能力指标，例如数学能力、理解能力</li>
+<li><strong>题目参数（a/b/c）</strong>：
+<ul>
+<li>难度（b）：题目所要求的能力阈值，θ=b时答对概率为50%</li>
+<li>区分度（a）：题目对能力差异的敏感程度，a越大，题目越能区分高、低能力个体</li>
+<li>猜题率（c）：能力极低的用户仍能答对该题的概率（主要用于选择题场景）<br>
+基于3PL模型，某个体答对某题目的概率可表示为：</li>
+</ul>
+</li>
+</ul>
+<p>$$
+P(\text{答对}\mid\theta)=c+(1-c)\frac{1}{1+e^{-a(\theta-b)}}
+$$</p>
+<p><img src="images/diff.jpg" alt=""></p>
+<p><strong>补充解释</strong>：
+难度(b)与区分度(a)的区别？
+难度指的是题目有多难（谁能做对），区分度指的是题目有多会“分人”（强弱差异有多明显）。</p>
+<table>
+<thead>
+<tr>
+<th>题目</th>
+<th>低能力正确率</th>
+<th>高能力正确率</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 + 3 = ?</td>
+<td>95%</td>
+<td>99%</td>
+<td><strong>难度低，区分度低</strong></td>
+</tr>
+<tr>
+<td>12 × 17 = ?</td>
+<td>30%</td>
+<td>80%</td>
+<td><strong>难度中等，区分度高</strong></td>
+</tr>
+<tr>
+<td>微积分证明题</td>
+<td>2%</td>
+<td>10%</td>
+<td><strong>难度高，区分度低</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意模型局限性</strong>：<br>
+<em>由于IRT模型有局限性和风险，所以不能“拿来就用”，需要通过系统设计来规避</em></p>
+<ul>
+<li>基于<strong>局部独立假设</strong>：题目作答相互独立，作答顺序不影响正确率；</li>
+<li>需要<strong>大样本稳定估计</strong>：新题无足够作答样本，导致参数估计不稳定；</li>
+<li>选择带来的<strong>样本偏差</strong>：对不同能力用户有选择性的推题，会导致样本选择偏差，不能直接用来训练迭代模型；</li>
+<li>θ不是<strong>绝对能力</strong>：是相对尺度，与题库绑定，不同题库的θ不可直接比较。</li>
+</ul>
+<h2 id="通过系统设计规避">通过系统设计规避</h2>
+<p><strong>如何解决样本有偏?</strong></p>
+<ul>
+<li>当系统持续根据<strong>难度b≈能力θ</strong>推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样；</li>
+<li>因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。</li>
+</ul>
+<p><img src="images/sys.jpg" alt=""></p>
+<p><strong>如何解决新题参数估计？</strong></p>
+<p>问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。</p>
+<ul>
+<li>
+<p>新题上线时，由教研配置参数或系统默认初值，作为贝叶斯先验；<br>
+（考虑到课程制作老师不具有建模经验，所以配置时要提供直觉标签，比如：简单、中等、困难，以此映射b先验分布）<br>
+$$
+b \sim N(\mu_0, \sigma_0^2)
+$$</p>
+</li>
+<li>
+<p>随样本量积累，对参数进行贝叶斯更新（先验主导 → 逐渐数据主导 →  参数自然收敛）；</p>
+</li>
+</ul>
+<p>Step1.将新题与旧题样本一起训练模型，得到新题MLE 难度估计$b_\text{MLE}$<br>
+Step2.结合先验，做贝叶斯 MAP 更新：<br>
+$$
+b_{\text{MAP}} = \frac{\sigma_0^2}{\sigma_{\text{MLE}}^2 + \sigma_0^2} b_{\text{MLE}} + \frac{\sigma_{\text{MLE}}^2}{\sigma_{\text{MLE}}^2 + \sigma_0^2} \mu_0
+$$
+<img src="images/bys.jpg" alt=""></p>
+<p>问题2：新题需要更快的采样，因此要概率倾斜（高权重 → 逐渐降低 → 趋于稳定）。<br>
+$$
+W_j = \frac{1}{1+\alpha \log(1 + n_j)}
+$$
+<img src="images/w.jpg" alt=""></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2026-02-25-lasso/"
+      ><span>岭回归、Lasso回归和弹性网络</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>
