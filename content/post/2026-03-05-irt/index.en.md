@@ -91,5 +91,204 @@ W_j = \frac{1}{1+\alpha \log(1 + n_j)}
 $$
 ![](images/w.jpg)
 
+## Demo
 
+
+``` r
+library(mirt)
+library(dplyr)
+library(tidyr)
+```
+
+
+``` r
+# 一、模拟用户作答数据
+# 假设：
+# 500 个用户
+# 30 道题目
+# 使用 3PL模型生成作答数据 
+
+set.seed(123)
+
+n_user <- 500
+n_item <- 30
+
+# 用户能力
+theta <- rnorm(n_user, 0, 1)
+
+# 题目参数
+a <- runif(n_item, 0.5, 2)      # 区分度
+b <- rnorm(n_item, 0, 1)        # 难度
+c <- runif(n_item, 0, 0.25)     # 猜题率
+
+# 模拟作答结果
+response_matrix <- matrix(0, n_user, n_item)
+
+for(i in 1:n_user){
+  for(j in 1:n_item){
+    
+    p <- c[j] + (1 - c[j]) /
+      (1 + exp(-a[j] * (theta[i] - b[j])))
+    
+    response_matrix[i,j] <- rbinom(1,1,p)
+    
+  }
+}
+
+# Convert to data frame with column names
+response_df <- as.data.frame(response_matrix)
+colnames(response_df) <- paste0("Item_", 1:n_item)
+head(response_df[1:10])
+```
+
+```
+##   Item_1 Item_2 Item_3 Item_4 Item_5 Item_6 Item_7 Item_8 Item_9 Item_10
+## 1      1      0      1      1      0      0      1      1      0       0
+## 2      0      1      1      0      1      0      1      0      1       0
+## 3      1      1      1      1      1      1      1      1      1       1
+## 4      1      0      0      1      1      1      1      0      1       1
+## 5      1      1      1      1      0      0      1      1      1       1
+## 6      1      1      1      1      1      1      1      1      1       1
+```
+
+``` r
+# 二、训练IRT模型
+model <- mirt(response_df,
+              model = 1,
+              itemtype = "3PL")
+
+# 题目参数
+item_param <- coef(model, IRTpars = TRUE, simplify = TRUE)$items
+head(item_param)
+```
+
+```
+##                a          b            g u
+## Item_1 1.0477618 -0.2515579 0.2906541741 1
+## Item_2 1.3650349 -0.1511028 0.0005653079 1
+## Item_3 0.6484016  0.1811232 0.0084633382 1
+## Item_4 1.9829753 -0.7579012 0.2192744895 1
+## Item_5 1.1689408 -0.8213291 0.0005377403 1
+## Item_6 1.2722048  1.0213948 0.2169061711 1
+```
+
+``` r
+# 三、估计用户能力 θ
+# 当新用户做完几道题后，可以估计其能力
+theta_est <- fscores(model)
+head(theta_est)
+```
+
+```
+##               F1
+## [1,] -0.54745791
+## [2,] -0.74272147
+## [3,]  1.43268727
+## [4,] -0.05135097
+## [5,]  0.36252749
+## [6,]  1.93857589
+```
+
+``` r
+# 四、题目推荐逻辑
+# 推荐原则：推荐难度接近用户能力的题目
+recommend_item <- function(theta_user, item_param, k = 5){
+  
+  # Convert matrix to data frame for dplyr operations
+  item_df <- as.data.frame(item_param)
+  
+  item_df |>
+    mutate(diff = abs(b - theta_user)) |>
+    arrange(diff) |>
+    slice(1:k)
+  
+}
+
+recommend_item(theta_est[1], item_param)
+```
+
+```
+##                 a          b            g u       diff
+## Item_24 1.1456504 -0.4761928 0.1948695010 1 0.07126507
+## Item_26 0.9756254 -0.4279209 0.0024932911 1 0.11953704
+## Item_9  0.6078766 -0.7101584 0.0038371831 1 0.16270054
+## Item_4  1.9829753 -0.7579012 0.2192744895 1 0.21044331
+## Item_27 1.1661338 -0.7636724 0.0004771388 1 0.21621445
+```
+
+``` r
+# 五、探索机制（避免样本偏差）
+recommend_with_explore <- function(theta_user,
+                                   item_param,
+                                   explore_rate = 0.1){
+  
+  if(runif(1) < explore_rate){
+    
+    # 随机探索
+    sample(1:nrow(item_param),1)
+    
+  }else{
+    
+    # 能力匹配推荐
+    which.min(abs(item_param$b - theta_user))
+    
+  }
+}
+```
+
+
+``` r
+# 六、新题参数冷启动及MAP更新
+# 先验标签：简单 = -1，中等 = 0，困难 = 1
+# b ~ N(μ0, σ0²)
+mu0 <- 0
+sigma0 <- 1
+
+# 当新题有少量样本后，可以得到：b_MLE
+# 然后进行贝叶斯更新：
+update_b_map <- function(b_mle,
+                         sigma_mle,
+                         mu0,
+                         sigma0){
+  
+  b_map <- (sigma0^2 / (sigma_mle^2 + sigma0^2)) * b_mle +
+           (sigma_mle^2 / (sigma_mle^2 + sigma0^2)) * mu0
+  
+  return(b_map)
+}
+
+# 示例：
+update_b_map(
+  b_mle = 0.6,
+  sigma_mle = 0.5,
+  mu0 = 0,
+  sigma0 = 1
+)
+```
+
+```
+## [1] 0.48
+```
+
+``` r
+# 八、新题探索权重机制
+explore_weight <- function(nj, alpha = 0.5){
+  
+  1 / (1 + alpha * log(1 + nj))
+  
+}
+
+data.frame(
+  sample_count = c(0,10,50,200),
+  weight = explore_weight(c(0,10,50,200))
+)
+```
+
+```
+##   sample_count    weight
+## 1            0 1.0000000
+## 2           10 0.4547630
+## 3           50 0.3371643
+## 4          200 0.2738486
+```
 

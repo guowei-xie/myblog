@@ -189,7 +189,7 @@
 当系统持续根据难度b≈能力θ推荐题目，就会产生有偏样本，为了使模型可迭代，就需要定期无偏采样； 因此设计“随机探索”机制，有概率$e$会进行随机选题，以此生产无偏样本。 如何解决新题参数估计？
 问题1：新题上线缺乏作答数据，不能稳定估计难度(b)，因此对参数b做渐进式估计(先验初始化 → 探索采样 → 贝叶斯更新 → 参数收敛) 。"><meta itemprop="datePublished" content="2026-03-05T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2026-03-05T00:00:00+00:00" />
-<meta itemprop="wordCount" content="119">
+<meta itemprop="wordCount" content="613">
 <meta itemprop="keywords" content="" />
   
   <meta property="og:title" content="基于IRT的习题推荐系统构思" />
@@ -460,7 +460,162 @@ $$
 W_j = \frac{1}{1+\alpha \log(1 + n_j)}
 $$
 <img src="images/w.jpg" alt=""></p>
-</section>
+<h2 id="demo">Demo</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(mirt)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(dplyr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyr)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 一、模拟用户作答数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 假设：</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 500 个用户</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 30 道题目</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 使用 3PL模型生成作答数据 </span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">123</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>n_user <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">500</span>
+</span></span><span style="display:flex;"><span>n_item <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">30</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 用户能力</span>
+</span></span><span style="display:flex;"><span>theta <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(n_user, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 题目参数</span>
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">runif</span>(n_item, <span style="color:#ae81ff">0.5</span>, <span style="color:#ae81ff">2</span>)      <span style="color:#75715e"># 区分度</span>
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(n_item, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)        <span style="color:#75715e"># 难度</span>
+</span></span><span style="display:flex;"><span>c <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">runif</span>(n_item, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.25</span>)     <span style="color:#75715e"># 猜题率</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模拟作答结果</span>
+</span></span><span style="display:flex;"><span>response_matrix <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">matrix</span>(<span style="color:#ae81ff">0</span>, n_user, n_item)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>n_user){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(j <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>n_item){
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    p <span style="color:#f92672">&lt;-</span> c[j] <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> c[j]) <span style="color:#f92672">/</span>
+</span></span><span style="display:flex;"><span>      (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">exp</span>(<span style="color:#f92672">-</span>a[j] <span style="color:#f92672">*</span> (theta[i] <span style="color:#f92672">-</span> b[j])))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    response_matrix[i,j] <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rbinom</span>(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>,p)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Convert to data frame with column names</span>
+</span></span><span style="display:flex;"><span>response_df <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">as.data.frame</span>(response_matrix)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">colnames</span>(response_df) <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">paste0</span>(<span style="color:#e6db74">&#34;Item_&#34;</span>, <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>n_item)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">head</span>(response_df[1<span style="color:#f92672">:</span><span style="color:#ae81ff">10</span>])
+</span></span></code></pre></div><pre tabindex="0"><code>##   Item_1 Item_2 Item_3 Item_4 Item_5 Item_6 Item_7 Item_8 Item_9 Item_10
+## 1      1      0      1      1      0      0      1      1      0       0
+## 2      0      1      1      0      1      0      1      0      1       0
+## 3      1      1      1      1      1      1      1      1      1       1
+## 4      1      0      0      1      1      1      1      0      1       1
+## 5      1      1      1      1      0      0      1      1      1       1
+## 6      1      1      1      1      1      1      1      1      1       1
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 二、训练IRT模型</span>
+</span></span><span style="display:flex;"><span>model <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mirt</span>(response_df,
+</span></span><span style="display:flex;"><span>              model <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>              itemtype <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;3PL&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 题目参数</span>
+</span></span><span style="display:flex;"><span>item_param <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">coef</span>(model, IRTpars <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>, simplify <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)<span style="color:#f92672">$</span>items
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">head</span>(item_param)
+</span></span></code></pre></div><pre tabindex="0"><code>##                a          b            g u
+## Item_1 1.0477618 -0.2515579 0.2906541741 1
+## Item_2 1.3650349 -0.1511028 0.0005653079 1
+## Item_3 0.6484016  0.1811232 0.0084633382 1
+## Item_4 1.9829753 -0.7579012 0.2192744895 1
+## Item_5 1.1689408 -0.8213291 0.0005377403 1
+## Item_6 1.2722048  1.0213948 0.2169061711 1
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 三、估计用户能力 θ</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 当新用户做完几道题后，可以估计其能力</span>
+</span></span><span style="display:flex;"><span>theta_est <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">fscores</span>(model)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">head</span>(theta_est)
+</span></span></code></pre></div><pre tabindex="0"><code>##               F1
+## [1,] -0.54745791
+## [2,] -0.74272147
+## [3,]  1.43268727
+## [4,] -0.05135097
+## [5,]  0.36252749
+## [6,]  1.93857589
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 四、题目推荐逻辑</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 推荐原则：推荐难度接近用户能力的题目</span>
+</span></span><span style="display:flex;"><span>recommend_item <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(theta_user, item_param, k <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>){
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Convert matrix to data frame for dplyr operations</span>
+</span></span><span style="display:flex;"><span>  item_df <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">as.data.frame</span>(item_param)
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  item_df <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(diff <span style="color:#f92672">=</span> <span style="color:#a6e22e">abs</span>(b <span style="color:#f92672">-</span> theta_user)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">arrange</span>(diff) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slice</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>k)
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">recommend_item</span>(theta_est[1], item_param)
+</span></span></code></pre></div><pre tabindex="0"><code>##                 a          b            g u       diff
+## Item_24 1.1456504 -0.4761928 0.1948695010 1 0.07126507
+## Item_26 0.9756254 -0.4279209 0.0024932911 1 0.11953704
+## Item_9  0.6078766 -0.7101584 0.0038371831 1 0.16270054
+## Item_4  1.9829753 -0.7579012 0.2192744895 1 0.21044331
+## Item_27 1.1661338 -0.7636724 0.0004771388 1 0.21621445
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 五、探索机制（避免样本偏差）</span>
+</span></span><span style="display:flex;"><span>recommend_with_explore <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(theta_user,
+</span></span><span style="display:flex;"><span>                                   item_param,
+</span></span><span style="display:flex;"><span>                                   explore_rate <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>){
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">runif</span>(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">&lt;</span> explore_rate){
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 随机探索</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sample</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#a6e22e">nrow</span>(item_param),<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>  }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 能力匹配推荐</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">which.min</span>(<span style="color:#a6e22e">abs</span>(item_param<span style="color:#f92672">$</span>b <span style="color:#f92672">-</span> theta_user))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 六、新题参数冷启动及MAP更新</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 先验标签：简单 = -1，中等 = 0，困难 = 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># b ~ N(μ0, σ0²)</span>
+</span></span><span style="display:flex;"><span>mu0 <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>sigma0 <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 当新题有少量样本后，可以得到：b_MLE</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 然后进行贝叶斯更新：</span>
+</span></span><span style="display:flex;"><span>update_b_map <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(b_mle,
+</span></span><span style="display:flex;"><span>                         sigma_mle,
+</span></span><span style="display:flex;"><span>                         mu0,
+</span></span><span style="display:flex;"><span>                         sigma0){
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  b_map <span style="color:#f92672">&lt;-</span> (sigma0^2 <span style="color:#f92672">/</span> (sigma_mle^2 <span style="color:#f92672">+</span> sigma0^2)) <span style="color:#f92672">*</span> b_mle <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>           (sigma_mle^2 <span style="color:#f92672">/</span> (sigma_mle^2 <span style="color:#f92672">+</span> sigma0^2)) <span style="color:#f92672">*</span> mu0
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span>(b_map)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 示例：</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">update_b_map</span>(
+</span></span><span style="display:flex;"><span>  b_mle <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.6</span>,
+</span></span><span style="display:flex;"><span>  sigma_mle <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5</span>,
+</span></span><span style="display:flex;"><span>  mu0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>  sigma0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre tabindex="0"><code>## [1] 0.48
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 八、新题探索权重机制</span>
+</span></span><span style="display:flex;"><span>explore_weight <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(nj, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.5</span>){
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> alpha <span style="color:#f92672">*</span> <span style="color:#a6e22e">log</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> nj))
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">data.frame</span>(
+</span></span><span style="display:flex;"><span>  sample_count <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">50</span>,<span style="color:#ae81ff">200</span>),
+</span></span><span style="display:flex;"><span>  weight <span style="color:#f92672">=</span> <span style="color:#a6e22e">explore_weight</span>(<span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">50</span>,<span style="color:#ae81ff">200</span>))
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><pre tabindex="0"><code>##   sample_count    weight
+## 1            0 1.0000000
+## 2           10 0.4547630
+## 3           50 0.3371643
+## 4          200 0.2738486
+</code></pre></section>
 
   
   
