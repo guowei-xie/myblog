@@ -1,0 +1,728 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>对组织拥抱AI的一些思考 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="Part.1 关于大年初一，我在养膘，老板在养虾🦞这件事。
+我感觉我们可能真的要全面拥抱 AI 了。
+这一个月以来，我一直在想一个问题：
+我们公司到底该怎么拥抱 AI？
+这个问题很大，也很容易说空，比如：
+&ldquo;先做提效的，再搞创新的&rdquo; &ldquo;业务觉得有用就做，先让大家都用起来&rdquo; &ldquo;得做公司战略级的AI项目&rdquo; 之前我们也做过大大小的尝试，比如：
+用AI扫描各业务班型的数据表现，做归因分析 用AI为销售提供高效的物料检索工具 用AI做质检&hellip; 这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：&ldquo;AI能替代我们干什么？&rdquo;。
+假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？
+我的判断是：不一定。
+甚至很多情况下，它只会更快地重复原来的问题。
+因为&quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&quot;这句话，其实隐含了一个前提：
+&ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&rdquo;
+但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。
+如果这个问题没想清楚，&ldquo;全面拥抱AI&quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。
+所以，要拥抱 AI，我认为最先该问的是 &ldquo;一个岗位存在的原因是什么？&rdquo;
+因为很多岗位职能，未必是&quot;核心价值本身&rdquo;，而可能只是&quot;旧组织形态下的补丁&quot;。
+比如我们的班主任，表面上他的工作可能包括：
+加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&hellip;
+可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。
+从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。
+但如果再往下问一步，&ldquo;这个岗位的组织价值是什么？&quot;，答案肯定不是&quot;做这些动作&rdquo;。
+而是：&ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&rdquo;
+这就完全不一样了，视角切换后很多事情就变了：
+有些动作可以被替代（比如辅导答疑） 有些动作应该被重构（比如固化的 SOP、电访框架） 有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子） 还有一些原本依赖人经验的判断，其实应该上移为系统能力 最后一类，我认为是最值得 AI 切入的地方。 比如：面对这样的用户，我应该怎么做，才有可能让他续报？
+所以，我们最先要问的不该是 &ldquo;AI 能帮我们做什么&rdquo;，
+而是 &ldquo;我们这家公司，真正是靠什么活着的&rdquo;。
+再具体一点：
+&ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&rdquo;。
+&ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&rdquo;
+&ldquo;哪些能力依然值得保留在人身上？&rdquo;
+Part.2 我老婆的工作是&quot;卖飞书&quot;，
+所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。
+很多公司做 AI 时，天然会从&quot;覆盖面最大&quot;的地方切入。
+比如：知识问答、日报总结、流程自动化&hellip;因为这些地方**&ldquo;看起来最好推&rdquo;**。" />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="对组织拥抱AI的一些思考">
+<meta itemprop="description" content="Part.1 关于大年初一，我在养膘，老板在养虾🦞这件事。
+我感觉我们可能真的要全面拥抱 AI 了。
+这一个月以来，我一直在想一个问题：
+我们公司到底该怎么拥抱 AI？
+这个问题很大，也很容易说空，比如：
+&ldquo;先做提效的，再搞创新的&rdquo; &ldquo;业务觉得有用就做，先让大家都用起来&rdquo; &ldquo;得做公司战略级的AI项目&rdquo; 之前我们也做过大大小的尝试，比如：
+用AI扫描各业务班型的数据表现，做归因分析 用AI为销售提供高效的物料检索工具 用AI做质检&hellip; 这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：&ldquo;AI能替代我们干什么？&rdquo;。
+假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？
+我的判断是：不一定。
+甚至很多情况下，它只会更快地重复原来的问题。
+因为&quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&quot;这句话，其实隐含了一个前提：
+&ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&rdquo;
+但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。
+如果这个问题没想清楚，&ldquo;全面拥抱AI&quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。
+所以，要拥抱 AI，我认为最先该问的是 &ldquo;一个岗位存在的原因是什么？&rdquo;
+因为很多岗位职能，未必是&quot;核心价值本身&rdquo;，而可能只是&quot;旧组织形态下的补丁&quot;。
+比如我们的班主任，表面上他的工作可能包括：
+加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&hellip;
+可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。
+从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。
+但如果再往下问一步，&ldquo;这个岗位的组织价值是什么？&quot;，答案肯定不是&quot;做这些动作&rdquo;。
+而是：&ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&rdquo;
+这就完全不一样了，视角切换后很多事情就变了：
+有些动作可以被替代（比如辅导答疑） 有些动作应该被重构（比如固化的 SOP、电访框架） 有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子） 还有一些原本依赖人经验的判断，其实应该上移为系统能力 最后一类，我认为是最值得 AI 切入的地方。 比如：面对这样的用户，我应该怎么做，才有可能让他续报？
+所以，我们最先要问的不该是 &ldquo;AI 能帮我们做什么&rdquo;，
+而是 &ldquo;我们这家公司，真正是靠什么活着的&rdquo;。
+再具体一点：
+&ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&rdquo;。
+&ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&rdquo;
+&ldquo;哪些能力依然值得保留在人身上？&rdquo;
+Part.2 我老婆的工作是&quot;卖飞书&quot;，
+所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。
+很多公司做 AI 时，天然会从&quot;覆盖面最大&quot;的地方切入。
+比如：知识问答、日报总结、流程自动化&hellip;因为这些地方**&ldquo;看起来最好推&rdquo;**。"><meta itemprop="datePublished" content="2026-05-25T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-05-25T00:00:00+00:00" />
+<meta itemprop="wordCount" content="318">
+<meta itemprop="keywords" content="AI,Organization,Sales," />
+  
+  <meta property="og:title" content="对组织拥抱AI的一些思考" />
+<meta property="og:description" content="Part.1 关于大年初一，我在养膘，老板在养虾🦞这件事。
+我感觉我们可能真的要全面拥抱 AI 了。
+这一个月以来，我一直在想一个问题：
+我们公司到底该怎么拥抱 AI？
+这个问题很大，也很容易说空，比如：
+&ldquo;先做提效的，再搞创新的&rdquo; &ldquo;业务觉得有用就做，先让大家都用起来&rdquo; &ldquo;得做公司战略级的AI项目&rdquo; 之前我们也做过大大小的尝试，比如：
+用AI扫描各业务班型的数据表现，做归因分析 用AI为销售提供高效的物料检索工具 用AI做质检&hellip; 这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：&ldquo;AI能替代我们干什么？&rdquo;。
+假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？
+我的判断是：不一定。
+甚至很多情况下，它只会更快地重复原来的问题。
+因为&quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&quot;这句话，其实隐含了一个前提：
+&ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&rdquo;
+但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。
+如果这个问题没想清楚，&ldquo;全面拥抱AI&quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。
+所以，要拥抱 AI，我认为最先该问的是 &ldquo;一个岗位存在的原因是什么？&rdquo;
+因为很多岗位职能，未必是&quot;核心价值本身&rdquo;，而可能只是&quot;旧组织形态下的补丁&quot;。
+比如我们的班主任，表面上他的工作可能包括：
+加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&hellip;
+可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。
+从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。
+但如果再往下问一步，&ldquo;这个岗位的组织价值是什么？&quot;，答案肯定不是&quot;做这些动作&rdquo;。
+而是：&ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&rdquo;
+这就完全不一样了，视角切换后很多事情就变了：
+有些动作可以被替代（比如辅导答疑） 有些动作应该被重构（比如固化的 SOP、电访框架） 有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子） 还有一些原本依赖人经验的判断，其实应该上移为系统能力 最后一类，我认为是最值得 AI 切入的地方。 比如：面对这样的用户，我应该怎么做，才有可能让他续报？
+所以，我们最先要问的不该是 &ldquo;AI 能帮我们做什么&rdquo;，
+而是 &ldquo;我们这家公司，真正是靠什么活着的&rdquo;。
+再具体一点：
+&ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&rdquo;。
+&ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&rdquo;
+&ldquo;哪些能力依然值得保留在人身上？&rdquo;
+Part.2 我老婆的工作是&quot;卖飞书&quot;，
+所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。
+很多公司做 AI 时，天然会从&quot;覆盖面最大&quot;的地方切入。
+比如：知识问答、日报总结、流程自动化&hellip;因为这些地方**&ldquo;看起来最好推&rdquo;**。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/embrace-ai-org/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-05-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-05-25T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="对组织拥抱AI的一些思考"/>
+<meta name="twitter:description" content="Part.1 关于大年初一，我在养膘，老板在养虾🦞这件事。
+我感觉我们可能真的要全面拥抱 AI 了。
+这一个月以来，我一直在想一个问题：
+我们公司到底该怎么拥抱 AI？
+这个问题很大，也很容易说空，比如：
+&ldquo;先做提效的，再搞创新的&rdquo; &ldquo;业务觉得有用就做，先让大家都用起来&rdquo; &ldquo;得做公司战略级的AI项目&rdquo; 之前我们也做过大大小的尝试，比如：
+用AI扫描各业务班型的数据表现，做归因分析 用AI为销售提供高效的物料检索工具 用AI做质检&hellip; 这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：&ldquo;AI能替代我们干什么？&rdquo;。
+假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？
+我的判断是：不一定。
+甚至很多情况下，它只会更快地重复原来的问题。
+因为&quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&quot;这句话，其实隐含了一个前提：
+&ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&rdquo;
+但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。
+如果这个问题没想清楚，&ldquo;全面拥抱AI&quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。
+所以，要拥抱 AI，我认为最先该问的是 &ldquo;一个岗位存在的原因是什么？&rdquo;
+因为很多岗位职能，未必是&quot;核心价值本身&rdquo;，而可能只是&quot;旧组织形态下的补丁&quot;。
+比如我们的班主任，表面上他的工作可能包括：
+加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&hellip;
+可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。
+从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。
+但如果再往下问一步，&ldquo;这个岗位的组织价值是什么？&quot;，答案肯定不是&quot;做这些动作&rdquo;。
+而是：&ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&rdquo;
+这就完全不一样了，视角切换后很多事情就变了：
+有些动作可以被替代（比如辅导答疑） 有些动作应该被重构（比如固化的 SOP、电访框架） 有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子） 还有一些原本依赖人经验的判断，其实应该上移为系统能力 最后一类，我认为是最值得 AI 切入的地方。 比如：面对这样的用户，我应该怎么做，才有可能让他续报？
+所以，我们最先要问的不该是 &ldquo;AI 能帮我们做什么&rdquo;，
+而是 &ldquo;我们这家公司，真正是靠什么活着的&rdquo;。
+再具体一点：
+&ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&rdquo;。
+&ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&rdquo;
+&ldquo;哪些能力依然值得保留在人身上？&rdquo;
+Part.2 我老婆的工作是&quot;卖飞书&quot;，
+所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。
+很多公司做 AI 时，天然会从&quot;覆盖面最大&quot;的地方切入。
+比如：知识问答、日报总结、流程自动化&hellip;因为这些地方**&ldquo;看起来最好推&rdquo;**。"/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/embrace-ai-org/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">对组织拥抱AI的一些思考</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>May 25, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="part1">Part.1</h2>
+<p>关于大年初一，我在养膘，老板在养虾🦞这件事。</p>
+<p>我感觉我们可能真的要全面拥抱 AI 了。</p>
+<p>这一个月以来，我一直在想一个问题：</p>
+<p><strong>我们公司到底该怎么拥抱 AI？</strong></p>
+<p>这个问题很大，也很容易说空，比如：</p>
+<ul>
+<li>&ldquo;先做提效的，再搞创新的&rdquo;</li>
+<li>&ldquo;业务觉得有用就做，先让大家都用起来&rdquo;</li>
+<li>&ldquo;得做公司战略级的AI项目&rdquo;</li>
+</ul>
+<p>之前我们也做过大大小的尝试，比如：</p>
+<ul>
+<li>用AI扫描各业务班型的数据表现，做归因分析</li>
+<li>用AI为销售提供高效的物料检索工具</li>
+<li>用AI做质检&hellip;</li>
+</ul>
+<p>这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：<strong>&ldquo;AI能替代我们干什么？&rdquo;</strong>。</p>
+<p>假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？</p>
+<p>我的判断是：<strong>不一定。</strong></p>
+<p>甚至很多情况下，它只会<strong>更快地重复原来的问题</strong>。</p>
+<p>因为&quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&quot;这句话，其实隐含了一个前提：</p>
+<p><strong>&ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&rdquo;</strong></p>
+<p>但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。</p>
+<p>如果这个问题没想清楚，&ldquo;全面拥抱AI&quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。</p>
+<p>所以，要拥抱 AI，我认为最先该问的是 <strong>&ldquo;一个岗位存在的原因是什么？&rdquo;</strong></p>
+<p>因为很多岗位职能，未必是&quot;核心价值本身&rdquo;，而可能只是&quot;旧组织形态下的补丁&quot;。</p>
+<p>比如我们的班主任，表面上他的工作可能包括：</p>
+<p>加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&hellip;</p>
+<blockquote>
+<p>可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。</p>
+</blockquote>
+<p>从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。</p>
+<p>但如果再往下问一步，&ldquo;这个岗位的组织价值是什么？&quot;，答案肯定不是&quot;做这些动作&rdquo;。</p>
+<p>而是：<strong>&ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&rdquo;</strong></p>
+<p>这就完全不一样了，视角切换后很多事情就变了：</p>
+<ul>
+<li>有些动作可以被替代（比如辅导答疑）</li>
+<li>有些动作应该被重构（比如固化的 SOP、电访框架）</li>
+<li>有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子）</li>
+<li>还有一些原本依赖人经验的判断，其实应该上移为<strong>系统能力</strong></li>
+</ul>
+<blockquote>
+<p>最后一类，我认为是<strong>最值得 AI 切入的地方。</strong>
+比如：面对这样的用户，我应该怎么做，才有可能让他续报？</p>
+</blockquote>
+<p>所以，我们最先要问的不该是 <strong>&ldquo;AI 能帮我们做什么&rdquo;</strong>，</p>
+<p>而是 <strong>&ldquo;我们这家公司，真正是靠什么活着的&rdquo;。</strong></p>
+<p>再具体一点：</p>
+<p><strong>&ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&rdquo;。</strong></p>
+<p><strong>&ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&rdquo;</strong></p>
+<p><strong>&ldquo;哪些能力依然值得保留在人身上？&rdquo;</strong></p>
+<h2 id="part2">Part.2</h2>
+<p>我老婆的工作是&quot;卖飞书&quot;，</p>
+<p>所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。</p>
+<p>很多公司做 AI 时，天然会从&quot;覆盖面最大&quot;的地方切入。</p>
+<p>比如：知识问答、日报总结、流程自动化&hellip;因为这些地方**&ldquo;看起来最好推&rdquo;**。</p>
+<p>她的客户希望快点被 AI 带飞，她希望她的客户快点燃烧 Token 付费，两者一拍即合、场面和谐&hellip;</p>
+<p>当然，并不是说这些东西没价值，它们确实能带来效率提升，也能帮公司建立用 AI 的习惯。</p>
+<p>但问题在于：</p>
+<p><strong>这类需求之所以最容易推进，往往不是因为它们最重要，而是因为它们最安全，</strong></p>
+<p>因此很少能真正触碰到公司的**&ldquo;核心价值创造环节&rdquo;**。</p>
+<p>所以，组织真正该 AI 的地方，不是&quot;大家都能碰到的地方&quot;，</p>
+<p>而是：<strong>&ldquo;最接近价值创造的地方&rdquo;。</strong></p>
+<p>更直白一点：<strong>&ldquo;我们公司最核心的钱，是怎么赚出来的？&rdquo;</strong></p>
+<blockquote>
+<p>市场获客？销售转化？课导服务？内容产品？</p>
+</blockquote>
+<p>真正值得优先 AI 的地方，往往不是&quot;最通用&quot;的地方，</p>
+<p>而是 <strong>&ldquo;最接近核心结果，同时又最依赖人脑经验的地方。&rdquo;</strong></p>
+<p>这很关键，因为一个环节如果同时满足下面几个条件：</p>
+<ul>
+<li>高频发生</li>
+<li>投入大量人力</li>
+<li>高度依赖经验判断</li>
+<li>不同人之间表现差异巨大</li>
+<li>做得好坏会显著影响结果</li>
+</ul>
+<p>那它几乎天然就是 AI 最值得切入的地方。</p>
+<p>所以，我认为组织要拥抱 AI ，不该先从&quot;哪里最容易做&quot;开始，</p>
+<p>而应该从这个问题开始：</p>
+<p><strong>&ldquo;我们公司最值钱的那部分结果，是靠哪些人用经验顶出来的？&rdquo;</strong></p>
+<p>这个问题的答案，很可能就是组织 AI 路线图真正的起点。</p>
+<p>而如果把这个框架套回我司，我会觉得：</p>
+<p><strong>最优先的切入点，很可能就是销售转化环节</strong>（当然，年课复购本质上也算销售转化）。</p>
+<h2 id="part3">Part.3</h2>
+<p>销售从来不缺高手（比如 sd 这条鲶鱼🐟）。</p>
+<p>一条鲶鱼确实能激活一潭水，但如果鲶鱼的能耐只能属于它自己，那么组织能力的上限，就永远卡在两件事上：</p>
+<ul>
+<li>下一条鲶鱼什么时候出现</li>
+<li>以及它愿意待多久</li>
+</ul>
+<p>所以，如果高手的经验可以被&quot;复刻&quot;，组织能力的上限，理论上就有可能被突破。</p>
+<p>&ldquo;复刻&quot;这个词也不太准确，高手真正的价值，往往不在于他做了什么标准动作，</p>
+<p>而在于他能在极短时间里，基于潜意识中的大量模糊信号，做出微妙但正确的判断和决策。</p>
+<p>这种能力，很难用线性的 SOP 封装。</p>
+<p>但反过来说，这种&quot;不可说&quot;的经验，恰恰是组织能力最脆弱的地方，也是 AI 最可能建立壁垒的地方。</p>
+<p><strong>AI 擅长的是从高维、模糊的数据里，找到人类能隐约感知但没法清晰表述的模式。</strong></p>
+<blockquote>
+<p>很多组织真正的问题，从来都不是&quot;没有高手&rdquo;，而是：</p>
+<ul>
+<li>少数人很强，但整体不稳定</li>
+<li>好经验只能口口相传，无法沉淀</li>
+<li>新人上手慢，中腰部波动大</li>
+<li>很多关键判断无法复盘</li>
+<li>好结果出现了，但说不清为什么</li>
+</ul>
+</blockquote>
+<p>所以，真正值得切入的方向，也许不是&quot;让 AI 去学销售 Top 的标准动作&quot;，</p>
+<p><strong>而是用 AI 把销售 Top 们的&quot;潜意识&quot;，集体外化出来。</strong></p>
+<p>把高手凭感觉做对的事，拆成组织可以系统做对的事。</p>
+<p>而 AI 在这里最有价值的地方，不是替人做事，而是帮组织完成一件<strong>以前不可能做到的事</strong>。</p>
+<p>这是一个非常大的分水岭。</p>
+<p>因为一旦做到这一步，AI 就不再只是工具了，它开始参与组织能力本身的形成。</p>
+<blockquote>
+<p>到这里我突然想起来，3 年前公司举办的 AI Hackathon 比赛，我们的夺冠项目《销售副驾-金点子助手》。</p>
+<p>它的功能很简单，就是在销售与用户沟通时，右侧实时弹出跟进建议和话术参考。</p>
+<p>虽然当时技术受限，实现得比较&quot;画饼&quot;，但大家对这个产品的理念是极度认可的。</p>
+<p>现在回头看，我们当时其实已经模模糊糊指向了一个很核心的需求：销售需要的不是事后复盘，而是<strong>实时、在线的决策支持。</strong></p>
+<p>三年前画出的那张饼，或许正是今天 AI 该去真正烙熟的那一张。</p>
+</blockquote>
+<h2 id="part4">Part.4</h2>
+<p>我那次 CT 轮岗的时候，</p>
+<p>跟着组长群里的 SOP 走，一天要轰炸二三十条消息给用户。</p>
+<p>我当时看着那堆模板，第一反应是&quot;发这些 TMD 有啥用？我不发&quot;，</p>
+<p>但转念一想：&ldquo;万一，就因为我发了这一条，他就报了呢？&rdquo;</p>
+<p>那个&quot;万一&quot;，</p>
+<p>背后藏着的其实是一种判断的无力感——<strong>在信息不足时，我们往往用&quot;动作的勤奋&quot;，去掩盖&quot;判断的懒惰&quot;。</strong></p>
+<p>这恰恰点出了很多 AI 项目不温不火的核心：它们没有进入<strong>业务最关键的判断环节。</strong></p>
+<p>这点很重要，</p>
+<p>因为现实里，大多数组织真正稀缺的，不是&quot;执行动作&quot;，而是：</p>
+<p><strong>在不确定中作对判断。</strong></p>
+<p>比如：</p>
+<ul>
+<li>这个用户值不值得继续投入，哪个用户更该先去跟进？</li>
+<li>用户讲的需求是真需求还是在敷衍我？</li>
+<li>这个节点最该推进的，是信任、价格，还是紧迫感？</li>
+<li>现在什么话不能说？什么时机才能报价？</li>
+</ul>
+<p>这些问题之所以值钱，不是因为它们多复杂，而是因为它们决定了后续资源该往哪里走。</p>
+<p><strong>&ldquo;把有限的人力、时间和注意力，放在更值得的地方。&rdquo;</strong></p>
+<p>所以，真正能带来改变的 AI，它不是提供&quot;答案参考&quot;，而是进入**&ldquo;动作分配&rdquo;。**</p>
+<p>也就是说，它开始影响：</p>
+<ul>
+<li>谁先做</li>
+<li>做什么</li>
+<li>不做什么</li>
+<li>怎么做</li>
+<li>为什么这么做</li>
+</ul>
+<p>这个时候， AI 才算是&quot;长进业务里&quot;。</p>
+<p>而且我认为，第一阶段最容易打赢的，不是让高手更强，而是 <strong>让那些普通销售，更稳定的做出不那么差的判断。</strong></p>
+<blockquote>
+<p>🐂 这听起来不是很性感，但很重要，毕竟我们是一家&quot;劳动密集型&quot;企业，服从正态分布🐴</p>
+</blockquote>
+<p>这件事一旦成立，组织可能就会发生一个很本质的变化：<strong>从&quot;靠少数人兜底&quot;，变成&quot;靠系统托底&quot;。</strong></p>
+<p>与此同时，销售管理本身也应该被重构，从管理&quot;努力程度&quot;，逐渐转向管理&quot;判断质量&quot;。</p>
+<h2 id="part5">Part.5</h2>
+<p>《王者荣耀》现在有一个 AI 陪伴功能（好像叫&quot;灵宝&quot;），</p>
+<p>它会主动提醒我：&ldquo;对面出了某件装备，要不要针对性克制出装？&rdquo;</p>
+<p>甚至还顺手给我一个<strong>一键预购方案</strong>。</p>
+<p>这游戏我玩了很多年，但是菜得很稳定。</p>
+<p>因为我从来没打算去研究那些复杂的装备属性、克制关系和版本细节。</p>
+<p>在我认知里，这都是资深玩家或沉迷的人才会干的事。</p>
+<p>但这个功能很有意思，它并没有替我&quot;玩游戏&quot;，也没有直接把我变成高手。</p>
+<p>它做的事情其实很朴素：</p>
+<p><strong>在我最容易做错判断的那个瞬间，给我一个足够靠谱的建议，并且为我提供了一个&quot;Next Best Action&quot;。</strong></p>
+<p>这其实就是一种非常典型的 AI 嵌入方式。</p>
+<p>它把&quot;原本只有高手才会在意的判断&quot;，在合适的时机、合适的上下文里，递到了我面前，</p>
+<p>并且提供了一个 <strong>&ldquo;最佳动作&rdquo;</strong>。</p>
+<p>一个普通销售，可能不是不会说话，也不是不努力，而问题往往出在：</p>
+<ul>
+<li>他不知道眼前这个用户到底值不值得追</li>
+<li>他不知道这个节点最该推进的是信任、价格还是紧迫感</li>
+<li>他不知道用户嘴上说&quot;再考虑一下&quot;，到底是真的犹豫，还是已经礼貌性退出</li>
+<li>他不知道，此时最该做的，可能不是&quot;继续跟&quot;，而是&quot;先别烦他&quot;</li>
+</ul>
+<p>这时候，如果系统能像&quot;游戏陪伴&quot;一样，在关键节点给出提示：</p>
+<ul>
+<li>这个用户当前更像&quot;高意向但低信任&quot;，先别急着报价</li>
+<li>这个用户近三次互动明显降温，不建议继续密集触达</li>
+<li>这个用户对&quot;成绩提升&quot;不敏感，但对&quot;家长陪伴焦虑&quot;反应明显</li>
+<li>当前最优动作不是打电话，而是发一条更贴近他具体问题的消息</li>
+</ul>
+<p>那它带来的价值，就远远不是提效工具那么简单了。</p>
+<p>因为它不是在替代执行，而是在<strong>重塑判断的分布</strong>。</p>
+<p>原本只有 Top 销售能做对的事，开始变成中腰部也能更稳定地做对，</p>
+<p>原本很多只能靠悟性和感觉吃饭的地方，开始被系统一点点接住。</p>
+<p>这其实很像给业务装上了一个 <strong>&ldquo;实时陪伴系统&rdquo;，</strong></p>
+<p>不是一个&quot;等你来问&quot;的工具，而是一个在 <strong>关键节点主动出现的&quot;业务副驾&quot;。</strong></p>
+<p>它不一定永远正确，但只要它能让大量普通人在大量关键节点上：</p>
+<p>少犯一点错、少浪费一点资源、少做一点无效动作&hellip;</p>
+<p>组织层面的收益就会非常可怕。</p>
+<p>因为对于&quot;正态分布型&quot;业务来说，</p>
+<p>真正决定结果的，很多时候不是&quot;有没有超级高手&quot;，而是<strong>平均水平能不能被系统性抬高。</strong></p>
+<p>如果我们的销售真的能拥有这样一个&quot;副驾&quot;，</p>
+<p>它带来的变化，可能会有点像今天程序员对 Claude Code 的依赖——<strong>很多原本高度依赖经验和能力的工作，开始变得&quot;只要有基础，就能做出不错结果&quot;。</strong></p>
+<h2 id="part6">Part.6</h2>
+<p>如果一个想法不能被落地，那就又变成了假大空。</p>
+<p>所以问题来了——</p>
+<p>前面饼也画了、坑也挖了，我们到底要怎么把这件事落下来？</p>
+<p>如果在以前，我肯定会这么做（实际上也这么做了）：</p>
+<ul>
+<li>先把销冠的话术、物料整理出来</li>
+<li>切片到向量数据库</li>
+<li>接上聊天记录、用户画像、订单信息</li>
+<li>然后做一个&quot;销售助手&quot;页面/应用（实际叫&quot;销冠助手&quot;）</li>
+<li>最后让大家&quot;试着用起来&quot;</li>
+</ul>
+<p>这一套思路不能说错，
+但它最大的问题是：<strong>它默认销售会主动来问，并且大概知道自己在什么时候要问什么。</strong></p>
+<p>所以，这套思路，本质上更像&quot;培优&quot;逻辑，因此不太可能系统性抬高平均水平。</p>
+<p>真正需要被托住的，往往不是那批已经知道&quot;什么时候、该问什么&quot;的人。</p>
+<p>所以，我得重新思考，如果真要做一个&quot;销售副驾&quot;，第一版 PRD 该长成什么样？</p>
+<blockquote>
+<p>这里先抛开技术层面的分析（技术方面我不擅长，如果有可能，我再找专业的人帮做补充），
+现在就先以一个产品运营的视角去看这件事。</p>
+</blockquote>
+<p>首先，得要有明确的产品定位：
+<strong>销售副驾 = 在销售关键节点，基于用户状态与上下文，主动给出更接近 Top Sales 判断的建议系统。</strong></p>
+<p>销售关键节点有很多，在我们的销售链路中有：</p>
+<p>加微、首电、催课、回访挖需、异议处理、续报关单&hellip;等等</p>
+<p>（当然，肯定也有人会说&quot;整个流程都很关键&quot;）</p>
+<p>但我觉得第一版一定要克制，选择一个点先切入，最好选择符合：</p>
+<ul>
+<li>频次高</li>
+<li>做对了很值钱，做错了很伤</li>
+<li>很吃个人经验</li>
+</ul>
+<p>这些条件的节点。然后就是 <strong>&ldquo;只做副驾，不做代驾&rdquo;</strong>。</p>
+<p>另外，还有一个非常重要的点：<strong>必须能够反馈闭环</strong>。</p>
+<p>因为副驾的核心价值不在于&quot;第一版多准&quot;，而在于<strong>它能不能持续变得更准</strong>。</p>
+<p>如果系统给出的建议，销售采纳了或没采纳、采纳之后用户的反应是什么、最终是否推进到了下一节点……这些信号都能回流到系统里，那它就具备了&quot;越用越懂这家公司&quot;的能力。</p>
+<p>反过来，如果只输出建议、不接收反馈，那它本质上还是一个&quot;看起来更聪明的话术库&quot;——很快就会被业务边缘化。</p>
+<p>所以第一版的最低标准，应该是这三件事同时跑通：</p>
+<ol>
+<li>在一个明确的关键节点，能给出<strong>具体动作建议</strong>（不只是话术参考）</li>
+<li>销售能用最低的成本<strong>给一个反馈</strong>（采纳 / 调整 / 忽略，最好附一句为什么）</li>
+<li>这些反馈能沉淀回系统，影响下一次的建议</li>
+</ol>
+<p>只要这条最小闭环跑起来，后面的事情就有了复利。</p>
+<h2 id="写在最后">写在最后</h2>
+<p>这篇东西越写越多，本来是想梳理一下自己最近的一些零散想法，结果一不小心就写成了一份&quot;自言自语版的产品观&quot;😅。</p>
+<p>总结下来其实就一句话：</p>
+<blockquote>
+<p><strong>拥抱 AI，不是问&quot;AI 能替我们做什么&quot;，而是问&quot;我们真正是靠什么活着的，哪些判断又最值得被系统接住&quot;。</strong></p>
+</blockquote>
+<p>详细的 PRD 已经放在 github 上，MVP 也正在推进中。后续如果 demo 跑得通，会再补一篇聊聊踩到的坑。</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ai"
+      >AI</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/organization"
+      >Organization</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/sales"
+      >Sales</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2026-03-05-irt/"
+      ><span>基于IRT的习题推荐系统构思</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI on 浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/ai/</link>
+    <description>Recent content in AI on 浑身蟹数</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 25 May 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>对组织拥抱AI的一些思考</title>
+      <link>https://www.xiebro.cool/post/embrace-ai-org/</link>
+      <pubDate>Mon, 25 May 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/embrace-ai-org/</guid>
+      <description>Part.1 关于大年初一，我在养膘，老板在养虾🦞这件事。&#xA;我感觉我们可能真的要全面拥抱 AI 了。&#xA;这一个月以来，我一直在想一个问题：&#xA;我们公司到底该怎么拥抱 AI？&#xA;这个问题很大，也很容易说空，比如：&#xA;&amp;ldquo;先做提效的，再搞创新的&amp;rdquo; &amp;ldquo;业务觉得有用就做，先让大家都用起来&amp;rdquo; &amp;ldquo;得做公司战略级的AI项目&amp;rdquo; 之前我们也做过大大小的尝试，比如：&#xA;用AI扫描各业务班型的数据表现，做归因分析 用AI为销售提供高效的物料检索工具 用AI做质检&amp;hellip; 这些方向和尝试都没错，但它们本质上，其实都在回答同一个问题：&amp;ldquo;AI能替代我们干什么？&amp;rdquo;。&#xA;假如，公司大部分岗位职能，都被封装成 Skills，人被 Agent 替代，那这件事，就一定会给组织带来跃迁式改变吗？&#xA;我的判断是：不一定。&#xA;甚至很多情况下，它只会更快地重复原来的问题。&#xA;因为&amp;quot;只要把人现在做的事情拆出来、封装好、交给 AI 执行，组织就会变先进&amp;quot;这句话，其实隐含了一个前提：&#xA;&amp;ldquo;今天组织里的大部分动作，本来就是对的，只是效率不够高。&amp;rdquo;&#xA;但现实情况肯定不是这样（至少我们不是🤔），因为组织的问题，从来不只是做得慢。&#xA;如果这个问题没想清楚，&amp;ldquo;全面拥抱AI&amp;quot;很可能会变成：更快地执行低价值动作、更规模化地复制错误、更自动化的制造幻觉。&#xA;所以，要拥抱 AI，我认为最先该问的是 &amp;ldquo;一个岗位存在的原因是什么？&amp;rdquo;&#xA;因为很多岗位职能，未必是&amp;quot;核心价值本身&amp;rdquo;，而可能只是&amp;quot;旧组织形态下的补丁&amp;quot;。&#xA;比如我们的班主任，表面上他的工作可能包括：&#xA;加微、发消息、打电话、挖需、记录用户意向、处理异议、关单&amp;hellip;&#xA;可能还得顺手疏导一下家庭矛盾（当年轮岗我遇到了🤷🏻‍♀️）。&#xA;从动作角度，这些都可以拆成 Skills，很多都可以 Agent 化。&#xA;但如果再往下问一步，&amp;ldquo;这个岗位的组织价值是什么？&amp;quot;，答案肯定不是&amp;quot;做这些动作&amp;rdquo;。&#xA;而是：&amp;ldquo;帮组织高质量地完成用户理解、价值传递、决策推动和收入转化。&amp;rdquo;&#xA;这就完全不一样了，视角切换后很多事情就变了：&#xA;有些动作可以被替代（比如辅导答疑） 有些动作应该被重构（比如固化的 SOP、电访框架） 有些动作根本不应该继续存在（比如营销感过重、毫无针对性的群发钩子） 还有一些原本依赖人经验的判断，其实应该上移为系统能力 最后一类，我认为是最值得 AI 切入的地方。 比如：面对这样的用户，我应该怎么做，才有可能让他续报？&#xA;所以，我们最先要问的不该是 &amp;ldquo;AI 能帮我们做什么&amp;rdquo;，&#xA;而是 &amp;ldquo;我们这家公司，真正是靠什么活着的&amp;rdquo;。&#xA;再具体一点：&#xA;&amp;ldquo;我们最核心的结果，究竟是靠哪一些人、在哪些判断上，硬撑出来的&amp;rdquo;。&#xA;&amp;ldquo;从这些人身上，哪些能力应该剥离出来，变成组织系统能力？&amp;rdquo;&#xA;&amp;ldquo;哪些能力依然值得保留在人身上？&amp;rdquo;&#xA;Part.2 我老婆的工作是&amp;quot;卖飞书&amp;quot;，&#xA;所以我能经常偷听她开会，听各家企业聊自己的 AI 需求。&#xA;很多公司做 AI 时，天然会从&amp;quot;覆盖面最大&amp;quot;的地方切入。&#xA;比如：知识问答、日报总结、流程自动化&amp;hellip;因为这些地方**&amp;ldquo;看起来最好推&amp;rdquo;**。</description>
+    </item>
+  </channel>
+</rss>
