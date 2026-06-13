@@ -9,6 +9,7 @@ tags:
   - Forecasting
   - Attribution
   - Interpretability
+math: true
 ---
 
 ```{r setup, include=FALSE}

@@ -115,6 +115,43 @@ library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(co
   
   
   
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
 
   
   <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
@@ -361,7 +398,7 @@ library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(co
 </span></span></code></pre></div><img src="index.en_files/figure-html/fig-overall-trend-1.png" alt="" width="888" />
 <p>整体随活跃度（<code>active_days</code> 的均值跟 <code>cohort_id</code> 正相关）小幅上行，但单一时序看不出结构性差异。</p>
 <h2 id="三类预测思路">三类预测思路</h2>
-<p>记 <code>\(R_t\)</code> 为时刻 <code>\(t\)</code> 的当期转化率。三种思路：</p>
+<p>记 $R_t$ 为时刻 $t$ 的当期转化率。三种思路：</p>
 <table>
 <thead>
 <tr>
@@ -373,22 +410,22 @@ library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(co
 <tbody>
 <tr>
 <td>全局预测</td>
-<td><code>\(R_t = c + \sum_{i=1}^{p} \phi_i R_{t-i} + \epsilon_t\)</code></td>
+<td>$R_t = c + \sum_{i=1}^{p} \phi_i R_{t-i} + \epsilon_t$</td>
 <td>单变量时序，捕捉整体周期</td>
 </tr>
 <tr>
 <td>分群预测</td>
-<td><code>\(R_t = \sum_{g=1}^{k} p_g R_{t_g}\)</code></td>
+<td>$R_t = \sum_{g=1}^{k} p_g R_{t_g}$</td>
 <td>多变量，可解释、可归因</td>
 </tr>
 <tr>
 <td>个体预测</td>
-<td>`(R_t = \frac{1}{N}\sum_{i} R_{t_i},\ R_{t_i}=P(y=1</td>
-<td>X))`</td>
+<td>$R_t = \frac{1}{N}\sum_{i} R_{t_i},\ R_{t_i}=P(y=1</td>
+<td>X)$</td>
 </tr>
 </tbody>
 </table>
-<p>其中 <code>\(p_g\)</code> 是群体 <code>\(g\)</code> 的占比，$R_{tg}$ 是群体 <code>\(g\)</code> 的转化率，$R_{ti}$ 是用户 <code>\(i\)</code> 的转化率。</p>
+<p>其中 $p_g$ 是群体 $g$ 的占比，$R_{tg}$ 是群体 $g$ 的转化率，$R_{ti}$ 是用户 $i$ 的转化率。</p>
 <p>直觉上三者各有侧重：</p>
 <ul>
 <li>时序模型擅长&quot;季节性&quot;；</li>
@@ -660,9 +697,9 @@ $$</p>
 R_t = \sum_{g=1}^{k} k_{gn}, p_g, R_{t_g}
 $$</p>
 <ul>
-<li><code>\(p_g\)</code>：群体 <code>\(g\)</code> 的占比，由<strong>用户自身属性</strong>决定（城市、年龄、活跃度等）；</li>
-<li><code>\(R_{tg}\)</code>：群体 <code>\(g\)</code> 的历史转化率，作为基准；</li>
-<li><code>\(k_{gn}\)</code>：群体 <code>\(g\)</code> 在服务水平 <code>\(n\)</code> 下的<strong>转化率缩放系数</strong>，由<strong>服务质量</strong>决定。</li>
+<li>$p_g$：群体 $g$ 的占比，由<strong>用户自身属性</strong>决定（城市、年龄、活跃度等）；</li>
+<li>$R_{tg}$：群体 $g$ 的历史转化率，作为基准；</li>
+<li>$k_{gn}$：群体 $g$ 在服务水平 $n$ 下的<strong>转化率缩放系数</strong>，由<strong>服务质量</strong>决定。</li>
 </ul>
 <p>这把&quot;为什么不准&quot;分成了两条独立的解释线。</p>
 <h3 id="结构归因用户侧">结构归因（用户侧）</h3>
