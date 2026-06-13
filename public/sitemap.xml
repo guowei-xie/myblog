@@ -3,12 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/ai/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
+    <loc>https://www.xiebro.cool/tags/attribution/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/forecasting/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/interpretability/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/r/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</loc>
+    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/ai/</loc>
     <lastmod>2026-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/organization/</loc>
@@ -17,16 +38,10 @@
     <loc>https://www.xiebro.cool/tags/sales/</loc>
     <lastmod>2026-05-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/categories/thoughts/</loc>
     <lastmod>2026-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/embrace-ai-org/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2026-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2026-03-05-irt/</loc>
@@ -36,9 +51,6 @@
     <lastmod>2026-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/model/</loc>
-    <lastmod>2026-02-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/r/</loc>
     <lastmod>2026-02-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2026-02-25-lasso/</loc>

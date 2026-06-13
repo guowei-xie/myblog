@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Interpretability on 浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/interpretability/</link>
+    <description>Recent content in Interpretability on 浑身蟹数</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 13 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://www.xiebro.cool/tags/interpretability/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>转化率预测：分群方法、特征筛选与可解释归因</title>
+      <link>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</link>
+      <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</guid>
+      <description>在订阅、续费、复购这类业务里，运营和市场常问的问题是：&#xA;&amp;ldquo;这一批刚进来的用户，最终能续多少？&amp;rdquo;&#xA;预测的难点不在&amp;quot;算出一个数字&amp;quot;，而在两件事：&#xA;可解释：预测结果要能告诉业务侧&amp;quot;为什么是这个数&amp;quot;； 可归因：当预测偏离实际时，能定位误差来自哪部分人群、哪部分服务环节。 本文整理一套面向当期转化率的预测与归因方法，覆盖三类思路的对比、特征筛选标准、模型评估，以及偏差出现时如何拆解原因。&#xA;模拟数据 构造一个跨多个周期（cohort）的订阅用户样本，每个用户带几个可观测特征和一个转化标签：&#xA;library(tidyverse) library(glmnet) set.seed(42) simulate_users &amp;lt;- function(cohort_id, n = 1000) { city_tier &amp;lt;- sample(1:5, n, replace = TRUE, prob = c(0.15, 0.25, 0.25, 0.20, 0.15)) age_group &amp;lt;- sample(1:6, n, replace = TRUE) channel &amp;lt;- sample(c(&amp;#34;paid&amp;#34;, &amp;#34;organic&amp;#34;, &amp;#34;referral&amp;#34;, &amp;#34;live&amp;#34;), n, replace = TRUE) active_days &amp;lt;- pmax(0, round(rnorm(n, mean = 15 + 0.3 * cohort_id, sd = 5))) task_rate &amp;lt;- pmin(1, pmax(0, rnorm(n, mean = 0.</description>
+    </item>
+  </channel>
+</rss>
