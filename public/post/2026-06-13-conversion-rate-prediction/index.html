@@ -173,7 +173,7 @@ library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(co
 模拟数据 构造一个跨多个周期（cohort）的订阅用户样本，每个用户带几个可观测特征和一个转化标签：
 library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(cohort_id, n = 1000) { city_tier &lt;- sample(1:5, n, replace = TRUE, prob = c(0.15, 0.25, 0.25, 0.20, 0.15)) age_group &lt;- sample(1:6, n, replace = TRUE) channel &lt;- sample(c(&#34;paid&#34;, &#34;organic&#34;, &#34;referral&#34;, &#34;live&#34;), n, replace = TRUE) active_days &lt;- pmax(0, round(rnorm(n, mean = 15 &#43; 0.3 * cohort_id, sd = 5))) task_rate &lt;- pmin(1, pmax(0, rnorm(n, mean = 0."><meta itemprop="datePublished" content="2026-06-13T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2026-06-13T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1789">
+<meta itemprop="wordCount" content="1791">
 <meta itemprop="keywords" content="Forecasting,Attribution,Interpretability," />
   
   <meta property="og:title" content="转化率预测：分群方法、特征筛选与可解释归因" />
@@ -420,8 +420,8 @@ library(tidyverse) library(glmnet) set.seed(42) simulate_users &lt;- function(co
 </tr>
 <tr>
 <td>个体预测</td>
-<td>$R_t = \frac{1}{N}\sum_{i} R_{t_i},\ R_{t_i}=P(y=1</td>
-<td>X)$</td>
+<td>$R_t = \frac{1}{N}\sum_{i} R_{t_i},\ R_{t_i}=P(y=1 \mid X)$</td>
+<td>多变量，逐人打分</td>
 </tr>
 </tbody>
 </table>
