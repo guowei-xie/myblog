@@ -269,7 +269,7 @@ encode_by_target(df$city_tier, df$converted)
 **稳定性 — PSI（Population Stability Index）**
 
 $$
-\text{PSI} = \sum_{i=1}^{n} (A_i - E_i)\, \ln\!\left(\frac{A_i}{E_i}\right)
+\text{PSI} = \sum_{i=1}^{n} (A_i - E_i) \ln \left(\frac{A_i}{E_i}\right)
 $$
 
 ```{r}
@@ -292,7 +292,7 @@ psi <- function(expected, actual, eps = 1e-6) {
 **预测力 — IV（Information Value）**
 
 $$
-\text{IV} = \sum_{i=1}^{n} (P_i - Q_i)\, \ln\!\left(\frac{P_i}{Q_i}\right)
+\text{IV} = \sum_{i=1}^{n} (P_i - Q_i) \ln \left(\frac{P_i}{Q_i}\right)
 $$
 
 ```{r}
@@ -476,7 +476,7 @@ $$
 当预测偏离实际时，把"用户结构"和"服务质量"分开看：
 
 $$
-R_t = \sum_{g=1}^{k} k_{gn}\, p_g\, R_{t_g}
+R_t = \sum_{g=1}^{k} k_{gn} \cdot p_g \cdot R_{t_g}
 $$
 
 - $p_g$：群体 $g$ 的占比，由**用户自身属性**决定（城市、年龄、活跃度等）；
