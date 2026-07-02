@@ -13,13 +13,15 @@
 #        ssh-copy-id xiebro
 #   b) 让站点目录归 xiebro 所有，从而 git pull 无需 sudo：
 #        ssh -t xiebro "sudo chown -R xiebro:xiebro /data/wwwroot/myblog"
-#   若不做 (b)，把下面 REMOTE_PULL 的注释切换成带 sudo 的那行（部署时会交互式要 sudo 密码）。
+#   （a、b 均已配置完成。服务器 origin 会被本脚本幂等切到公开仓库的 HTTPS 地址，拉取无需 GitHub 凭据。）
 
 set -euo pipefail
 
 REMOTE="${BLOG_REMOTE:-xiebro}"                     # ~/.ssh/config 主机别名 -> xiebro@123.56.29.19
 SITE_DIR="${BLOG_SITE_DIR:-/data/wwwroot/myblog}"   # 服务器上的 git 检出（nginx 站点根 public/ 的父目录）
 URL="${BLOG_URL:-https://www.xiebro.cool/}"
+# 服务器以 xiebro 身份拉取，用公开仓库的 HTTPS 地址（无需 GitHub 凭据）；下面会幂等地校正 origin
+REPO_HTTPS="${BLOG_REPO_HTTPS:-https://github.com/guowei-xie/myblog.git}"
 
 cd "$(dirname "$0")"
 
@@ -34,10 +36,9 @@ echo "==> [1/3] 推送到 origin/main"
 git push origin main
 
 echo "==> [2/3] 在 ${REMOTE} 上拉取更新（${SITE_DIR}）"
-# 无 sudo 版本（已执行前置配置 b）：
-ssh "$REMOTE" "git -C '${SITE_DIR}' pull --ff-only && git -C '${SITE_DIR}' log --oneline -1"
-# 带 sudo 版本（未 chown 时改用这行，注释掉上面一行）：
-# ssh -t "$REMOTE" "sudo git -C '${SITE_DIR}' pull --ff-only && git -C '${SITE_DIR}' log --oneline -1"
+# 免密（key 登录）+ 免 sudo（xiebro 拥有目录）+ 免凭据（公开仓库 HTTPS）。
+# set-url 是幂等的：第一次会把 origin 从 SSH 切到 HTTPS，之后无变化。
+ssh "$REMOTE" "git -C '${SITE_DIR}' remote set-url origin '${REPO_HTTPS}' && git -C '${SITE_DIR}' pull --ff-only && git -C '${SITE_DIR}' log --oneline -1"
 
 echo "==> [3/3] 校验线上状态"
 code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL")
