@@ -1,5 +1,5 @@
 ---
-title: 多臂老虎机：从海报推荐到蒙特卡洛验证
+title: 多臂老虎机实战
 author: xiebro
 date: '2026-07-02'
 slug: []
