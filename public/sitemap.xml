@@ -3,27 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/attribution/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
+    <loc>https://www.xiebro.cool/tags/bandit/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/exploration-exploitation/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/r/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/ucb/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/attribution/</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/forecasting/</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/interpretability/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/r/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</loc>
@@ -73,12 +91,6 @@
   </url><url>
     <loc>https://www.xiebro.cool/categories/%E5%B7%A5%E7%A8%8B%E5%8C%96/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/monte-carlo/</loc>
-    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
-    <lastmod>2025-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/rule-of-37/</loc>
     <lastmod>2025-04-20T00:00:00+00:00</lastmod>

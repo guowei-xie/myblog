@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 13 Jun 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>多臂老虎机：从海报推荐到蒙特卡洛验证</title>
+      <link>https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/</link>
+      <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/</guid>
+      <description>做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：&#xA;手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？&#xA;押给当前看起来最好的那个，是利用（exploit）；分一点量去试试看似平庸、但样本还不够的那些，是探索（explore）。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。&#xA;这篇文章用一个真实业务里打磨过的场景——转介绍海报推荐——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——UCB 热启动。&#xA;文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。&#xA;一、多臂老虎机是什么 想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个未知的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。&#xA;难点全在&amp;quot;未知&amp;quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。&#xA;衡量这种浪费的量叫后悔（regret）。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为&#xA;$$ R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right). $$&#xA;&amp;ldquo;最大化累计奖励&amp;quot;等价于&amp;quot;最小化累计后悔&amp;rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长 $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&amp;quot;看&amp;quot;出来。&#xA;二、业务场景与模拟数据 场景。 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到一号位（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。&#xA;核心指标：辐射率。 我们关心的不是曝光、也不是保存，而是&#xA;$$ \text{辐射率} = \frac{\text{触新量}}{\text{保存数}}, $$&#xA;即每一次&amp;quot;保存&amp;quot;里，能带来多少&amp;quot;触达新用户&amp;quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。</description>
+    </item>
     <item>
       <title>转化率预测：分群方法、特征筛选与可解释归因</title>
       <link>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</link>

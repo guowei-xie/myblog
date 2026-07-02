@@ -1,0 +1,754 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>多臂老虎机：从海报推荐到蒙特卡洛验证 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：
+手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？
+押给当前看起来最好的那个，是利用（exploit）；分一点量去试试看似平庸、但样本还不够的那些，是探索（explore）。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。
+这篇文章用一个真实业务里打磨过的场景——转介绍海报推荐——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——UCB 热启动。
+文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。
+一、多臂老虎机是什么 想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个未知的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。
+难点全在&quot;未知&quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。
+衡量这种浪费的量叫后悔（regret）。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为
+$$ R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right). $$
+&ldquo;最大化累计奖励&quot;等价于&quot;最小化累计后悔&rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长 $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&quot;看&quot;出来。
+二、业务场景与模拟数据 场景。 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到一号位（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。
+核心指标：辐射率。 我们关心的不是曝光、也不是保存，而是
+$$ \text{辐射率} = \frac{\text{触新量}}{\text{保存数}}, $$
+即每一次&quot;保存&quot;里，能带来多少&quot;触达新用户&quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。" />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="多臂老虎机：从海报推荐到蒙特卡洛验证">
+<meta itemprop="description" content="做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：
+手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？
+押给当前看起来最好的那个，是利用（exploit）；分一点量去试试看似平庸、但样本还不够的那些，是探索（explore）。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。
+这篇文章用一个真实业务里打磨过的场景——转介绍海报推荐——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——UCB 热启动。
+文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。
+一、多臂老虎机是什么 想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个未知的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。
+难点全在&quot;未知&quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。
+衡量这种浪费的量叫后悔（regret）。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为
+$$ R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right). $$
+&ldquo;最大化累计奖励&quot;等价于&quot;最小化累计后悔&rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长 $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&quot;看&quot;出来。
+二、业务场景与模拟数据 场景。 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到一号位（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。
+核心指标：辐射率。 我们关心的不是曝光、也不是保存，而是
+$$ \text{辐射率} = \frac{\text{触新量}}{\text{保存数}}, $$
+即每一次&quot;保存&quot;里，能带来多少&quot;触达新用户&quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。"><meta itemprop="datePublished" content="2026-07-02T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-07-02T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1327">
+<meta itemprop="keywords" content="Bandit,UCB,Exploration-Exploitation,Monte-Carlo," />
+  
+  <meta property="og:title" content="多臂老虎机：从海报推荐到蒙特卡洛验证" />
+<meta property="og:description" content="做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：
+手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？
+押给当前看起来最好的那个，是利用（exploit）；分一点量去试试看似平庸、但样本还不够的那些，是探索（explore）。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。
+这篇文章用一个真实业务里打磨过的场景——转介绍海报推荐——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——UCB 热启动。
+文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。
+一、多臂老虎机是什么 想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个未知的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。
+难点全在&quot;未知&quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。
+衡量这种浪费的量叫后悔（regret）。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为
+$$ R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right). $$
+&ldquo;最大化累计奖励&quot;等价于&quot;最小化累计后悔&rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长 $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&quot;看&quot;出来。
+二、业务场景与模拟数据 场景。 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到一号位（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。
+核心指标：辐射率。 我们关心的不是曝光、也不是保存，而是
+$$ \text{辐射率} = \frac{\text{触新量}}{\text{保存数}}, $$
+即每一次&quot;保存&quot;里，能带来多少&quot;触达新用户&quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-07-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-07-02T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="多臂老虎机：从海报推荐到蒙特卡洛验证"/>
+<meta name="twitter:description" content="做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：
+手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？
+押给当前看起来最好的那个，是利用（exploit）；分一点量去试试看似平庸、但样本还不够的那些，是探索（explore）。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。
+这篇文章用一个真实业务里打磨过的场景——转介绍海报推荐——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——UCB 热启动。
+文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。
+一、多臂老虎机是什么 想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个未知的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。
+难点全在&quot;未知&quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。
+衡量这种浪费的量叫后悔（regret）。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为
+$$ R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right). $$
+&ldquo;最大化累计奖励&quot;等价于&quot;最小化累计后悔&rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长 $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&quot;看&quot;出来。
+二、业务场景与模拟数据 场景。 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到一号位（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。
+核心指标：辐射率。 我们关心的不是曝光、也不是保存，而是
+$$ \text{辐射率} = \frac{\text{触新量}}{\text{保存数}}, $$
+即每一次&quot;保存&quot;里，能带来多少&quot;触达新用户&quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。"/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">多臂老虎机：从海报推荐到蒙特卡洛验证</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Jul 2, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p>做推荐、做投放、做运营的人，几乎每天都在回答同一个问题：</p>
+<blockquote>
+<p><strong>手上有一批候选（几张海报、几套文案、几个出价），流量有限，先把量押给谁？</strong></p>
+</blockquote>
+<p>押给当前看起来最好的那个，是<strong>利用（exploit）</strong>；分一点量去试试看似平庸、但样本还不够的那些，是<strong>探索（explore）</strong>。多臂老虎机（Multi-Armed Bandit, MAB）就是把这个两难形式化后的最小模型。</p>
+<p>这篇文章用一个真实业务里打磨过的场景——<strong>转介绍海报推荐</strong>——把 MAB 从建模讲到验证：先模拟数据，用最经典的 Epsilon-Greedy 建基线，立起三条验证指标做蒙特卡洛复盘；再换上 UCB 和 Thompson Sampling 两种更聪明的策略，看 UCB 默认参数下容易踩的坑、以及 Thompson 如何零超参地做到最好；最后落到一个工程上真正提速的收尾——<strong>UCB 热启动</strong>。</p>
+<blockquote>
+<p>文中所有数据均为模拟生成，业务框架取自实际项目、数字与真实经营指标无关。</p>
+</blockquote>
+<h2 id="一多臂老虎机是什么">一、多臂老虎机是什么</h2>
+<p>想象一排老虎机，共 $K$ 个摇臂。每个臂 $a$ 背后有一个<strong>未知</strong>的奖励分布，期望是 $\mu_a$。你有 $N$ 次机会，每次拉一个臂、拿一次奖励，目标是让 $N$ 次的累计奖励最大。</p>
+<p>难点全在&quot;未知&quot;两个字：你只能靠拉的过程去估计每个臂的好坏，而每一次用于试探的拉动，都可能是一次本可以拿更高奖励的浪费。</p>
+<p>衡量这种浪费的量叫<strong>后悔（regret）</strong>。设最优臂的期望为 $\mu^{\star} = \max_a \mu_a$，第 $t$ 步选了臂 $a_t$，则累计后悔为</p>
+<p>$$
+R(T) = \sum_{t=1}^{T} \left( \mu^{\star} - \mu_{a_t} \right).
+$$</p>
+<p>&ldquo;最大化累计奖励&quot;等价于&quot;最小化累计后悔&rdquo;——后者是评价一个策略好坏更干净的尺子。一个经典结论先摆在这里：<strong>固定探索率的朴素策略，后悔随时间线性增长；而 UCB 这类基于置信区间的策略，能把后悔压到对数增长</strong> $O(\log T)$。后面我们会用蒙特卡洛把这句话——以及它成立的前提——都&quot;看&quot;出来。</p>
+<h2 id="二业务场景与模拟数据">二、业务场景与模拟数据</h2>
+<p><strong>场景。</strong> 转介绍海报中心里有若干张海报。用户每次进入，系统要决定把哪张海报放到<strong>一号位</strong>（其余按指标排序）。放对了海报，就更可能带来一次新用户触达。</p>
+<p><strong>核心指标：辐射率。</strong> 我们关心的不是曝光、也不是保存，而是</p>
+<p>$$
+\text{辐射率} = \frac{\text{触新量}}{\text{保存数}},
+$$</p>
+<p>即每一次&quot;保存&quot;里，能带来多少&quot;触达新用户&quot;。每张海报维护一个状态向量 $(v, c, cnt)$：$v$ 触新量、$c$ 保存数、$cnt$ 被推荐次数。这张海报的辐射率估计就是 $\hat{Q} = v / c$。</p>
+<p><strong>映射到老虎机。</strong> 一张海报 = 一个臂；把它放到一号位并拿到一次保存 = 拉一次臂；这次保存<strong>是否触新</strong>就是奖励 $r \in {0, 1}$，服从 $\text{Bernoulli}(p_a)$，其中 $p_a$ 是这张海报的<strong>真实辐射率</strong>。于是&quot;累计辐射率&quot;恰好就是到目前为止的平均奖励。冷启动时给每张新海报先各推一次（轮询），既避免了除零，也拿到一份最初的认知。</p>
+<p>整个系统串起来是这样一条数据流：</p>
+<img src="images/mab-flow.png" alt="海报推荐 MAB 系统数据流" width="888" />
+<p>海报中心为每张海报维护状态向量 $(v, c, cnt)$；MAB 作为一个<strong>无记忆</strong>（memoryless）服务，输入这批向量、输出排好序的海报列表——<strong>一号位</strong>由 MAB 决策，其余按指标排；展示页拿到结果后，用户行为通过 callback 把被选海报的计数（如 <code>B: Count++</code>）回写，供下一次调用使用。正因为无记忆，它每次都只依据当前传入的计数做决策，天然适合做成一个无状态的函数式接口。</p>
+<p><strong>模拟数据。</strong> 参考历史经验，转介绍海报的辐射率大致落在 $0.2$ 到 $0.6$ 之间。为了把算法行为看清楚，我们先取 $N=5$ 张辐射率<strong>梯度明显</strong>的海报作为&quot;上帝视角&quot;的真值（辐射率非常接近的难例留到第四节专门讨论）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(furrr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(scales)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">42</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>N_PULLS <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">2000</span>   <span style="color:#75715e"># 单次实验的调用次数（累计保存数）</span>
+</span></span><span style="display:flex;"><span>REPS    <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">400</span>    <span style="color:#75715e"># 蒙特卡洛重复次数</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plan</span>(multisession, workers <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">availableCores</span>() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 5 张海报的“真实辐射率”，即拉动该臂得到触新（奖励=1）的概率</span>
+</span></span><span style="display:flex;"><span>p_true   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0.20</span>, <span style="color:#ae81ff">0.30</span>, <span style="color:#ae81ff">0.40</span>, <span style="color:#ae81ff">0.50</span>, <span style="color:#ae81ff">0.60</span>)
+</span></span><span style="display:flex;"><span>N_ARMS   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">length</span>(p_true)
+</span></span><span style="display:flex;"><span>best_arm <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">which.max</span>(p_true)
+</span></span><span style="display:flex;"><span>p_star   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">max</span>(p_true)
+</span></span></code></pre></div><p>最优海报是第 5 张，真实辐射率 $p^{\star} = 0.60$。把 5 张海报的真值画出来：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">tibble</span>(arm <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(<span style="color:#a6e22e">seq_len</span>(N_ARMS)), rate <span style="color:#f92672">=</span> p_true) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(rate, <span style="color:#a6e22e">fct_rev</span>(arm), fill <span style="color:#f92672">=</span> arm <span style="color:#f92672">==</span> <span style="color:#a6e22e">as.character</span>(best_arm))) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_col</span>(width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.66</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_fill_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(`TRUE` <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>]),
+</span></span><span style="display:flex;"><span>                               `FALSE` <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;blue&#34;</span>])),
+</span></span><span style="display:flex;"><span>                    guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_x_continuous</span>(labels <span style="color:#f92672">=</span> <span style="color:#a6e22e">label_percent</span>(accuracy <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>),
+</span></span><span style="display:flex;"><span>                     limits <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0.65</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Ground-truth radiation rate of 5 posters&#34;</span>,
+</span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Poster #5 is optimal; the algorithm never sees this — it must learn by pulling&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;True radiation rate&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Poster&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-arms-truth-1.png" alt="" width="888" />
+<p>算法当然看不到这张图——它只能通过一次次&quot;放到一号位、观察是否触新&quot;来逼近它。</p>
+<h2 id="三mab-策略建模epsilon-greedy">三、MAB 策略建模：Epsilon-Greedy</h2>
+<p>最直接的探索/利用平衡，就是 <strong>Epsilon-Greedy</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>设定探索率 epsilon ∈ (0, 1)；
+</span></span><span style="display:flex;"><span>每一步抽一个随机数 a ~ U(0, 1)：
+</span></span><span style="display:flex;"><span>  若 a &gt; epsilon：选当前估计辐射率最高的海报（利用）；
+</span></span><span style="display:flex;"><span>  若 a ≤ epsilon：随机挑一张海报（探索）。
+</span></span></code></pre></div><p>它的软肋也很直白：</p>
+<ul>
+<li>$\epsilon$ 定大了，即使早已看清优劣，仍要固定地拿出这么多流量去乱试，后悔停不下来；</li>
+<li>$\epsilon$ 定小了，遇到几张辐射率接近的海报，要花很久才能分辨；</li>
+<li>更关键的是，<strong>探索时它对&quot;第二好&quot;和&quot;最差&quot;一视同仁</strong>——明明只需要在几个尖子里再确认，它却把探索流量均摊给了所有海报，包括早该淘汰的那些。</li>
+</ul>
+<blockquote>
+<p><strong>一句带过的替代思路：Softmax。</strong> 与其&quot;要么贪心、要么完全随机&quot;，不如按分数给概率：$\text{softmax}(x_i) = \dfrac{e^{x_i / \tau}}{\sum_j e^{x_j / \tau}}$。好海报拿到更高的被选概率，差海报被压低但不归零；温度 $\tau$ 越大越接近均匀（探索越猛），配合<strong>降温</strong>（annealing）逐步调小 $\tau$，就能从&quot;敢试&quot;平滑过渡到&quot;敢押&quot;。这里就不展开它的仿真了，只作个对照。</p>
+</blockquote>
+<p>下面把两类策略写成同一个仿真函数——它们只差&quot;如何选臂&quot;这一行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 单次实验：给定真值 p_true，跑 n_pulls 步，返回逐步轨迹</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># policy: &#34;egreedy&#34; / &#34;ucb&#34; / &#34;thompson&#34;（三种选臂逻辑写在同一处，后文都会用到）</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># init_v / init_n: 起始的 (触新, 保存) 计数，缺省为 0；热启动时灌入历史计数</span>
+</span></span><span style="display:flex;"><span>simulate_bandit <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(p_true, n_pulls,
+</span></span><span style="display:flex;"><span>                            policy  <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;egreedy&#34;</span>, <span style="color:#e6db74">&#34;ucb&#34;</span>, <span style="color:#e6db74">&#34;thompson&#34;</span>),
+</span></span><span style="display:flex;"><span>                            epsilon <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>,
+</span></span><span style="display:flex;"><span>                            c_ucb   <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>,
+</span></span><span style="display:flex;"><span>                            init_v  <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>,
+</span></span><span style="display:flex;"><span>                            init_n  <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>) {
+</span></span><span style="display:flex;"><span>  policy   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">match.arg</span>(policy)
+</span></span><span style="display:flex;"><span>  K        <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">length</span>(p_true)
+</span></span><span style="display:flex;"><span>  best_arm <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">which.max</span>(p_true)
+</span></span><span style="display:flex;"><span>  p_star   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">max</span>(p_true)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  v <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is.null</span>(init_v)) <span style="color:#a6e22e">rep</span>(<span style="color:#ae81ff">0</span>, K) <span style="color:#66d9ef">else</span> init_v   <span style="color:#75715e"># 触新累计</span>
+</span></span><span style="display:flex;"><span>  n <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is.null</span>(init_n)) <span style="color:#a6e22e">rep</span>(<span style="color:#ae81ff">0</span>, K) <span style="color:#66d9ef">else</span> init_n   <span style="color:#75715e"># 保存累计（= 被推荐次数）</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  is_opt      <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">integer</span>(n_pulls)
+</span></span><span style="display:flex;"><span>  reward      <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">integer</span>(n_pulls)
+</span></span><span style="display:flex;"><span>  inst_regret <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">numeric</span>(n_pulls)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (t <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">seq_len</span>(n_pulls)) {
+</span></span><span style="display:flex;"><span>    arm <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">any</span>(n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">which</span>(n <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)[1]                                  <span style="color:#75715e"># 冷启动：每张海报先各推一次</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (policy <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;egreedy&#34;</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">runif</span>(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">&lt;</span> epsilon) <span style="color:#a6e22e">sample.int</span>(K, <span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">which.max</span>(v <span style="color:#f92672">/</span> n)
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (policy <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;ucb&#34;</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">which.max</span>(v <span style="color:#f92672">/</span> n <span style="color:#f92672">+</span> c_ucb <span style="color:#f92672">*</span> <span style="color:#a6e22e">sqrt</span>(<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">sum</span>(n)) <span style="color:#f92672">/</span> n))  <span style="color:#75715e"># UCB：估计 + 探索加成</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">which.max</span>(<span style="color:#a6e22e">rbeta</span>(K, v <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, (n <span style="color:#f92672">-</span> v) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>))           <span style="color:#75715e"># Thompson：从各臂 Beta 后验采样</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rbinom</span>(<span style="color:#ae81ff">1L</span>, <span style="color:#ae81ff">1L</span>, p_true[arm])                <span style="color:#75715e"># 这次保存是否触新</span>
+</span></span><span style="display:flex;"><span>    v[arm] <span style="color:#f92672">&lt;-</span> v[arm] <span style="color:#f92672">+</span> r
+</span></span><span style="display:flex;"><span>    n[arm] <span style="color:#f92672">&lt;-</span> n[arm] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    is_opt[t]      <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">as.integer</span>(arm <span style="color:#f92672">==</span> best_arm)
+</span></span><span style="display:flex;"><span>    reward[t]      <span style="color:#f92672">&lt;-</span> r
+</span></span><span style="display:flex;"><span>    inst_regret[t] <span style="color:#f92672">&lt;-</span> p_star <span style="color:#f92672">-</span> p_true[arm]
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">list</span>(is_opt <span style="color:#f92672">=</span> is_opt, reward <span style="color:#f92672">=</span> reward, inst_regret <span style="color:#f92672">=</span> inst_regret)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="四建立验证指标并做蒙特卡洛验证">四、建立验证指标，并做蒙特卡洛验证</h2>
+<p>单跑一次实验，曲线全是噪声，说明不了问题。正确姿势是<strong>蒙特卡洛</strong>：固定海报真值这套&quot;环境&quot;，把在线过程的随机性重复上百次，取平均，看策略的期望行为。</p>
+<p>我们盯三条曲线（沿用项目里的定义）：</p>
+<p>$$
+\text{最优动作比例} = \frac{\text{最优海报被选中的次数}}{\text{调用接口次数}}
+$$</p>
+<p>$$
+\text{累计辐射率} = \frac{\text{累计触新量}}{\text{累计保存量}}
+$$</p>
+<p>$$
+\text{累计后悔} = \sum_{t} \left( \text{最优海报真实辐射率} - \text{被选首位海报真实辐射率} \right)
+$$</p>
+<p>第一条看<strong>是否收敛到最优臂</strong>，第二条看<strong>赚到的真金白银</strong>，第三条看<strong>为探索付出的代价</strong>。把蒙特卡洛的聚合逻辑封装一下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#75715e"># 跑 REPS 次实验，对齐步数后求三条曲线的均值</span>
+</span></span><span style="display:flex;"><span>mc_run <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(p_true, n_pulls, reps, policy, label, <span style="color:#66d9ef">...</span>) {
+</span></span><span style="display:flex;"><span>  step <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">seq_len</span>(n_pulls)
+</span></span><span style="display:flex;"><span>  sims <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">future_map</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">seq_len</span>(reps),
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">function</span>(i) <span style="color:#a6e22e">simulate_bandit</span>(p_true, n_pulls, policy <span style="color:#f92672">=</span> policy, <span style="color:#66d9ef">...</span>),
+</span></span><span style="display:flex;"><span>    .options <span style="color:#f92672">=</span> <span style="color:#a6e22e">furrr_options</span>(seed <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>  opt <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">vapply</span>(sims, <span style="color:#66d9ef">function</span>(s) <span style="color:#a6e22e">cumsum</span>(s<span style="color:#f92672">$</span>is_opt)      <span style="color:#f92672">/</span> step, <span style="color:#a6e22e">numeric</span>(n_pulls))
+</span></span><span style="display:flex;"><span>  rew <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">vapply</span>(sims, <span style="color:#66d9ef">function</span>(s) <span style="color:#a6e22e">cumsum</span>(s<span style="color:#f92672">$</span>reward)      <span style="color:#f92672">/</span> step, <span style="color:#a6e22e">numeric</span>(n_pulls))
+</span></span><span style="display:flex;"><span>  reg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">vapply</span>(sims, <span style="color:#66d9ef">function</span>(s) <span style="color:#a6e22e">cumsum</span>(s<span style="color:#f92672">$</span>inst_regret),        <span style="color:#a6e22e">numeric</span>(n_pulls))
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">tibble</span>(step <span style="color:#f92672">=</span> step, strategy <span style="color:#f92672">=</span> label,
+</span></span><span style="display:flex;"><span>         opt_ratio     <span style="color:#f92672">=</span> <span style="color:#a6e22e">rowMeans</span>(opt),
+</span></span><span style="display:flex;"><span>         cum_radiation <span style="color:#f92672">=</span> <span style="color:#a6e22e">rowMeans</span>(rew),
+</span></span><span style="display:flex;"><span>         cum_regret    <span style="color:#f92672">=</span> <span style="color:#a6e22e">rowMeans</span>(reg))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 三条曲线的统一画法</span>
+</span></span><span style="display:flex;"><span>metric_labels <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(opt_ratio     <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Optimal-action ratio&#34;</span>,
+</span></span><span style="display:flex;"><span>                   cum_radiation <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Cumulative radiation&#34;</span>,
+</span></span><span style="display:flex;"><span>                   cum_regret    <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Cumulative regret&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>plot_metrics <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(df, title, subtitle <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>) {
+</span></span><span style="display:flex;"><span>  df <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pivot_longer</span>(<span style="color:#a6e22e">c</span>(opt_ratio, cum_radiation, cum_regret),
+</span></span><span style="display:flex;"><span>                 names_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;metric&#34;</span>, values_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;value&#34;</span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(metric <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(metric_labels[metric], levels <span style="color:#f92672">=</span> metric_labels)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(step, value, color <span style="color:#f92672">=</span> strategy)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_line</span>(linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">facet_wrap</span>(<span style="color:#f92672">~</span>metric, scales <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;free_y&#34;</span>, nrow <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog<span style="color:#a6e22e">[c</span>(<span style="color:#e6db74">&#34;blue&#34;</span>, <span style="color:#e6db74">&#34;rose&#34;</span>, <span style="color:#e6db74">&#34;sage&#34;</span>, <span style="color:#e6db74">&#34;gold&#34;</span>)])) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> title, subtitle <span style="color:#f92672">=</span> subtitle,
+</span></span><span style="display:flex;"><span>         x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Pulls (cumulative saves)&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>, color <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">theme_blog</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>跑 Epsilon-Greedy（$\epsilon = 0.1$）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>eg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;egreedy&#34;</span>,
+</span></span><span style="display:flex;"><span>             label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ε-greedy (ε=0.1)&#34;</span>, epsilon <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(eg,
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Epsilon-Greedy: Monte-Carlo behaviour&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;Averaged over %d runs · optimal poster&#39;s true rate p* = %.2f&#34;</span>,
+</span></span><span style="display:flex;"><span>                     REPS, p_star))
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-egreedy-1.png" alt="" width="888" />
+<p>三条曲线讲了一个完整的故事：</p>
+<ul>
+<li><strong>最优动作比例</strong>稳步爬升——但受限于那固定的 $\epsilon$，它的天花板大约在 $1-\epsilon+\epsilon/K \approx 0.92$，因为哪怕早已看清优劣，仍有 10% 的流量在随机乱试；</li>
+<li><strong>累计辐射率</strong>逼近 $p^{\star}=0.60$，但始终差一口气——同样是那 10% 探索在往一号位塞次优海报；</li>
+<li><strong>累计后悔</strong>因此没有走平，而是保持近似<strong>线性</strong>的爬升——这正是固定 $\epsilon$ 的宿命。</li>
+</ul>
+<h3 id="一个经典难例两张海报几乎一样好">一个经典难例：两张海报几乎一样好</h3>
+<p>Epsilon-Greedy 最难受的情形，是最优和次优<strong>辐射率极度接近</strong>。我们造一个：让前两名只差万分之二。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>p_close  <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0.30</span>, <span style="color:#ae81ff">0.40</span>, <span style="color:#ae81ff">0.50</span>, <span style="color:#ae81ff">0.5999</span>, <span style="color:#ae81ff">0.6001</span>)  <span style="color:#75715e"># 第 4、5 张几乎打平</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>eg_close <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mc_run</span>(p_close, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;egreedy&#34;</span>,
+</span></span><span style="display:flex;"><span>                   label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ε-greedy · near-tied leaders&#34;</span>, epsilon <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(eg_close,
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hard case: top two posters are nearly tied&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Optimal-action ratio stalls, yet cumulative radiation is barely affected&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-closearms-1.png" alt="" width="888" />
+<p><strong>最优动作比例</strong>这次怎么都收不上去——因为两张海报的奖励分布几乎无法区分，算法在它俩之间反复横跳。但注意<strong>累计辐射率</strong>几乎不受影响，稳稳贴着 $p^{\star} \approx 0.6$：既然两张海报一样好，选错了也不亏。这提醒我们：<strong>&ldquo;是否收敛到最优臂&quot;和&quot;是否赚到钱&quot;是两回事</strong>，评估时要分开看。</p>
+<h2 id="五ucb-策略建模">五、UCB 策略建模</h2>
+<p>Epsilon-Greedy 的探索是&quot;盲目&quot;的——掷个骰子决定要不要乱试。<strong>UCB（Upper Confidence Bound）</strong> 换了个思路：<strong>乐观地面对不确定性</strong>。它给每个臂算一个&quot;可能达到的上界&rdquo;，然后永远选上界最高的那个：</p>
+<p>$$
+\text{UCB}(a) = Q_t(a) + c \cdot \sqrt{\frac{\log N}{n(a)}}
+$$</p>
+<ul>
+<li>$Q_t(a)$：臂 $a$ 当前的预期奖励（辐射率估计 $v/c$）；</li>
+<li>$n(a)$：臂 $a$ 被推荐的次数；$N$：所有臂被推荐的总次数；</li>
+<li>$c$：探索因子。</li>
+</ul>
+<p>这个式子的第一直觉是：<strong>它由两部分组成——预期奖励 + 探索欲望</strong>。</p>
+<ul>
+<li>探索欲望 $\sqrt{\log N / n(a)}$ 随 $n(a)$ 增大而衰减：一个臂拉得越多，你对它越有把握，就越没必要再为&quot;探索&quot;去选它；</li>
+<li>它又与 $\log N$ 挂钩，体现的是<strong>相对稀有度</strong>——在别人都被拉了很多次的当口，一个很少被碰的臂会被&quot;补偿&quot;性地抬一手。</li>
+</ul>
+<p>由 Hoeffding 不等式可以证明，这个上界以高概率覆盖真实均值，从而给出后悔的对数级保证。相比 Epsilon-Greedy，UCB 有两个工程上很实在的好处：</p>
+<ol>
+<li><strong>没有随机性</strong>——任何时刻的选择都能由当前数据完全复算，便于排查和回溯；</li>
+<li><strong>对场景无知也能冷启动</strong>——探索欲望项会自动逼着每个没被充分了解的臂被试到，不依赖先验。</li>
+</ol>
+<p>选臂逻辑我们前面已经写进 <code>simulate_bandit</code> 了（<code>policy = &quot;ucb&quot;</code> 那一行），直接拿来对打。</p>
+<h2 id="六蒙特卡洛对比ucbthompson-与热启动">六、蒙特卡洛对比：UCB、Thompson 与热启动</h2>
+<h3 id="先看默认探索因子-c2">先看默认探索因子 c=2</h3>
+<p>UCB1 的教科书默认 $c=2$。把它和 Epsilon-Greedy 摆在一起：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>ucb2 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ucb&#34;</span>,
+</span></span><span style="display:flex;"><span>               label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCB (c=2)&#34;</span>, c_ucb <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(<span style="color:#a6e22e">bind_rows</span>(eg, ucb2),
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Default UCB (c=2) vs Epsilon-Greedy&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;With low-reward, narrow-gap radiation rates, the default c=2 over-explores&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-ucb-vs-eg-1.png" alt="" width="888" />
+<p>意外吗？<strong>默认 $c=2$ 的 UCB 反而输给了 $\epsilon$-greedy</strong>：最优动作比例更低、累计后悔更高。原因藏在奖励尺度里——$c=2$ 是按&quot;奖励取值铺满 $[0,1]$&ldquo;校准的，而辐射率的臂间差距只有约 $0.1$、伯努利奖励的方差却接近满档。探索加成 $c\sqrt{\log N / n(a)}$ 因此远大于真实差距，UCB 把大量流量摊在了&quot;其实已经能分辨&quot;的臂上。</p>
+<p>这正是&quot;无超参&quot;的另一面：<strong>你不调 $c$，UCB 也会跑，但未必跑得好</strong>。$c$ 不是可有可无的旋钮，而是要和奖励尺度对齐的。</p>
+<h3 id="探索因子-c-的取舍">探索因子 c 的取舍</h3>
+<p>先不跑仿真，光看探索加成 $c\sqrt{\log N / n(a)}$ 随累计次数的变化：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">expand_grid</span>(N_total <span style="color:#f92672">=</span> <span style="color:#a6e22e">seq</span>(<span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">20000</span>, by <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>),
+</span></span><span style="display:flex;"><span>            n_arm   <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">500</span>, <span style="color:#ae81ff">1000</span>),
+</span></span><span style="display:flex;"><span>            c_ucb   <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">0.7</span>, <span style="color:#ae81ff">2</span>)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(bonus <span style="color:#f92672">=</span> c_ucb <span style="color:#f92672">*</span> <span style="color:#a6e22e">sqrt</span>(<span style="color:#a6e22e">log</span>(N_total) <span style="color:#f92672">/</span> n_arm)) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(N_total, bonus,
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(c_ucb), linetype <span style="color:#f92672">=</span> <span style="color:#a6e22e">factor</span>(n_arm))) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_line</span>(linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog<span style="color:#a6e22e">[c</span>(<span style="color:#e6db74">&#34;sage&#34;</span>, <span style="color:#e6db74">&#34;rose&#34;</span>)]),
+</span></span><span style="display:flex;"><span>                     name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Exploration factor c&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_linetype_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(`500` <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, `1000` <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>                        name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Times this arm pulled n(a)&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Exploration bonus vs cumulative pulls&#34;</span>,
+</span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Smaller c and larger n(a) shrink the bonus — the arm leans toward exploiting&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Cumulative pulls N&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Exploration bonus&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-cfactor-bound-1.png" alt="" width="888" />
+<p>既然默认值偏大，就把 $c$ 调小。三档 $c$ 一起跑：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>c_grid <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">map_dfr</span>(<span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.7</span>), <span style="color:#66d9ef">function</span>(cc) {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ucb&#34;</span>,
+</span></span><span style="display:flex;"><span>         label <span style="color:#f92672">=</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;UCB (c=%.1f)&#34;</span>, cc), c_ucb <span style="color:#f92672">=</span> cc)
+</span></span><span style="display:flex;"><span>})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(<span style="color:#a6e22e">bind_rows</span>(eg, c_grid) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>               <span style="color:#a6e22e">mutate</span>(strategy <span style="color:#f92672">=</span> <span style="color:#a6e22e">fct_relevel</span>(strategy, <span style="color:#e6db74">&#34;ε-greedy (ε=0.1)&#34;</span>)),
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Tuning the exploration factor: c = 2 / 1 / 0.7&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;At c = 0.7 UCB converges fastest with the lowest regret — overtaking ε-greedy&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-cfactor-1.png" alt="" width="888" />
+<p>把 $c$ 收到 $0.7$，UCB 就明显反超了 $\epsilon$-greedy：最优动作比例的平台更高（不像 $\epsilon$-greedy 被 $1-\epsilon$ 卡住），累计后悔也最平。<strong>这不是巧合，而是项目里最终采用的设置。</strong> 代价也要说清楚：更小的 $c$ 探索更省，遇到第四节那种&quot;两张海报几乎打平&quot;的情形，会更容易过早锁定、甚至押错略差的那张——所以 $c$ 的取值本质上是在&quot;收敛速度&quot;和&quot;分辨接近臂的耐心&quot;之间做权衡。</p>
+<h3 id="第三种思路thompson-sampling零超参的贝叶斯采样">第三种思路：Thompson Sampling（零超参的贝叶斯采样）</h3>
+<p>ε-greedy 要调 $\epsilon$，UCB 要调 $c$。有没有连超参都省了的？<strong>Thompson Sampling</strong>（汤普森采样）就是。</p>
+<p>它的想法很贝叶斯：不去估一个&quot;点&quot;辐射率，而是为每张海报维护一个<strong>辐射率的后验分布</strong>。伯努利奖励下这个后验恰好是 Beta 分布——用触新数 $v$ 和&quot;保存但没触新&quot;数 $c - v$ 当参数：</p>
+<p>$$
+p_a \sim \text{Beta}(v_a + 1, (c_a - v_a) + 1)
+$$</p>
+<p>每一步，从每张海报各自的后验里<strong>采样</strong>一个辐射率，谁采得最高就把谁放一号位；拿到反馈再更新对应海报的后验。被试次数少的海报后验又宽又不确定，偶尔会采出一个偏高的值从而获得被试的机会——<strong>探索由此自然发生，不需要任何显式的探索率或探索因子</strong>。选臂就是 <code>simulate_bandit</code> 里的最后一支：<code>which.max(rbeta(K, v + 1, (n - v) + 1))</code>。</p>
+<p>把三种策略摆在一起（UCB 用调好的 $c=0.7$）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>ucb07    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ucb&#34;</span>,
+</span></span><span style="display:flex;"><span>                   label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCB (c=0.7)&#34;</span>, c_ucb <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>)
+</span></span><span style="display:flex;"><span>thompson <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;thompson&#34;</span>,
+</span></span><span style="display:flex;"><span>                   label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Thompson Sampling&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">bind_rows</span>(eg, ucb07, thompson) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutate</span>(strategy <span style="color:#f92672">=</span> <span style="color:#a6e22e">fct_relevel</span>(strategy,
+</span></span><span style="display:flex;"><span>                                  <span style="color:#e6db74">&#34;ε-greedy (ε=0.1)&#34;</span>, <span style="color:#e6db74">&#34;UCB (c=0.7)&#34;</span>, <span style="color:#e6db74">&#34;Thompson Sampling&#34;</span>)),
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Three classic strategies head to head&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Thompson Sampling converges fastest with the lowest regret — and zero hyperparameters&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-three-1.png" alt="" width="888" />
+<p>结果很干脆：<strong>Thompson Sampling 在三条曲线上全面领先</strong>，最优动作比例最高、累计后悔最低，却连一个超参都不用调。这也是它在实践中广受欢迎的原因——尤其像转介绍海报这种伯努利奖励（触新/没触新）的场景，Beta 后验是天然契合的建模。</p>
+<p>那为什么工程上我们最后仍以 UCB 落地？因为 Thompson 带随机性，每次决策不可复算、不便回溯；而 UCB <strong>无随机、可复算，且很容易把历史认知灌成先验做热启动</strong>。</p>
+<h3 id="ucb-热启动">UCB 热启动</h3>
+<p>冷启动的 UCB 已经不错，但线上还有一个朴素的浪费：<strong>对那些早有历史数据、明知优劣的海报，我们还在从零开始重新认识它们。</strong> 既然历史已经告诉我们哪些海报好，为什么不把这份认知直接搬进算法的起点？</p>
+<p>这就是<strong>热启动（warm start）</strong>：用海报<strong>近期历史的触新量 / 保存量</strong>作为 $v$、$n$ 的初值（而不是从 0 开始），让算法一上来就站在历史认知的肩膀上。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 模拟一段离线历史：每张海报约积累 40 次保存，触新数由真实辐射率生成</span>
+</span></span><span style="display:flex;"><span>hist_n <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rpois</span>(N_ARMS, lambda <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>hist_v <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rbinom</span>(N_ARMS, size <span style="color:#f92672">=</span> hist_n, prob <span style="color:#f92672">=</span> p_true)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>warm <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">bind_rows</span>(
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ucb&#34;</span>,
+</span></span><span style="display:flex;"><span>         label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCB cold-start (c=0.7)&#34;</span>, c_ucb <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>),
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mc_run</span>(p_true, N_PULLS, REPS, policy <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ucb&#34;</span>,
+</span></span><span style="display:flex;"><span>         label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCB warm-start (c=0.7)&#34;</span>, c_ucb <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.7</span>,
+</span></span><span style="display:flex;"><span>         init_v <span style="color:#f92672">=</span> hist_v, init_n <span style="color:#f92672">=</span> hist_n)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">plot_metrics</span>(warm,
+</span></span><span style="display:flex;"><span>  title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;UCB warm start: seed the estimates with history&#34;</span>,
+</span></span><span style="display:flex;"><span>  subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;The warm start begins near the top, skipping almost the entire cold-start exploration&#34;</span>)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/index.en_files/figure-html/fig-mc-warmstart-1.png" alt="" width="888" />
+<p>热启动的<strong>最优动作比例</strong>几乎一上来就在高位——它省掉了整段&quot;从头认识每张海报&quot;的冷启动流量；<strong>累计后悔</strong>也被压到冷启动的一半以下。换算成线上，这意味着实验能更快收敛、更早决定是否放量，把宝贵的流量从&quot;交学费&quot;挪到&quot;赚收益&rdquo;。</p>
+<h2 id="小结">小结</h2>
+<p>这几种做法连起来，是一条&quot;让探索越来越便宜&quot;的路：</p>
+<ol>
+<li><strong>MAB</strong> 把&quot;探索 vs 利用&quot;变成一个可计算的问题，用<strong>后悔</strong>当尺子；</li>
+<li><strong>Epsilon-Greedy</strong> 是最直接的基线，但盲目探索让它的后悔线性增长，且对次优和最差一视同仁；</li>
+<li><strong>UCB</strong> 用&quot;乐观面对不确定性&quot;取代掷骰子——无随机、可复算、能冷启动；但它的探索因子 $c$ <strong>必须和奖励尺度对齐</strong>，默认的 $c=2$ 在辐射率这种窄差距场景会过度探索，调到 $0.7$ 才真正跑赢基线；</li>
+<li><strong>Thompson Sampling</strong> 把探索变成&quot;从各臂的 Beta 后验里采样&quot;，零超参、在这组测试里表现最好；代价是带随机、不可复算；</li>
+<li><strong>UCB 热启动</strong> 是工程落地的选择——正因为 UCB 无随机、可复算、易灌历史先验，把认知灌进起点后，让探索越来越便宜。</li>
+</ol>
+<p>而真正让这套演进可信的，是贯穿始终的<strong>蒙特卡洛验证</strong>：不看单次跑的偶然曲线，而是固定环境、重复上百次，用最优动作比例 / 累计辐射率 / 累计后悔三条均值曲线，去回答&quot;它到底收没收敛、赚没赚到、值不值&quot;这三个独立的问题。也正是这套验证，让我们在上线前就看清了&quot;默认 $c=2$ 并不好&quot;这件事。</p>
+<hr>
+<p><em>参考：<a href="https://hrl.boyuai.com/chapter/1/%E5%A4%9A%E8%87%82%E8%80%81%E8%99%8E%E6%9C%BA/">动手学强化学习 · 多臂老虎机</a>；<a href="https://blog.csdn.net/u011984148/article/details/106678502">不只是 A/B 测试：多臂老虎机赌徒实验</a>。</em></p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/bandit"
+      >Bandit</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ucb"
+      >UCB</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/exploration-exploitation"
+      >Exploration-Exploitation</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/monte-carlo"
+      >Monte-Carlo</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/"
+      ><span>转化率预测：分群方法、特征筛选与可解释归因</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -16,7 +16,10 @@ options(
   # to disable knitting Rmd files on save, set this option to FALSE
   blogdown.knit.on_save = TRUE,
   # build .Rmd to .md; to build to .html (via Pandoc), set this option to 'html'
-  blogdown.method = 'markdown'
+  blogdown.method = 'markdown',
+  # theme renders math client-side with KaTeX on $...$ / $$...$$ delimiters, so
+  # do NOT wrap CJK-adjacent inline math in backtick-\(...\) (KaTeX can't see it)
+  blogdown.protect.math = FALSE
 )
 
 # fix Hugo version
