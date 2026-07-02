@@ -1,5 +1,5 @@
 ---
-title: 多臂老虎机实战
+title: 多臂老虎机：海报推荐
 author: xiebro
 date: '2026-07-02'
 slug: []
