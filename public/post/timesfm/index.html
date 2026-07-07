@@ -1,0 +1,673 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>TimesFM：把时序预测变成一次推理 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="做招生、做投放、做运营的，几乎每天都在回答同一个问题：
+下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？
+以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。
+这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&quot;零样本&quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。
+文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。
+一、什么是&quot;时序基础模型&quot; 传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&quot;时间序列大致长什么样、会怎么走&quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。
+可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。
+体现在流程上，传统 ML 那套是 数据 → 划分 → 训练 → 验证，动辄小半天；TimesFM 是 数据 → 载入权重 → 预测，几秒钟的事。
+TimesFM 出自 Google 的论文 A Decoder-Only Foundation Model for Time-Series Forecasting（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&quot;token&quot;从词换成了一段段数值。
+二、它内部大概怎么转 它能这么用，背后大概是三件事在起作用。
+Patching：把数值切成块再喂进去。 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2." />
+  <meta name="author" content="xiebro &amp; claude" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="TimesFM：把时序预测变成一次推理">
+<meta itemprop="description" content="做招生、做投放、做运营的，几乎每天都在回答同一个问题：
+下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？
+以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。
+这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&quot;零样本&quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。
+文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。
+一、什么是&quot;时序基础模型&quot; 传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&quot;时间序列大致长什么样、会怎么走&quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。
+可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。
+体现在流程上，传统 ML 那套是 数据 → 划分 → 训练 → 验证，动辄小半天；TimesFM 是 数据 → 载入权重 → 预测，几秒钟的事。
+TimesFM 出自 Google 的论文 A Decoder-Only Foundation Model for Time-Series Forecasting（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&quot;token&quot;从词换成了一段段数值。
+二、它内部大概怎么转 它能这么用，背后大概是三件事在起作用。
+Patching：把数值切成块再喂进去。 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2."><meta itemprop="datePublished" content="2026-07-06T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-07-06T00:00:00+00:00" />
+<meta itemprop="wordCount" content="863">
+<meta itemprop="keywords" content="TimesFM,Time-Series,Foundation-Model,Forecasting,Transformer," />
+  
+  <meta property="og:title" content="TimesFM：把时序预测变成一次推理" />
+<meta property="og:description" content="做招生、做投放、做运营的，几乎每天都在回答同一个问题：
+下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？
+以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。
+这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&quot;零样本&quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。
+文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。
+一、什么是&quot;时序基础模型&quot; 传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&quot;时间序列大致长什么样、会怎么走&quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。
+可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。
+体现在流程上，传统 ML 那套是 数据 → 划分 → 训练 → 验证，动辄小半天；TimesFM 是 数据 → 载入权重 → 预测，几秒钟的事。
+TimesFM 出自 Google 的论文 A Decoder-Only Foundation Model for Time-Series Forecasting（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&quot;token&quot;从词换成了一段段数值。
+二、它内部大概怎么转 它能这么用，背后大概是三件事在起作用。
+Patching：把数值切成块再喂进去。 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/timesfm/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-07-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-07-06T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="TimesFM：把时序预测变成一次推理"/>
+<meta name="twitter:description" content="做招生、做投放、做运营的，几乎每天都在回答同一个问题：
+下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？
+以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。
+这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&quot;零样本&quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。
+文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。
+一、什么是&quot;时序基础模型&quot; 传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&quot;时间序列大致长什么样、会怎么走&quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。
+可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。
+体现在流程上，传统 ML 那套是 数据 → 划分 → 训练 → 验证，动辄小半天；TimesFM 是 数据 → 载入权重 → 预测，几秒钟的事。
+TimesFM 出自 Google 的论文 A Decoder-Only Foundation Model for Time-Series Forecasting（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&quot;token&quot;从词换成了一段段数值。
+二、它内部大概怎么转 它能这么用，背后大概是三件事在起作用。
+Patching：把数值切成块再喂进去。 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/timesfm/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">TimesFM：把时序预测变成一次推理</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Jul 6, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro &amp; claude</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p>做招生、做投放、做运营的，几乎每天都在回答同一个问题：</p>
+<blockquote>
+<p><strong>下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？</strong></p>
+</blockquote>
+<p>以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。</p>
+<p>这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&quot;零样本&quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。</p>
+<blockquote>
+<p>文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。</p>
+</blockquote>
+<h2 id="一什么是时序基础模型">一、什么是&quot;时序基础模型&quot;</h2>
+<p>传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&quot;时间序列大致长什么样、会怎么走&quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。</p>
+<p>可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。</p>
+<p>体现在流程上，传统 ML 那套是 <code>数据 → 划分 → 训练 → 验证</code>，动辄小半天；TimesFM 是 <code>数据 → 载入权重 → 预测</code>，几秒钟的事。</p>
+<p>TimesFM 出自 Google 的论文 <em>A Decoder-Only Foundation Model for Time-Series Forecasting</em>（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&quot;token&quot;从词换成了一段段数值。</p>
+<h2 id="二它内部大概怎么转">二、它内部大概怎么转</h2>
+<p>它能这么用，背后大概是三件事在起作用。</p>
+<p><strong>Patching：把数值切成块再喂进去。</strong> 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2.5 版把上下文窗口拉到了 16384。</p>
+<p><strong>Decoder-only + 因果注意力 + 自回归。</strong> 和 GPT 一样，它带因果掩码（只能看过去、看不到未来），一个 patch 一个 patch 地自回归生成：先根据历史生成第一个未来 patch，接上，再生成下一个。位置信息用旋转位置编码（RoPE），归一化用 RMSNorm，都是现在 Transformer 的标配，长序列外推更稳，这里不展开。</p>
+<p><strong>RevIN 实例归一化，零样本能跨量纲靠的就是它。</strong> 招生量是几十上百，GMV 是几十万，气温在 0 上下。一个模型怎么同时吃这些量级？靠的是进模型前先标准化、出来再还原：</p>
+<p>$$
+\tilde{x} = \frac{x - \mu}{\sigma} \quad\xrightarrow{\ \text{model}\ }\quad \hat{x} = \hat{\tilde{x}} \cdot \sigma + \mu
+$$</p>
+<p>模型自始至终只看到均值 0、方差 1 的标准形态，预测完再乘回这条序列自己的 $\sigma$、加回 $\mu$。所以同一套权重，招生量能预测，GMV 也能，气温还行。对应到 API 就是 <code>normalize_inputs=True</code> 这个开关，多尺度的数据基本一直开着。</p>
+<h2 id="三上手三步就能预测">三、上手：三步就能预测</h2>
+<p>TimesFM 2.5 的接口挺简单，就三步：载入 → compile 配置 → forecast。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> timesfm
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>torch<span style="color:#f92672">.</span>set_float32_matmul_precision(<span style="color:#e6db74">&#34;high&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1) 载入预训练权重（首次会从 HuggingFace 下载 ~800MB）</span>
+</span></span><span style="display:flex;"><span>model <span style="color:#f92672">=</span> timesfm<span style="color:#f92672">.</span>TimesFM_2p5_200M_torch<span style="color:#f92672">.</span>from_pretrained(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;google/timesfm-2.5-200m-pytorch&#34;</span>, torch_compile<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2) 配置预测行为</span>
+</span></span><span style="display:flex;"><span>model<span style="color:#f92672">.</span>compile(timesfm<span style="color:#f92672">.</span>ForecastConfig(
+</span></span><span style="display:flex;"><span>    max_context<span style="color:#f92672">=</span><span style="color:#ae81ff">512</span>,                   <span style="color:#75715e"># 往回看多长</span>
+</span></span><span style="display:flex;"><span>    max_horizon<span style="color:#f92672">=</span><span style="color:#ae81ff">21</span>,                    <span style="color:#75715e"># 往前预测多长</span>
+</span></span><span style="display:flex;"><span>    normalize_inputs<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,             <span style="color:#75715e"># RevIN：跨量纲的开关</span>
+</span></span><span style="display:flex;"><span>    use_continuous_quantile_head<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, <span style="color:#75715e"># 更好校准的分位数区间</span>
+</span></span><span style="display:flex;"><span>    fix_quantile_crossing<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,        <span style="color:#75715e"># 保证 q10&lt;=q20&lt;=...&lt;=q90 单调不交叉</span>
+</span></span><span style="display:flex;"><span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3) 零样本预测（inputs 是一批序列，可以一次喂多条）</span>
+</span></span><span style="display:flex;"><span>point_forecast, quantile_forecast <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>forecast(horizon<span style="color:#f92672">=</span><span style="color:#ae81ff">21</span>, inputs<span style="color:#f92672">=</span>[series])
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># point_forecast:    (N, 21)      # 两个输出的结构见下文</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># quantile_forecast: (N, 21, 10)</span>
+</span></span></code></pre></div><p>在往下看场景之前，先把<strong>输入和输出的数据结构</strong>理清楚，后面三个场景都是这一套。</p>
+<p><strong>输入 <code>inputs</code></strong> 是一个列表，每个元素是一条序列（一维数组）。多条序列长度可以不一样，模型内部会自己截断/对齐，不用你手动补齐：</p>
+<pre tabindex="0"><code>inputs = [                       # 一个 list，装 N 条序列
+    np.array([12, 15, 13, ...]), #   序列①：比如 159 天历史，一维
+    np.array([88, 90, ...]),     #   序列②：长度可以和①不同
+]                                #   本文场景一只喂 1 条，即 N=1
+</code></pre><p><strong>输出</strong>是两个数组，形状里 <code>N</code> = 序列条数、<code>H</code> = 预测步数（horizon）：</p>
+<pre tabindex="0"><code>point_forecast     shape (N, H)       每条序列未来 H 步的点预测（= q50 中位数）
+quantile_forecast  shape (N, H, 10)   每条序列、每一步，给出 10 个分位数
+
+# 场景一里 N=1、H=21，于是：
+#   point_forecast    -&gt; (1, 21)
+#   quantile_forecast -&gt; (1, 21, 10)
+</code></pre><p><code>quantile_forecast</code> 最后那一维的 10 个数，含义按索引<strong>固定排布</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">索引</th>
+<th style="text-align:center">0</th>
+<th style="text-align:center">1</th>
+<th style="text-align:center">2</th>
+<th style="text-align:center">3</th>
+<th style="text-align:center">4</th>
+<th style="text-align:center">5</th>
+<th style="text-align:center">6</th>
+<th style="text-align:center">7</th>
+<th style="text-align:center">8</th>
+<th style="text-align:center">9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">含义</td>
+<td style="text-align:center">mean</td>
+<td style="text-align:center">q10</td>
+<td style="text-align:center">q20</td>
+<td style="text-align:center">q30</td>
+<td style="text-align:center">q40</td>
+<td style="text-align:center">q50</td>
+<td style="text-align:center">q60</td>
+<td style="text-align:center">q70</td>
+<td style="text-align:center">q80</td>
+<td style="text-align:center">q90</td>
+</tr>
+</tbody>
+</table>
+<p>注意 index 0 是<strong>均值 mean，不是 q10</strong>，分位数从 index 1 才开始，取的时候留意：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>qf <span style="color:#f92672">=</span> quantile_forecast[<span style="color:#ae81ff">0</span>]     <span style="color:#75715e"># 取第 1 条序列 -&gt; (21, 10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ❌ 错：lower = qf[:, 0]  这是 mean！</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ✅ 对：</span>
+</span></span><span style="display:flex;"><span>q10, q50, q90 <span style="color:#f92672">=</span> qf[:, <span style="color:#ae81ff">1</span>], qf[:, <span style="color:#ae81ff">5</span>], qf[:, <span style="color:#ae81ff">9</span>]   <span style="color:#75715e"># 10% / 50%(中位数) / 90%</span>
+</span></span></code></pre></div><p><code>q10~q90</code> 围出的是 80% 预测区间，<code>q20~q80</code> 是 60% 区间，点预测 <code>point_forecast</code> 就等于 <code>q50</code>。</p>
+<h2 id="四场景一渠道日招生量的零样本预测">四、场景一：渠道日招生量的零样本预测</h2>
+<p><strong>场景。</strong> 某体验课渠道的日招生量，带明显的周季节性（周末报名更旺）和缓慢的上升趋势。模拟 180 天，把最后 21 天藏起来当&quot;标准答案&quot;，让模型只看前面，去预测这 21 天。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_admission_series</span>(n_days<span style="color:#f92672">=</span><span style="color:#ae81ff">180</span>, seed<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>):
+</span></span><span style="display:flex;"><span>    rng <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>default_rng(seed)
+</span></span><span style="display:flex;"><span>    t <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>arange(n_days)
+</span></span><span style="display:flex;"><span>    trend  <span style="color:#f92672">=</span> <span style="color:#ae81ff">42</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0.16</span> <span style="color:#f92672">*</span> t                                    <span style="color:#75715e"># 缓慢爬坡的大盘</span>
+</span></span><span style="display:flex;"><span>    dow    <span style="color:#f92672">=</span> t <span style="color:#f92672">%</span> <span style="color:#ae81ff">7</span>                                            <span style="color:#75715e"># 0=周一 ... 6=周日</span>
+</span></span><span style="display:flex;"><span>    weekly <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(dow <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">22</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>where(dow <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">0</span>)  <span style="color:#75715e"># 周末更旺</span>
+</span></span><span style="display:flex;"><span>    season <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sin(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>pi <span style="color:#f92672">*</span> t <span style="color:#f92672">/</span> <span style="color:#ae81ff">30</span>)                  <span style="color:#75715e"># 月度小波动</span>
+</span></span><span style="display:flex;"><span>    noise  <span style="color:#f92672">=</span> rng<span style="color:#f92672">.</span>normal(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, n_days)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>clip(trend <span style="color:#f92672">+</span> weekly <span style="color:#f92672">+</span> season <span style="color:#f92672">+</span> noise, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">None</span>)<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>float32)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>HORIZON <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>
+</span></span><span style="display:flex;"><span>full <span style="color:#f92672">=</span> make_admission_series()
+</span></span><span style="display:flex;"><span>context, actual_future <span style="color:#f92672">=</span> full[:<span style="color:#f92672">-</span>HORIZON], full[<span style="color:#f92672">-</span>HORIZON:]   <span style="color:#75715e"># 藏起最后 21 天</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>point_forecast, quantile_forecast <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>forecast(horizon<span style="color:#f92672">=</span>HORIZON, inputs<span style="color:#f92672">=</span>[context])
+</span></span></code></pre></div><p>结果如下。蓝线是点预测，深浅两条蓝带分别是 60% / 80% 区间，红色虚线是藏起来的真实值：</p>
+<img src="images/01_admission_forecast.png" alt="渠道日招生量零样本预测" width="900" />
+<p>模型没在这条序列上训练、也没调过参，但周末抬头的节律基本复现出来了，MAPE 5.4%；藏起来的 21 天真实值全落在 80% 区间里（覆盖率 100%）。给一段历史，点预测和不确定区间就一起出来了。</p>
+<blockquote>
+<p>对运营来说，那条蓝带有时比中间那根线更有用：它把正常波动的上下界圈了出来。</p>
+</blockquote>
+<h2 id="五场景二用预测区间做异常检测">五、场景二：用预测区间做异常检测</h2>
+<p>既然模型已经给出了&quot;正常情况下该落在哪个区间&quot;，那实际值一旦跑出区间，就可以当异常信号看，不用再单独搞一个异常检测模型。规则也简单：</p>
+<ul>
+<li>实际值落在 80% 区间（q10~q90）之外 → <code>CRITICAL</code></li>
+<li>落在 60% 区间（q20~q80）之外、但还在 80% 内 → <code>WARNING</code></li>
+<li>否则 → <code>NORMAL</code></li>
+</ul>
+<p>在验证段人为注入两个异常：第 6 天一次大促尖峰（+70%），第 14 天一次投放系统故障塌陷（掉到 35%）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>actual[<span style="color:#ae81ff">6</span>]  <span style="color:#f92672">*=</span> <span style="color:#ae81ff">1.7</span>    <span style="color:#75715e"># 大促尖峰</span>
+</span></span><span style="display:flex;"><span>actual[<span style="color:#ae81ff">14</span>] <span style="color:#f92672">*=</span> <span style="color:#ae81ff">0.35</span>   <span style="color:#75715e"># 系统故障塌陷</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>qf <span style="color:#f92672">=</span> quantile_forecast[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>q10, q20, q80, q90 <span style="color:#f92672">=</span> qf[:, <span style="color:#ae81ff">1</span>], qf[:, <span style="color:#ae81ff">2</span>], qf[:, <span style="color:#ae81ff">8</span>], qf[:, <span style="color:#ae81ff">9</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>severity <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>full(HORIZON, <span style="color:#e6db74">&#34;NORMAL&#34;</span>, dtype<span style="color:#f92672">=</span>object)
+</span></span><span style="display:flex;"><span>severity[(actual <span style="color:#f92672">&lt;</span> q20) <span style="color:#f92672">|</span> (actual <span style="color:#f92672">&gt;</span> q80)] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;WARNING&#34;</span>    <span style="color:#75715e"># 先标 60% 外</span>
+</span></span><span style="display:flex;"><span>severity[(actual <span style="color:#f92672">&lt;</span> q10) <span style="color:#f92672">|</span> (actual <span style="color:#f92672">&gt;</span> q90)] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;CRITICAL&#34;</span>   <span style="color:#75715e"># 再覆盖 80% 外</span>
+</span></span></code></pre></div><img src="images/02_anomaly_detection.png" alt="用 TimesFM 预测区间做异常检测" width="900" />
+<p>两个注入的异常都被判成 <code>CRITICAL</code>（红叉）：第 6 天实际 125.6，正常区间上界才到 88.7；第 14 天实际 29.8，下界还在 76.7。几个贴着边界的小波动标成了 <code>WARNING</code>（橙三角）。相当于一次预测顺带干了监控告警的活——日常盯盘不用再给每个指标拍一个&quot;跌 10% 就报警&quot;的死阈值，区间会随历史波动性自己收放。</p>
+<h2 id="六场景三把已知的促销节假日喂给模型协变量-xreg">六、场景三：把已知的促销/节假日喂给模型（协变量 XReg）</h2>
+<p>前两个场景只用了历史序列本身。但运营里很多未来其实是提前知道的：下周三要大促、下个月有假期、这批课准备调价。这些已知的外部信息就是协变量（covariates），TimesFM 2.5 通过 XReg 支持（要 <code>pip install timesfm[xreg]</code>）。</p>
+<p>协变量分动态、静态两类，都以「字典」传入——key 是协变量名，value 是&quot;每条序列一个元素&quot;的列表，按下标和 <code>inputs</code> 对齐。区别只在于那个元素是一整条数组还是一个标量：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">参数</th>
+<th style="text-align:left">每条序列给什么</th>
+<th style="text-align:left">长度</th>
+<th style="text-align:left">例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>dynamic_numerical_covariates</code></td>
+<td style="text-align:left">一条时间序列</td>
+<td style="text-align:left"><code>context + horizon</code></td>
+<td style="text-align:left">价格 <code>price</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>dynamic_categorical_covariates</code></td>
+<td style="text-align:left">一条时间序列</td>
+<td style="text-align:left"><code>context + horizon</code></td>
+<td style="text-align:left">是否促销 / 节假日</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>static_numerical_covariates</code></td>
+<td style="text-align:left">一个标量</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">基准客单价</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>static_categorical_covariates</code></td>
+<td style="text-align:left">一个标量（int / 字符串）</td>
+<td style="text-align:left">1</td>
+<td style="text-align:left">渠道类型 <code>store_type</code></td>
+</tr>
+</tbody>
+</table>
+<p>动态协变量得覆盖 <code>context + horizon</code>——未来那段的值也要给全，模型正是靠&quot;未来的促销安排&quot;去修正预测的；静态协变量一条序列只给一个固定值。拿本场景的 3 个渠道（context=24 周、horizon=12 周）落到具体形状：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>inputs <span style="color:#f92672">=</span> [ sales_A, sales_B, sales_C ]                    <span style="color:#75715e"># 目标序列：每条长 24（各自历史）</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dynamic_numerical_covariates <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;price&#34;</span>:     [ price_A, price_B, price_C ],           <span style="color:#75715e"># 每条长 36 = 24 + 12</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>dynamic_categorical_covariates <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;promotion&#34;</span>: [ [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>], <span style="color:#f92672">...</span> ],             <span style="color:#75715e"># 每条长 36，值 0/1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;holiday&#34;</span>:   [ [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#f92672">...</span>], <span style="color:#f92672">...</span> ],
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>static_categorical_covariates <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;store_type&#34;</span>: [ <span style="color:#e6db74">&#34;premium&#34;</span>, <span style="color:#e6db74">&#34;standard&#34;</span>, <span style="color:#e6db74">&#34;discount&#34;</span> ],  <span style="color:#75715e"># list 长 3，每条序列一个值</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;region&#34;</span>:     [ <span style="color:#e6db74">&#34;urban&#34;</span>,   <span style="color:#e6db74">&#34;suburban&#34;</span>, <span style="color:#e6db74">&#34;rural&#34;</span>    ],
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>inputs</code> 和这几个 list 都靠<strong>下标</strong>一一对应（不是靠名字），顺序、长度（= 序列条数）必须一致。</p>
+<p>有一点值得点破：这些协变量并不进 Transformer 主干，而是走一条<strong>线性回归旁路</strong>。类别值先做 one-hot，动态协变量按 <code>context</code> / <code>horizon</code> 切成两段，一起喂给一个 in-context 线性模型；Transformer 主干只吃目标序列，两路结果最后按 <code>xreg_mode</code> 合并。输出结构和 <code>forecast()</code> 一样是点预测 + 分位数，只是按序列组织成 list（<code>xreg_pf[i]</code> 就是第 i 条序列未来 H 步的预测）。</p>
+<p>模拟 3 个渠道的周销量，在未来 horizon 段里放进两次促销、一次节假日。这些尖峰纯看历史猜不出来，但作为协变量喂进去就能补上：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># baseline：只喂历史，模型看不到未来的促销/节假日</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># （开了 return_backcast 后 forecast() 输出含 backcast，未来段取最后 HORIZON 个）</span>
+</span></span><span style="display:flex;"><span>base_raw, _ <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>forecast(horizon<span style="color:#f92672">=</span>HORIZON, inputs<span style="color:#f92672">=</span>list(context_inputs))
+</span></span><span style="display:flex;"><span>base_pf <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>asarray(base_raw)[:, <span style="color:#f92672">-</span>HORIZON:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># XReg：把 price / promotion / holiday 作为协变量</span>
+</span></span><span style="display:flex;"><span>xreg_pf, _ <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>forecast_with_covariates(
+</span></span><span style="display:flex;"><span>    inputs<span style="color:#f92672">=</span>list(context_inputs),
+</span></span><span style="display:flex;"><span>    dynamic_numerical_covariates<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;price&#34;</span>: [prices[s] <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> ids]},
+</span></span><span style="display:flex;"><span>    dynamic_categorical_covariates<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;promotion&#34;</span>: [promos[s]<span style="color:#f92672">.</span>astype(int) <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> ids],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;holiday&#34;</span>:   [holidays[s]<span style="color:#f92672">.</span>astype(int) <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> ids],
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    static_categorical_covariates<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;store_type&#34;</span>: [stores[s][<span style="color:#e6db74">&#34;type&#34;</span>] <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> ids],
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;region&#34;</span>:     [stores[s][<span style="color:#e6db74">&#34;region&#34;</span>] <span style="color:#66d9ef">for</span> s <span style="color:#f92672">in</span> ids],
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    xreg_mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;xreg + timesfm&#34;</span>,   <span style="color:#75715e"># 默认：先 TimesFM 出基线，再用协变量拟合残差</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><img src="images/03_covariates_sales.png" alt="销量预测：baseline vs 协变量 XReg" width="960" />
+<p>左图里，灰线（无协变量的 baseline）在未来段只会顺着趋势平走，绿色促销周和橙色节假日周的尖峰全错过了；蓝线（XReg）吃到了&quot;未来这几周有促销/节假日&quot;的信息，就把尖峰顶了上去。右图的 MAE 对比也很清楚，三个渠道从 <code>62 / 54 / 82</code> 降到 <code>18 / 22 / 41</code>，大概降到原来的三分之一。</p>
+<p><code>xreg_mode</code> 有两种，分工不太一样：</p>
+<ul>
+<li><code>&quot;xreg + timesfm&quot;</code>（默认）：先让 TimesFM 出基线，再用协变量拟合残差。适合协变量解释的是偏离主趋势的那部分，比如促销、节假日这种脉冲。</li>
+<li><code>&quot;timesfm + xreg&quot;</code>：先用协变量回归出主信号，再让 TimesFM 预测残差。适合协变量本身就是主要驱动力，比如气温对用电量。</li>
+</ul>
+<h2 id="七几个容易踩的坑">七、几个容易踩的坑</h2>
+<ol>
+<li>分位数索引 off-by-one：<code>quantile_forecast[..., 0]</code> 是 mean 不是 q10，分位数从 index 1 起，别取错。</li>
+<li>2.5 去掉了频率标志：老版本（1.0 / 2.0）要传 <code>freq=[0]</code> 之类，2.5 不需要了，接口清爽不少。</li>
+<li>动态协变量长度 = context + horizon：未来段的值也要给全，否则报错。</li>
+<li><code>normalize_inputs=True</code> 基本一直开：多尺度数据不开 RevIN，效果会明显变差。</li>
+<li>XReg 要先开 <code>return_backcast=True</code>，开完 <code>forecast()</code> 输出会带 backcast，取未来段记得切最后 <code>horizon</code> 个点——我在场景三就为这个形状栽过一次。</li>
+</ol>
+<hr>
+<p><em>参考：<a href="https://arxiv.org/abs/2310.10688">A Decoder-Only Foundation Model for Time-Series Forecasting (ICML 2024)</a>；<a href="https://research.google/blog/a-decoder-only-foundation-model-for-time-series-forecasting/">Google Research Blog</a>；<a href="https://huggingface.co/collections/google/timesfm-release-66e4be5fdb56e960c1e482a6">TimesFM on HuggingFace</a>。文中三张图都是本地跑 TimesFM 2.5（200M, PyTorch）在模拟数据上生成的。</em></p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/timesfm"
+      >TimesFM</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/time-series"
+      >Time-Series</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/foundation-model"
+      >Foundation-Model</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/forecasting"
+      >Forecasting</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/transformer"
+      >Transformer</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/"
+      ><span>多臂老虎机：海报推荐</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

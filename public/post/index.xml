@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 02 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TimesFM：把时序预测变成一次推理</title>
+      <link>https://www.xiebro.cool/post/timesfm/</link>
+      <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/timesfm/</guid>
+      <description>做招生、做投放、做运营的，几乎每天都在回答同一个问题：&#xA;下周这个渠道的量大概多少？会不会掉？掉了是正常波动还是出事了？&#xA;以前回答这个，得给每条序列单独配个模型：这个渠道用 ARIMA，那个指标套 Prophet，季节项、节假日再手动调一遍。渠道一多、指标一杂，光是维护这一堆各管一段的小模型就够喝一壶了。TimesFM 换了个思路：不再为每条序列训模型，而是拿一个在海量时间序列上预训练好的大模型，喂进一段历史，直接读出未来。跟 GPT 处理文本一个路子，只是它读的是数值。&#xA;这篇不推公式，就把 TimesFM 拿到运营场景里真跑一遍。先说清它凭什么能&amp;quot;零样本&amp;quot;预测、内部大概怎么转，再用三个场景把代码和图摆出来：渠道日招生量预测、招生量异常检测、带促销和价格协变量的销量预测。&#xA;文中数据都是模拟生成的，业务框架取自日常运营场景，数字跟真实经营指标无关。模型是 Google 开源的 TimesFM 2.5（200M），本地 CPU 就能跑。&#xA;一、什么是&amp;quot;时序基础模型&amp;quot; 传统预测模型基本是一序列一模型：它只见过你这一条数据，换个对象就得重新拟合、重新调参。TimesFM 反过来，它在大量跨领域的时间序列上预训练过——电力、金融、天气、零售、传感器都有——学的是&amp;quot;时间序列大致长什么样、会怎么走&amp;quot;这种通用规律。所以碰到一条没见过的新序列，它不用在你的数据上训练，推理时读一段历史上下文，就能给出预测和区间。这叫零样本（zero-shot）预测。&#xA;可以这么理解：传统模型像个只翻过技术手册的译者，手册翻得挺熟，换本小说就抓瞎；基础模型更像读过各种书的人，给他一段没读过的文字也能大致顺下去。差别就在要不要专门为你这份数据训练一遍。&#xA;体现在流程上，传统 ML 那套是 数据 → 划分 → 训练 → 验证，动辄小半天；TimesFM 是 数据 → 载入权重 → 预测，几秒钟的事。&#xA;TimesFM 出自 Google 的论文 A Decoder-Only Foundation Model for Time-Series Forecasting（ICML 2024），是个 decoder-only 的 Transformer，跟语言模型同一个家族，只是把&amp;quot;token&amp;quot;从词换成了一段段数值。&#xA;二、它内部大概怎么转 它能这么用，背后大概是三件事在起作用。&#xA;Patching：把数值切成块再喂进去。 一条几千上万点的序列，一个时间点当一个 token 的话，又长又碎。TimesFM 的做法是分块（patch）：连续 32 个点打包成一个输入 token，连续 128 个点作为一个输出 token。这样一条 2048 点的历史就变成约 64 个输入 token，生成时一次吐 128 个点。读得细、写得粗——读历史要看清纹理，往外生成时大步走更省算力。2.</description>
+    </item>
     <item>
       <title>多臂老虎机：海报推荐</title>
       <link>https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/</link>

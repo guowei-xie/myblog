@@ -3,12 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/bandit/</loc>
-    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+    <loc>https://www.xiebro.cool/categories/ai/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/forecasting/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/foundation-model/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/machine-learning/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/time-series/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/timesfm/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/timesfm/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/transformer/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/bandit/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/exploration-exploitation/</loc>
@@ -23,22 +53,13 @@
     <loc>https://www.xiebro.cool/categories/r/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/ucb/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/2026-07-02-multi-armed-bandit/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/</loc>
-    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/attribution/</loc>
-    <lastmod>2026-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/forecasting/</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/interpretability/</loc>
@@ -151,9 +172,6 @@
   </url><url>
     <loc>https://www.xiebro.cool/post/psm/</loc>
     <lastmod>2024-03-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/ai/</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/anomaly-detection/</loc>
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
