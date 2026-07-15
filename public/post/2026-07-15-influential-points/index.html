@@ -1,0 +1,759 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>回归诊断中的强影响点：从标准化残差到影响图 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&quot;回归诊断&quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。
+本文用一份模拟数据把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&quot;删除诊断&quot;——DFFITS、DFBETAS、COVRATIO。
+三种&quot;不正常&quot;的点 开始之前先厘清三个容易混为一谈的概念，它们彼此并不等价：
+离群值（outlier）：实际 $y$ 与预测值相距很远的记录，表现为大残差，是 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&quot;单条记录对回归方程所产生影响的大小&quot;。 强影响点（influential point）：书中的定义是——&ldquo;一个值一旦缺失就会显著改变回归方程&rdquo;。关键在于，这样的点未必伴随大残差。 一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&quot;既在 $x$ 方向极端、又偏离趋势&quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。
+模拟数据 构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&quot;线被带偏&quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个&quot;干净&quot;的点，再刻意植入三个特殊点 A、B、C：
+library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1." />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="回归诊断中的强影响点：从标准化残差到影响图">
+<meta itemprop="description" content="在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&quot;回归诊断&quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。
+本文用一份模拟数据把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&quot;删除诊断&quot;——DFFITS、DFBETAS、COVRATIO。
+三种&quot;不正常&quot;的点 开始之前先厘清三个容易混为一谈的概念，它们彼此并不等价：
+离群值（outlier）：实际 $y$ 与预测值相距很远的记录，表现为大残差，是 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&quot;单条记录对回归方程所产生影响的大小&quot;。 强影响点（influential point）：书中的定义是——&ldquo;一个值一旦缺失就会显著改变回归方程&rdquo;。关键在于，这样的点未必伴随大残差。 一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&quot;既在 $x$ 方向极端、又偏离趋势&quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。
+模拟数据 构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&quot;线被带偏&quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个&quot;干净&quot;的点，再刻意植入三个特殊点 A、B、C：
+library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1."><meta itemprop="datePublished" content="2026-07-15T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-07-15T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1459">
+<meta itemprop="keywords" content="Regression,Diagnostics,Influential-Points," />
+  
+  <meta property="og:title" content="回归诊断中的强影响点：从标准化残差到影响图" />
+<meta property="og:description" content="在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&quot;回归诊断&quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。
+本文用一份模拟数据把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&quot;删除诊断&quot;——DFFITS、DFBETAS、COVRATIO。
+三种&quot;不正常&quot;的点 开始之前先厘清三个容易混为一谈的概念，它们彼此并不等价：
+离群值（outlier）：实际 $y$ 与预测值相距很远的记录，表现为大残差，是 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&quot;单条记录对回归方程所产生影响的大小&quot;。 强影响点（influential point）：书中的定义是——&ldquo;一个值一旦缺失就会显著改变回归方程&rdquo;。关键在于，这样的点未必伴随大残差。 一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&quot;既在 $x$ 方向极端、又偏离趋势&quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。
+模拟数据 构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&quot;线被带偏&quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个&quot;干净&quot;的点，再刻意植入三个特殊点 A、B、C：
+library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/2026-07-15-influential-points/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-07-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-07-15T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="回归诊断中的强影响点：从标准化残差到影响图"/>
+<meta name="twitter:description" content="在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&quot;回归诊断&quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。
+本文用一份模拟数据把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&quot;删除诊断&quot;——DFFITS、DFBETAS、COVRATIO。
+三种&quot;不正常&quot;的点 开始之前先厘清三个容易混为一谈的概念，它们彼此并不等价：
+离群值（outlier）：实际 $y$ 与预测值相距很远的记录，表现为大残差，是 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&quot;单条记录对回归方程所产生影响的大小&quot;。 强影响点（influential point）：书中的定义是——&ldquo;一个值一旦缺失就会显著改变回归方程&rdquo;。关键在于，这样的点未必伴随大残差。 一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&quot;既在 $x$ 方向极端、又偏离趋势&quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。
+模拟数据 构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&quot;线被带偏&quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个&quot;干净&quot;的点，再刻意植入三个特殊点 A、B、C：
+library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1."/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/2026-07-15-influential-points/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">回归诊断中的强影响点：从标准化残差到影响图</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Jul 15, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><p>在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：<strong>这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？</strong>《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&quot;回归诊断&quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。</p>
+<p>本文用一份<strong>模拟数据</strong>把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&quot;删除诊断&quot;——DFFITS、DFBETAS、COVRATIO。</p>
+<h2 id="三种不正常的点">三种&quot;不正常&quot;的点</h2>
+<p>开始之前先厘清三个容易混为一谈的概念，它们<strong>彼此并不等价</strong>：</p>
+<ul>
+<li><strong>离群值（outlier）</strong>：实际 $y$ 与预测值相距很远的记录，表现为<strong>大残差</strong>，是 $y$ 方向上的异常。</li>
+<li><strong>高杠杆点（high leverage）</strong>：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&quot;单条记录对回归方程所产生影响的大小&quot;。</li>
+<li><strong>强影响点（influential point）</strong>：书中的定义是——&ldquo;一个值一旦缺失就会显著改变回归方程&rdquo;。关键在于，这样的点<strong>未必</strong>伴随大残差。</li>
+</ul>
+<p>一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&quot;既在 $x$ 方向极端、又偏离趋势&quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。</p>
+<h2 id="模拟数据">模拟数据</h2>
+<p>构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&quot;线被带偏&quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。</p>
+<p>真实关系设为 $y = 3 + 1.5x + \varepsilon$，先生成 40 个&quot;干净&quot;的点，再刻意植入三个特殊点 A、B、C：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">2026</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>n_base  <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">40</span>
+</span></span><span style="display:flex;"><span>x_base  <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">runif</span>(n_base, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">12</span>)
+</span></span><span style="display:flex;"><span>y_base  <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.5</span> <span style="color:#f92672">*</span> x_base <span style="color:#f92672">+</span> <span style="color:#a6e22e">rnorm</span>(n_base, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1.2</span>)
+</span></span><span style="display:flex;"><span>base    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(x <span style="color:#f92672">=</span> x_base, y <span style="color:#f92672">=</span> y_base, label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;normal&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># B：x 居中、y 大幅偏离 —— 离群点</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># C：x 偏大、y 明显偏离趋势 —— 强影响点</span>
+</span></span><span style="display:flex;"><span>xB <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">7</span>;  yB <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.5</span> <span style="color:#f92672">*</span> xB <span style="color:#f92672">+</span> <span style="color:#ae81ff">9</span>
+</span></span><span style="display:flex;"><span>xC <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">13</span>; yC <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">7</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># A：x 最极端（高杠杆），但 y 落在&#34;其余数据所隐含的那条线&#34;上 —— 顺趋势</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 这样它虽然杠杆最高，加入后几乎不改变方程，是&#34;好杠杆点&#34;的典型</span>
+</span></span><span style="display:flex;"><span>rest    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">bind_rows</span>(base, <span style="color:#a6e22e">tibble</span>(x <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(xB, xC), y <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(yB, yC), label <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;B&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>)))
+</span></span><span style="display:flex;"><span>xA      <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">17</span>
+</span></span><span style="display:flex;"><span>yA      <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">as.numeric</span>(<span style="color:#a6e22e">predict</span>(<span style="color:#a6e22e">lm</span>(y <span style="color:#f92672">~</span> x, data <span style="color:#f92672">=</span> rest),
+</span></span><span style="display:flex;"><span>                              newdata <span style="color:#f92672">=</span> <span style="color:#a6e22e">tibble</span>(x <span style="color:#f92672">=</span> xA))) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0.6</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>special <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(label <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;B&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>),
+</span></span><span style="display:flex;"><span>                  x <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(xA, xB, xC),
+</span></span><span style="display:flex;"><span>                  y <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(yA, yB, yC))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dat <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">bind_rows</span>(base, special) <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">mutate</span>(obs <span style="color:#f92672">=</span> <span style="color:#a6e22e">row_number</span>())
+</span></span><span style="display:flex;"><span>n   <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">nrow</span>(dat)   <span style="color:#75715e"># 样本量</span>
+</span></span><span style="display:flex;"><span>p   <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span>           <span style="color:#75715e"># 预测变量个数（系数个数为 p + 1）</span>
+</span></span></code></pre></div><p>先拟合全量回归，并和&quot;剔除 C 之后&quot;的回归放在一张图上对比：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>fit    <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">lm</span>(y <span style="color:#f92672">~</span> x, data <span style="color:#f92672">=</span> dat)
+</span></span><span style="display:flex;"><span>fit_noC <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">lm</span>(y <span style="color:#f92672">~</span> x, data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(dat, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;C&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pts <span style="color:#f92672">&lt;-</span> dat <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(kind <span style="color:#f92672">=</span> <span style="color:#a6e22e">recode</span>(label,
+</span></span><span style="display:flex;"><span>                       normal <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;normal&#34;</span>,
+</span></span><span style="display:flex;"><span>                       A <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;A: high leverage&#34;</span>,
+</span></span><span style="display:flex;"><span>                       B <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;B: outlier&#34;</span>,
+</span></span><span style="display:flex;"><span>                       C <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;C: influential&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lab_pts <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">filter</span>(pts, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(pts, <span style="color:#a6e22e">aes</span>(x, y)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_point</span>(data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(pts, label <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;normal&#34;</span>),
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>], size <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.8</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_abline</span>(intercept <span style="color:#f92672">=</span> <span style="color:#a6e22e">coef</span>(fit)[1], slope <span style="color:#f92672">=</span> <span style="color:#a6e22e">coef</span>(fit)[2],
+</span></span><span style="display:flex;"><span>              color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;blue&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.9</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_abline</span>(intercept <span style="color:#f92672">=</span> <span style="color:#a6e22e">coef</span>(fit_noC)[1], slope <span style="color:#f92672">=</span> <span style="color:#a6e22e">coef</span>(fit_noC)[2],
+</span></span><span style="display:flex;"><span>              color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.9</span>, linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_point</span>(data <span style="color:#f92672">=</span> lab_pts, <span style="color:#a6e22e">aes</span>(color <span style="color:#f92672">=</span> kind), size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_text</span>(data <span style="color:#f92672">=</span> lab_pts, <span style="color:#a6e22e">aes</span>(label <span style="color:#f92672">=</span> label, color <span style="color:#f92672">=</span> kind),
+</span></span><span style="display:flex;"><span>            vjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-1</span>, fontface <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span>, show.legend <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">annotate</span>(<span style="color:#e6db74">&#34;text&#34;</span>, x <span style="color:#f92672">=</span> <span style="color:#ae81ff">15.5</span>, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">27</span>, label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;fit: all data&#34;</span>,
+</span></span><span style="display:flex;"><span>           color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;blue&#34;</span>], hjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">annotate</span>(<span style="color:#e6db74">&#34;text&#34;</span>, x <span style="color:#f92672">=</span> <span style="color:#ae81ff">15.5</span>, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">23.2</span>, label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;fit: without C&#34;</span>,
+</span></span><span style="display:flex;"><span>           color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>], hjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog<span style="color:#a6e22e">[c</span>(<span style="color:#e6db74">&#34;sage&#34;</span>, <span style="color:#e6db74">&#34;gold&#34;</span>, <span style="color:#e6db74">&#34;rose&#34;</span>)])) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Three kinds of unusual points&#34;</span>,
+</span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Dropping the single point C visibly rotates the regression line&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;x&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;y&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-scatter-1.png" alt="" width="888" />
+<p>三个点各司其职：<strong>A</strong> 在最右端（$x$ 极端），但正好落在其余点隐含的那条线上；<strong>B</strong> 的 $x$ 很普通，却高高地偏离；<strong>C</strong> 的 $x$ 偏大、$y$ 又明显偏低。注意实线（全量）与虚线（剔除 C）之间的夹角——只删掉 C 一个点，斜率就从 1.05 跳到 1.33。这正是书中图 4-5 想说的：<strong>一个点能不能左右回归线，和它残差大不大，是两回事。</strong></p>
+<p>下面把五个诊断量一次性算出来备用。它们全部来自 base R，无需额外依赖：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>d <span style="color:#f92672">&lt;-</span> dat <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
+</span></span><span style="display:flex;"><span>    hat       <span style="color:#f92672">=</span> <span style="color:#a6e22e">hatvalues</span>(fit),
+</span></span><span style="display:flex;"><span>    std_resid <span style="color:#f92672">=</span> <span style="color:#a6e22e">rstandard</span>(fit),
+</span></span><span style="display:flex;"><span>    cooks     <span style="color:#f92672">=</span> <span style="color:#a6e22e">cooks.distance</span>(fit),
+</span></span><span style="display:flex;"><span>    dffits    <span style="color:#f92672">=</span> <span style="color:#a6e22e">dffits</span>(fit),
+</span></span><span style="display:flex;"><span>    covratio  <span style="color:#f92672">=</span> <span style="color:#a6e22e">covratio</span>(fit)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>thr <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">list</span>(
+</span></span><span style="display:flex;"><span>  hat     <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> (p <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> n,          <span style="color:#75715e"># 杠杆值阈值</span>
+</span></span><span style="display:flex;"><span>  cooks   <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">/</span> (n <span style="color:#f92672">-</span> p <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>),          <span style="color:#75715e"># 库克距离阈值</span>
+</span></span><span style="display:flex;"><span>  dffits  <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">sqrt</span>((p <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> n),    <span style="color:#75715e"># DFFITS 阈值</span>
+</span></span><span style="display:flex;"><span>  dfbetas <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">/</span> <span style="color:#a6e22e">sqrt</span>(n),              <span style="color:#75715e"># DFBETAS 阈值</span>
+</span></span><span style="display:flex;"><span>  covr    <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> (p <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> n           <span style="color:#75715e"># COVRATIO 阈值（偏离 1 的幅度）</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>为了少写重复代码，先定义一个通用的&quot;索引图&quot;函数——横轴是观测序号，纵轴是某个诊断量，把 A/B/C 三点高亮出来：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>hl <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(normal <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>]),
+</span></span><span style="display:flex;"><span>        A <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;sage&#34;</span>]),
+</span></span><span style="display:flex;"><span>        B <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;gold&#34;</span>]),
+</span></span><span style="display:flex;"><span>        C <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>index_plot <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(df, yvar, title, ylab, hlines) {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">ggplot</span>(df, <span style="color:#a6e22e">aes</span>(obs, .data[[yvar]])) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> hlines, linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>               color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ink&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_segment</span>(<span style="color:#a6e22e">aes</span>(xend <span style="color:#f92672">=</span> obs, yend <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, color <span style="color:#f92672">=</span> label), linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_point</span>(<span style="color:#a6e22e">aes</span>(color <span style="color:#f92672">=</span> label, size <span style="color:#f92672">=</span> label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">geom_text</span>(data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(df, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>),
+</span></span><span style="display:flex;"><span>              <span style="color:#a6e22e">aes</span>(label <span style="color:#f92672">=</span> label, color <span style="color:#f92672">=</span> label),
+</span></span><span style="display:flex;"><span>              vjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-0.9</span>, fontface <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.4</span>, show.legend <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> hl, guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">scale_size_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1.6</span>, <span style="color:#ae81ff">3</span>), guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> title, x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;observation index&#34;</span>, y <span style="color:#f92672">=</span> ylab) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">theme_blog</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="指标一--标准化残差抓离群值">指标一 · 标准化残差：抓离群值</h2>
+<p>标准化残差是残差除以它自己的标准误，可以读作&quot;偏离回归线多少个标准误&quot;：</p>
+<p>$$
+r_i = \frac{e_i}{\hat\sigma \sqrt{1 - h_{ii}}}
+$$</p>
+<p>书中用它判定离群值，经验阈值是 $\pm 2.5$。在 R 里用 <code>rstandard()</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;std_resid&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Standardized residuals catch the outlier&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;standardized residual&#34;</span>, hlines <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-2.5</span>, <span style="color:#ae81ff">2.5</span>))
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-stdresid-1.png" alt="" width="888" />
+<p><strong>B</strong> 冲出了 $\pm 2.5$ 的红线（3.26），<strong>C</strong> 更是低到 -4.88。但请注意 <strong>A</strong>：它的标准化残差只有 0.18，完全正常。<strong>标准化残差只看 $y$ 方向的偏离，对&quot;藏在 $x$ 极端处&quot;的高杠杆点 A 视而不见。</strong></p>
+<h2 id="指标二--杠杆值抓-x-方向的极端">指标二 · 杠杆值：抓 x 方向的极端</h2>
+<p>杠杆值来自帽子矩阵。多元回归可写成 $\hat{Y} = HY$，其中</p>
+<p>$$
+H = X (X^{\top} X)^{-1} X^{\top}
+$$</p>
+<p>被称作帽子矩阵（它给 $Y$&ldquo;戴上帽子&quot;变成 $\hat{Y}$）。它的对角线元素 $h_{ii}$ 就是第 $i$ 个观测的杠杆值，衡量该点自变量取值有多&quot;极端&rdquo;。书中的经验法则是：超过 $2(p+1)/n$ 即为高杠杆。R 里用 <code>hatvalues()</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;hat&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Leverage catches the extreme-x points&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;leverage (hat value)&#34;</span>, hlines <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>hat)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-leverage-1.png" alt="" width="888" />
+<p>这次换成 <strong>A</strong> 和 <strong>C</strong> 越线，而残差巨大的 <strong>B</strong> 却贴在底部——它的 $x$ 太普通了。杠杆值<strong>完全不看响应变量 $y$</strong>，只问&quot;$x$ 有多极端&quot;。可见它和标准化残差恰好互补：一个管 $x$，一个管 $y$，<strong>但两者单独都不足以判断&rsquo;影响&rsquo;。</strong></p>
+<h2 id="指标三--库克距离抓真正的强影响点">指标三 · 库克距离：抓真正的强影响点</h2>
+<p>库克距离（Cook&rsquo;s distance）把前两者<strong>合二为一</strong>——它同时吃进残差大小与杠杆：</p>
+<p>$$
+D_i = \frac{r_i^{2}}{p + 1} \cdot \frac{h_{ii}}{1 - h_{ii}}
+$$</p>
+<p>直觉上，只有&quot;残差大 <strong>且</strong> 杠杆高&quot;的点，$D_i$ 才会同时被两个因子放大。书中给的经验阈值是 $4/(n - p - 1)$。R 里用 <code>cooks.distance()</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;cooks&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Cook&#39;s distance isolates the truly influential point&#34;</span>,
+</span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Cook&#39;s distance&#34;</span>, hlines <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>cooks)
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-cooks-1.png" alt="" width="888" />
+<p>结果一目了然：<strong>C 一骑绝尘</strong>（$D_C =$ 1.74），把阈值线远远甩在下面；<strong>B</strong> 只是勉强越线（残差大但杠杆低）；而杠杆最高的 <strong>A</strong>，库克距离几乎是 0（0.008）——<strong>因为它顺着趋势，删掉它方程根本不动。</strong> 这就是&quot;高杠杆 ≠ 强影响&quot;最干净的证据。</p>
+<h2 id="影响图一张图看全">影响图：一张图看全</h2>
+<p>书中这一节的招牌可视化，是把<strong>标准化残差、杠杆值、库克距离</strong>三者塞进同一张图——横轴放杠杆值，纵轴放标准化残差，<strong>点的大小随库克距离变化</strong>，库克距离超阈值的点用实心圆。这就是所谓的<strong>影响图</strong>（influence plot），也叫<strong>气泡图</strong>（bubble plot）。这里复刻书中图 4-6：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>d <span style="color:#f92672">&lt;-</span> d <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">mutate</span>(flagged <span style="color:#f92672">=</span> cooks <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>cooks)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(d, <span style="color:#a6e22e">aes</span>(hat, std_resid)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-2.5</span>, <span style="color:#ae81ff">2.5</span>), linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_vline</span>(xintercept <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>hat, linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_point</span>(<span style="color:#a6e22e">aes</span>(size <span style="color:#f92672">=</span> cooks, fill <span style="color:#f92672">=</span> flagged, color <span style="color:#f92672">=</span> flagged),
+</span></span><span style="display:flex;"><span>             shape <span style="color:#f92672">=</span> <span style="color:#ae81ff">21</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.75</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_text</span>(data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(d, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">aes</span>(label <span style="color:#f92672">=</span> label), fontface <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span>,
+</span></span><span style="display:flex;"><span>            vjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-1.1</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.6</span>, color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ink&#34;</span>]) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_size_area</span>(max_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">13</span>, guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_fill_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(`TRUE` <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>]),
+</span></span><span style="display:flex;"><span>                               `FALSE` <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;white&#34;</span>), guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(`TRUE` <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;rose&#34;</span>]),
+</span></span><span style="display:flex;"><span>                                `FALSE` <span style="color:#f92672">=</span> <span style="color:#a6e22e">unname</span>(palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>])),
+</span></span><span style="display:flex;"><span>                     guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">annotate</span>(<span style="color:#e6db74">&#34;text&#34;</span>, x <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>hat, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">4.6</span>,
+</span></span><span style="display:flex;"><span>           label <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;leverage threshold&#34;</span>, hjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-0.05</span>,
+</span></span><span style="display:flex;"><span>           color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>], size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.2</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">coord_cartesian</span>(ylim <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-6.4</span>, <span style="color:#ae81ff">5</span>), clip <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;off&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Influence (bubble) plot&#34;</span>,
+</span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;x = leverage, y = standardized residual, bubble area = Cook&#39;s distance&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;leverage (hat value)&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;standardized residual&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-bubble-1.png" alt="" width="888" />
+<p>怎么读这张图？</p>
+<ul>
+<li><strong>横轴越靠右</strong>，杠杆越高；<strong>纵轴越远离 0</strong>，残差越大；<strong>气泡越大</strong>，库克距离越大（影响越强）。</li>
+<li><strong>C</strong> 落在右下方，又高杠杆又大负残差，气泡最大且填成实心——<strong>一眼锁定的强影响点</strong>。</li>
+<li><strong>B</strong> 在左上：残差大（越过了 $y=2.5$）但紧贴左侧，杠杆低，气泡不大——<strong>只是个离群点</strong>。</li>
+<li><strong>A</strong> 在最右侧、贴着 $y=0$：杠杆最高，但残差近乎为零，气泡小到几乎看不见——<strong>高杠杆，零影响</strong>。</li>
+</ul>
+<p>一句话：<strong>真正该警惕的，是那些又靠右、又远离中线、气泡又大的点。</strong></p>
+<h2 id="剔除强影响点方程变了多少">剔除强影响点，方程变了多少</h2>
+<p>诊断出 C 之后，最实在的检验就是把它删掉，看系数变化多大——这对应书中的表 4-2：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>comp <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(
+</span></span><span style="display:flex;"><span>  term       <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Intercept (b0)&#34;</span>, <span style="color:#e6db74">&#34;Slope (b1)&#34;</span>),
+</span></span><span style="display:flex;"><span>  full       <span style="color:#f92672">=</span> <span style="color:#a6e22e">round</span>(<span style="color:#a6e22e">coef</span>(fit), <span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>  without_C  <span style="color:#f92672">=</span> <span style="color:#a6e22e">round</span>(<span style="color:#a6e22e">coef</span>(fit_noC), <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(change_pct <span style="color:#f92672">=</span> <span style="color:#a6e22e">round</span>((without_C <span style="color:#f92672">-</span> full) <span style="color:#f92672">/</span> <span style="color:#a6e22e">abs</span>(full) <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>knitr<span style="color:#f92672">::</span><span style="color:#a6e22e">kable</span>(comp, col.names <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Coefficient&#34;</span>, <span style="color:#e6db74">&#34;All data&#34;</span>, <span style="color:#e6db74">&#34;Without C&#34;</span>, <span style="color:#e6db74">&#34;Change (%)&#34;</span>),
+</span></span><span style="display:flex;"><span>             align <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lrrr&#34;</span>)
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th style="text-align:left">Coefficient</th>
+<th style="text-align:right">All data</th>
+<th style="text-align:right">Without C</th>
+<th style="text-align:right">Change (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Intercept (b0)</td>
+<td style="text-align:right">6.08</td>
+<td style="text-align:right">4.42</td>
+<td style="text-align:right">-27.3</td>
+</tr>
+<tr>
+<td style="text-align:left">Slope (b1)</td>
+<td style="text-align:right">1.05</td>
+<td style="text-align:right">1.33</td>
+<td style="text-align:right">26.7</td>
+</tr>
+</tbody>
+</table>
+<p>斜率从 1.05 抬到 1.33（约 +26%），截距也大幅回落——<strong>单单一个点，就足以改写&quot;$x$ 每增加一个单位、$y$ 平均变化多少&quot;这个核心结论。</strong> 在小样本里，这种事必须查清楚：是录入错误？是量纲不一致？还是一笔本就不该纳入的异常记录？</p>
+<blockquote>
+<p>书中也提醒：对<strong>大数据</strong>里的预测型回归，单个点几乎不可能有这么大权重，识别强影响点意义有限；但在<strong>异常检测</strong>场景里，找出这种点恰恰是全部目的所在。</p>
+</blockquote>
+<h2 id="书外延伸删除诊断三兄弟">书外延伸：删除诊断三兄弟</h2>
+<p>到这里，书中这一节的内容就讲完了。不过实务中还有三个更细的诊断量常被用到——它们不在本书范围内，属于经典回归诊断教材（如 Montgomery《线性回归分析导论》）的标准配置。三者共享同一个思想：<strong>删掉第 $i$ 个点，重新拟合，看某个量变化了多少。</strong> R 里一行 <code>influence.measures(fit)</code> 就能把它们全部算出来，这里为了对照阈值分开计算。</p>
+<p><strong>DFFITS</strong> 度量删掉第 $i$ 点后，<strong>它自己的拟合值</strong>变化了多少个标准误：</p>
+<p>$$
+\text{DFFITS}<em>i = \frac{\hat{y}<em>i - \hat{y}</em>{(i)}}{\hat\sigma</em>{(i)} \sqrt{h_{ii}}}
+$$</p>
+<p>经验阈值 $2\sqrt{(p+1)/n}$。它和库克距离高度相关，可看作后者&quot;针对单点自身拟合值&quot;的视角。</p>
+<p><strong>DFBETAS</strong> 更细，度量删掉第 $i$ 点后，<strong>每个回归系数</strong>各自变化了多少个标准误：</p>
+<p>$$
+\text{DFBETAS}<em>{j,i} = \frac{\hat\beta_j - \hat\beta</em>{j(i)}}{\hat\sigma_{(i)} \sqrt{(X^{\top} X)^{-1}_{jj}}}
+$$</p>
+<p>经验阈值 $2/\sqrt{n}$。它的独特价值是<strong>能定位到具体系数</strong>——告诉你这个点到底动了哪一个 $\beta$：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>dfb <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">dfbetas</span>(fit) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">as_tibble</span>() <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rename</span>(<span style="color:#a6e22e">`Intercept </span>(b0)<span style="color:#a6e22e">` = `</span>(Intercept)`, `<span style="color:#a6e22e">Slope </span>(b1)` = x) |&gt;
+</span></span><span style="display:flex;"><span>  mutate(obs = dat$obs, label = dat$label) |&gt;
+</span></span><span style="display:flex;"><span>  pivot_longer(c(`<span style="color:#a6e22e">Intercept </span>(b0)`, `<span style="color:#a6e22e">Slope </span>(b1)`),
+</span></span><span style="display:flex;"><span>               names_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;coef&#34;</span>, values_to <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;dfbetas&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(dfb, <span style="color:#a6e22e">aes</span>(obs, dfbetas)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#f92672">-</span>thr<span style="color:#f92672">$</span>dfbetas, thr<span style="color:#f92672">$</span>dfbetas), linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ink&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_segment</span>(<span style="color:#a6e22e">aes</span>(xend <span style="color:#f92672">=</span> obs, yend <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, color <span style="color:#f92672">=</span> label), linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_point</span>(<span style="color:#a6e22e">aes</span>(color <span style="color:#f92672">=</span> label, size <span style="color:#f92672">=</span> label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_text</span>(data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(dfb, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">aes</span>(label <span style="color:#f92672">=</span> label, color <span style="color:#f92672">=</span> label),
+</span></span><span style="display:flex;"><span>            vjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-0.7</span>, fontface <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, show.legend <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> hl, guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_size_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1.4</span>, <span style="color:#ae81ff">2.6</span>), guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">facet_wrap</span>(<span style="color:#f92672">~</span> coef) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DFBETAS pinpoints which coefficient a point distorts&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;observation index&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DFBETAS&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-dfbetas-1.png" alt="" width="888" />
+<p>两个面板里都是 <strong>C</strong> 冲得最远——它同时把截距和斜率拽出了阈值带，而 A、B 基本安分。这与前面&quot;删掉 C 系数剧变&quot;的结论完全吻合。</p>
+<p><strong>COVRATIO</strong> 换了个角度，度量删掉第 $i$ 点后，<strong>系数估计的精度</strong>（协方差矩阵行列式）变化多少：</p>
+<p>$$
+\text{COVRATIO}<em>i = \frac{\det\big(\hat\sigma</em>{(i)}^{2} (X_{(i)}^{\top} X_{(i)})^{-1}\big)}{\det\big(\hat\sigma^{2} (X^{\top} X)^{-1}\big)}
+$$</p>
+<p>经验阈值是偏离 1 的幅度超过 $3(p+1)/n$，即 $\lvert \text{COVRATIO}_i - 1 \rvert \ge 3(p+1)/n$。它的读法很特别：</p>
+<ul>
+<li>$\text{COVRATIO}_i &gt; 1$：删掉该点会让估计<strong>变差</strong>——说明它是个<strong>提升精度的&quot;好&quot;点</strong>；</li>
+<li>$\text{COVRATIO}_i &lt; 1$：删掉该点会让估计<strong>变好</strong>——说明它在<strong>拖累精度</strong>。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>band <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> thr<span style="color:#f92672">$</span>covr, <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> thr<span style="color:#f92672">$</span>covr)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(d, <span style="color:#a6e22e">aes</span>(obs, covratio)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">annotate</span>(<span style="color:#e6db74">&#34;rect&#34;</span>, xmin <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#66d9ef">Inf</span>, xmax <span style="color:#f92672">=</span> <span style="color:#66d9ef">Inf</span>, ymin <span style="color:#f92672">=</span> band[1], ymax <span style="color:#f92672">=</span> band[2],
+</span></span><span style="display:flex;"><span>           fill <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ash&#34;</span>], alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.15</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_hline</span>(yintercept <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, linetype <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>             color <span style="color:#f92672">=</span> palette_blog[<span style="color:#e6db74">&#34;ink&#34;</span>], linewidth <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.4</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_point</span>(<span style="color:#a6e22e">aes</span>(color <span style="color:#f92672">=</span> label, size <span style="color:#f92672">=</span> label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>)) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">geom_text</span>(data <span style="color:#f92672">=</span> <span style="color:#a6e22e">filter</span>(d, label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">aes</span>(label <span style="color:#f92672">=</span> label, color <span style="color:#f92672">=</span> label),
+</span></span><span style="display:flex;"><span>            vjust <span style="color:#f92672">=</span> <span style="color:#ae81ff">-0.9</span>, fontface <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;bold&#34;</span>, size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.4</span>, show.legend <span style="color:#f92672">=</span> <span style="color:#66d9ef">FALSE</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_color_manual</span>(values <span style="color:#f92672">=</span> hl, guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">scale_size_manual</span>(values <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1.6</span>, <span style="color:#ae81ff">3</span>), guide <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;none&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;COVRATIO separates good leverage from bad&#34;</span>,
+</span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Above the band = improves precision; below = hurts precision&#34;</span>,
+</span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;observation index&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;COVRATIO&#34;</span>) <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
+</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-covratio-1.png" alt="" width="888" />
+<p>这张图最有意思：前面所有指标都对 <strong>A</strong> 网开一面，唯独 COVRATIO 把它拎了出来——A 的 COVRATIO 高达 1.56（远在带子上方），意思是<strong>这个高杠杆点其实在帮你稳住估计，删了反而更不准</strong>，是名副其实的&quot;好杠杆点&quot;。而 <strong>C</strong> 掉到 0.21（带子下方很远），删掉它精度会明显改善——<strong>坏点实锤</strong>。</p>
+<p>最后把三个点在全部指标上的表现汇成一张对照表，看&quot;哪种点被哪个指标抓住&quot;：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>mark <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(cond) <span style="color:#a6e22e">ifelse</span>(cond, <span style="color:#e6db74">&#34;✔&#34;</span>, <span style="color:#e6db74">&#34;–&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>summ <span style="color:#f92672">&lt;-</span> d <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">filter</span>(label <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;normal&#34;</span>) <span style="color:#f92672">|&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">transmute</span>(
+</span></span><span style="display:flex;"><span>    Point            <span style="color:#f92672">=</span> label,
+</span></span><span style="display:flex;"><span>    `Std. residual`  <span style="color:#f92672">=</span> <span style="color:#a6e22e">mark</span>(<span style="color:#a6e22e">abs</span>(std_resid) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">2.5</span>),
+</span></span><span style="display:flex;"><span>    `Leverage`       <span style="color:#f92672">=</span> <span style="color:#a6e22e">mark</span>(hat <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>hat),
+</span></span><span style="display:flex;"><span>    `Cook&#39;s D`       <span style="color:#f92672">=</span> <span style="color:#a6e22e">mark</span>(cooks <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>cooks),
+</span></span><span style="display:flex;"><span>    DFFITS           <span style="color:#f92672">=</span> <span style="color:#a6e22e">mark</span>(<span style="color:#a6e22e">abs</span>(dffits) <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>dffits),
+</span></span><span style="display:flex;"><span>    COVRATIO         <span style="color:#f92672">=</span> <span style="color:#a6e22e">mark</span>(<span style="color:#a6e22e">abs</span>(covratio <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>covr)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>knitr<span style="color:#f92672">::</span><span style="color:#a6e22e">kable</span>(summ, align <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;lccccc&#34;</span>)
+</span></span></code></pre></div><table>
+<thead>
+<tr>
+<th style="text-align:left">Point</th>
+<th style="text-align:center">Std. residual</th>
+<th style="text-align:center">Leverage</th>
+<th style="text-align:center">Cook&rsquo;s D</th>
+<th style="text-align:center">DFFITS</th>
+<th style="text-align:center">COVRATIO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">A</td>
+<td style="text-align:center">–</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">–</td>
+<td style="text-align:center">–</td>
+<td style="text-align:center">✔</td>
+</tr>
+<tr>
+<td style="text-align:left">B</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">–</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+</tr>
+<tr>
+<td style="text-align:left">C</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+<td style="text-align:center">✔</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>A（高杠杆点）</strong>：只被 COVRATIO 标记，且是&quot;好&quot;的那种——其余指标都判它无害。</li>
+<li><strong>B（离群点）</strong>：残差类指标抓得住，杠杆类指标漏掉它。</li>
+<li><strong>C（强影响点）</strong>：几乎被所有指标同时点名——这才是真正要动手处理的对象。</li>
+</ul>
+<h2 id="小结">小结</h2>
+<p>回归诊断这一套指标，各有各的&quot;视角&quot;：</p>
+<ul>
+<li><strong>标准化残差</strong>盯 $y$ 方向的偏离（离群值）；</li>
+<li><strong>杠杆值</strong>盯 $x$ 方向的极端；</li>
+<li><strong>库克距离 / DFFITS</strong>把两者合起来，度量综合影响，锁定强影响点；</li>
+<li><strong>DFBETAS</strong>进一步定位到&quot;动了哪个系数&quot;；</li>
+<li><strong>COVRATIO</strong>换到&quot;估计精度&quot;的维度，还能区分好杠杆与坏杠杆。</li>
+</ul>
+<p>实践上有个顺手的顺序：<strong>先看影响图</strong>一眼扫出可疑的大气泡 → <strong>用删除诊断</strong>（DFBETAS）查它到底扰动了哪个系数、扰动多大 → <strong>结合业务判断</strong>是修正、剔除还是保留。别忘了书里的提醒：小样本里单点足以改写结论，务必查清；而在大数据的预测任务里，与其纠结单点，不如把&quot;识别强影响点&quot;的力气留给真正需要它的异常检测场景。</p>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/regression"
+      >Regression</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/diagnostics"
+      >Diagnostics</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/influential-points"
+      >Influential-Points</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/timesfm/"
+      ><span>TimesFM：把时序预测变成一次推理</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Regression on 浑身蟹数</title>
-    <link>https://www.xiebro.cool/tags/regression/</link>
-    <description>Recent content in Regression on 浑身蟹数</description>
+    <title>Influential-Points on 浑身蟹数</title>
+    <link>https://www.xiebro.cool/tags/influential-points/</link>
+    <description>Recent content in Influential-Points on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 15 Jul 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://www.xiebro.cool/tags/regression/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://www.xiebro.cool/tags/influential-points/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>回归诊断中的强影响点：从标准化残差到影响图</title>
       <link>https://www.xiebro.cool/post/2026-07-15-influential-points/</link>

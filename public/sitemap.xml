@@ -3,12 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/ai/</loc>
-    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/diagnostics/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/influential-points/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/r/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/regression/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/2026-07-15-influential-points/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/ai/</loc>
     <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/forecasting/</loc>
@@ -18,9 +39,6 @@
     <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/machine-learning/</loc>
-    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
     <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/time-series/</loc>
@@ -35,9 +53,6 @@
     <loc>https://www.xiebro.cool/tags/transformer/</loc>
     <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/</loc>
-    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/bandit/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -48,9 +63,6 @@
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/monte-carlo/</loc>
-    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/r/</loc>
     <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/ucb/</loc>

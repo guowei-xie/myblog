@@ -6,8 +6,15 @@
     <description>Recent content on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 15 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>回归诊断中的强影响点：从标准化残差到影响图</title>
+      <link>https://www.xiebro.cool/post/2026-07-15-influential-points/</link>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/2026-07-15-influential-points/</guid>
+      <description>在解释性建模里，拟合出一条回归线只是开始。真正的问题往往是：这条线可信吗？会不会有那么一两条记录，在背后悄悄操纵着整个方程？《数据科学家的实用统计学》（Bruce、Bruce、Gedeck）第 4 章&amp;quot;回归诊断&amp;quot;给出了一套判断工具——它们不直接关乎预测准确度，却能告诉你模型对数据的拟合到底稳不稳。&#xA;本文用一份模拟数据把这套诊断量逐一演示出来：每个指标度量什么、经验阈值怎么定、图怎么读、最后怎么据此做决策。主线严格沿用书中这一节的术语与阈值（标准化残差、杠杆值、库克距离，以及本章的招牌可视化——影响图/气泡图）；文末再单开一节，补上书中未涉及、但经典回归诊断教材（如 Montgomery）常用的三个&amp;quot;删除诊断&amp;quot;——DFFITS、DFBETAS、COVRATIO。&#xA;三种&amp;quot;不正常&amp;quot;的点 开始之前先厘清三个容易混为一谈的概念，它们彼此并不等价：&#xA;离群值（outlier）：实际 $y$ 与预测值相距很远的记录，表现为大残差，是 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余数据的记录，是 $x$ 方向上的异常。书里把杠杆定义为&amp;quot;单条记录对回归方程所产生影响的大小&amp;quot;。 强影响点（influential point）：书中的定义是——&amp;ldquo;一个值一旦缺失就会显著改变回归方程&amp;rdquo;。关键在于，这样的点未必伴随大残差。 一个点可以是高杠杆却毫无影响；也可以残差很大却撼动不了方程。真正危险的，是那种&amp;quot;既在 $x$ 方向极端、又偏离趋势&amp;quot;的点。下面我们就人为造出这三类点，看各个指标分别能抓住谁。&#xA;模拟数据 构造一个一元线性回归的样本——一元的好处是能直接在散点图上画出回归线、肉眼看到&amp;quot;线被带偏&amp;quot;。这些诊断量对多元回归同样适用，只是无法再用一张二维散点图直观呈现。&#xA;真实关系设为 $y = 3 + 1.5x + \varepsilon$，先生成 40 个&amp;quot;干净&amp;quot;的点，再刻意植入三个特殊点 A、B、C：&#xA;library(tidyverse) set.seed(2026) n_base &amp;lt;- 40 x_base &amp;lt;- runif(n_base, 4, 12) y_base &amp;lt;- 3 + 1.5 * x_base + rnorm(n_base, 0, 1.2) base &amp;lt;- tibble(x = x_base, y = y_base, label = &amp;#34;normal&amp;#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &amp;lt;- 7; yB &amp;lt;- 3 + 1.</description>
+    </item>
     <item>
       <title>TimesFM：把时序预测变成一次推理</title>
       <link>https://www.xiebro.cool/post/timesfm/</link>
