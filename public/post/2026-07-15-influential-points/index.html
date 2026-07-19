@@ -61,12 +61,12 @@
   
   
   
-  <meta name="description" content="拟合出一条回归线只是开始。回归系数是全部样本共同决定的，如果其中一两个点位置特殊，它们对结果的话语权可能远大于其余点，甚至单独决定斜率的正负。回归诊断要查的就是这件事：有没有这样的点，影响有多大，要不要处理。
-下面用一份模拟数据把几个常用的诊断量过一遍：每个指标衡量什么、经验阈值取多少、图怎么看，以及据此怎么决定。先讲三个最基础的，标准化残差、杠杆值、库克距离，再看把它们整合到一起的影响图；最后补上三个更细的删除诊断：DFFITS、DFBETAS、COVRATIO。
-三种&quot;不正常&quot;的点 有三个概念容易混，先分清楚：
-离群值（outlier）：实际 $y$ 离预测值很远的点，残差大，属于 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余样本的点，属于 $x$ 方向上的异常；杠杆衡量的是这个点能对回归结果施加多大影响。 强影响点（influential point）：删掉它，回归方程会明显改变。这样的点不一定有大残差。 一个点可以杠杆很高却几乎不影响结果，也可以残差很大却撼不动方程。最麻烦的是那种既在 $x$ 方向极端、又偏离整体趋势的点。下面就造出这三类点，看每个指标各自能抓到谁。
-模拟数据 用一元线性回归来演示，好处是能把回归线直接画在散点图上，看得见线被带偏。这些指标对多元回归一样成立，只是没法再用二维散点图直接呈现。
-真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个正常的点，再刻意加进三个特殊点 A、B、C：
+  <meta name="description" content="回归系数由全部样本共同决定。若个别点位置特殊，它对结果的话语权可能远大于其余点，甚至单独决定斜率正负。回归诊断就是查这件事：有没有这样的点、影响多大、要不要处理。
+下面用一份模拟数据过一遍常用诊断量——各衡量什么、阈值取多少、图怎么看。先讲最基础的三个（标准化残差、杠杆值、库克距离），再看整合它们的影响图，最后补三个删除诊断（DFFITS、DFBETAS、COVRATIO）。
+三种&quot;不正常&quot;的点 三个易混的概念先分清：
+离群值（outlier）：$y$ 远离预测值、残差大，$y$ 方向异常。 高杠杆点（high leverage）：自变量远离其余样本，$x$ 方向异常；杠杆衡量它能对结果施加多大影响。 强影响点（influential point）：删掉它回归方程会明显改变，不一定伴随大残差。 杠杆高未必影响大，残差大也未必撼动方程。最麻烦的是既在 $x$ 方向极端、又偏离整体趋势的点。下面造出这三类点，看每个指标各能抓到谁。
+模拟数据 用一元线性回归演示，好处是回归线能直接画在散点图上、看得见被带偏；这些指标对多元回归同样成立，只是无法用二维散点图呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，生成 40 个正常点，再刻意加进三个特殊点 A、B、C：
 library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1." />
   <meta name="author" content="xiebro" />
   
@@ -167,24 +167,24 @@ library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 
   
   
   <meta itemprop="name" content="回归诊断中的强影响点：从标准化残差到影响图">
-<meta itemprop="description" content="拟合出一条回归线只是开始。回归系数是全部样本共同决定的，如果其中一两个点位置特殊，它们对结果的话语权可能远大于其余点，甚至单独决定斜率的正负。回归诊断要查的就是这件事：有没有这样的点，影响有多大，要不要处理。
-下面用一份模拟数据把几个常用的诊断量过一遍：每个指标衡量什么、经验阈值取多少、图怎么看，以及据此怎么决定。先讲三个最基础的，标准化残差、杠杆值、库克距离，再看把它们整合到一起的影响图；最后补上三个更细的删除诊断：DFFITS、DFBETAS、COVRATIO。
-三种&quot;不正常&quot;的点 有三个概念容易混，先分清楚：
-离群值（outlier）：实际 $y$ 离预测值很远的点，残差大，属于 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余样本的点，属于 $x$ 方向上的异常；杠杆衡量的是这个点能对回归结果施加多大影响。 强影响点（influential point）：删掉它，回归方程会明显改变。这样的点不一定有大残差。 一个点可以杠杆很高却几乎不影响结果，也可以残差很大却撼不动方程。最麻烦的是那种既在 $x$ 方向极端、又偏离整体趋势的点。下面就造出这三类点，看每个指标各自能抓到谁。
-模拟数据 用一元线性回归来演示，好处是能把回归线直接画在散点图上，看得见线被带偏。这些指标对多元回归一样成立，只是没法再用二维散点图直接呈现。
-真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个正常的点，再刻意加进三个特殊点 A、B、C：
+<meta itemprop="description" content="回归系数由全部样本共同决定。若个别点位置特殊，它对结果的话语权可能远大于其余点，甚至单独决定斜率正负。回归诊断就是查这件事：有没有这样的点、影响多大、要不要处理。
+下面用一份模拟数据过一遍常用诊断量——各衡量什么、阈值取多少、图怎么看。先讲最基础的三个（标准化残差、杠杆值、库克距离），再看整合它们的影响图，最后补三个删除诊断（DFFITS、DFBETAS、COVRATIO）。
+三种&quot;不正常&quot;的点 三个易混的概念先分清：
+离群值（outlier）：$y$ 远离预测值、残差大，$y$ 方向异常。 高杠杆点（high leverage）：自变量远离其余样本，$x$ 方向异常；杠杆衡量它能对结果施加多大影响。 强影响点（influential point）：删掉它回归方程会明显改变，不一定伴随大残差。 杠杆高未必影响大，残差大也未必撼动方程。最麻烦的是既在 $x$ 方向极端、又偏离整体趋势的点。下面造出这三类点，看每个指标各能抓到谁。
+模拟数据 用一元线性回归演示，好处是回归线能直接画在散点图上、看得见被带偏；这些指标对多元回归同样成立，只是无法用二维散点图呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，生成 40 个正常点，再刻意加进三个特殊点 A、B、C：
 library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1."><meta itemprop="datePublished" content="2026-07-15T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2026-07-15T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1445">
+<meta itemprop="wordCount" content="1437">
 <meta itemprop="keywords" content="Regression,Diagnostics,Influential-Points," />
   
   <meta property="og:title" content="回归诊断中的强影响点：从标准化残差到影响图" />
-<meta property="og:description" content="拟合出一条回归线只是开始。回归系数是全部样本共同决定的，如果其中一两个点位置特殊，它们对结果的话语权可能远大于其余点，甚至单独决定斜率的正负。回归诊断要查的就是这件事：有没有这样的点，影响有多大，要不要处理。
-下面用一份模拟数据把几个常用的诊断量过一遍：每个指标衡量什么、经验阈值取多少、图怎么看，以及据此怎么决定。先讲三个最基础的，标准化残差、杠杆值、库克距离，再看把它们整合到一起的影响图；最后补上三个更细的删除诊断：DFFITS、DFBETAS、COVRATIO。
-三种&quot;不正常&quot;的点 有三个概念容易混，先分清楚：
-离群值（outlier）：实际 $y$ 离预测值很远的点，残差大，属于 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余样本的点，属于 $x$ 方向上的异常；杠杆衡量的是这个点能对回归结果施加多大影响。 强影响点（influential point）：删掉它，回归方程会明显改变。这样的点不一定有大残差。 一个点可以杠杆很高却几乎不影响结果，也可以残差很大却撼不动方程。最麻烦的是那种既在 $x$ 方向极端、又偏离整体趋势的点。下面就造出这三类点，看每个指标各自能抓到谁。
-模拟数据 用一元线性回归来演示，好处是能把回归线直接画在散点图上，看得见线被带偏。这些指标对多元回归一样成立，只是没法再用二维散点图直接呈现。
-真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个正常的点，再刻意加进三个特殊点 A、B、C：
+<meta property="og:description" content="回归系数由全部样本共同决定。若个别点位置特殊，它对结果的话语权可能远大于其余点，甚至单独决定斜率正负。回归诊断就是查这件事：有没有这样的点、影响多大、要不要处理。
+下面用一份模拟数据过一遍常用诊断量——各衡量什么、阈值取多少、图怎么看。先讲最基础的三个（标准化残差、杠杆值、库克距离），再看整合它们的影响图，最后补三个删除诊断（DFFITS、DFBETAS、COVRATIO）。
+三种&quot;不正常&quot;的点 三个易混的概念先分清：
+离群值（outlier）：$y$ 远离预测值、残差大，$y$ 方向异常。 高杠杆点（high leverage）：自变量远离其余样本，$x$ 方向异常；杠杆衡量它能对结果施加多大影响。 强影响点（influential point）：删掉它回归方程会明显改变，不一定伴随大残差。 杠杆高未必影响大，残差大也未必撼动方程。最麻烦的是既在 $x$ 方向极端、又偏离整体趋势的点。下面造出这三类点，看每个指标各能抓到谁。
+模拟数据 用一元线性回归演示，好处是回归线能直接画在散点图上、看得见被带偏；这些指标对多元回归同样成立，只是无法用二维散点图呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，生成 40 个正常点，再刻意加进三个特殊点 A、B、C：
 library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://www.xiebro.cool/post/2026-07-15-influential-points/" /><meta property="article:section" content="post" />
@@ -194,12 +194,12 @@ library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 
 
   
   <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="回归诊断中的强影响点：从标准化残差到影响图"/>
-<meta name="twitter:description" content="拟合出一条回归线只是开始。回归系数是全部样本共同决定的，如果其中一两个点位置特殊，它们对结果的话语权可能远大于其余点，甚至单独决定斜率的正负。回归诊断要查的就是这件事：有没有这样的点，影响有多大，要不要处理。
-下面用一份模拟数据把几个常用的诊断量过一遍：每个指标衡量什么、经验阈值取多少、图怎么看，以及据此怎么决定。先讲三个最基础的，标准化残差、杠杆值、库克距离，再看把它们整合到一起的影响图；最后补上三个更细的删除诊断：DFFITS、DFBETAS、COVRATIO。
-三种&quot;不正常&quot;的点 有三个概念容易混，先分清楚：
-离群值（outlier）：实际 $y$ 离预测值很远的点，残差大，属于 $y$ 方向上的异常。 高杠杆点（high leverage）：自变量取值远离其余样本的点，属于 $x$ 方向上的异常；杠杆衡量的是这个点能对回归结果施加多大影响。 强影响点（influential point）：删掉它，回归方程会明显改变。这样的点不一定有大残差。 一个点可以杠杆很高却几乎不影响结果，也可以残差很大却撼不动方程。最麻烦的是那种既在 $x$ 方向极端、又偏离整体趋势的点。下面就造出这三类点，看每个指标各自能抓到谁。
-模拟数据 用一元线性回归来演示，好处是能把回归线直接画在散点图上，看得见线被带偏。这些指标对多元回归一样成立，只是没法再用二维散点图直接呈现。
-真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，先生成 40 个正常的点，再刻意加进三个特殊点 A、B、C：
+<meta name="twitter:description" content="回归系数由全部样本共同决定。若个别点位置特殊，它对结果的话语权可能远大于其余点，甚至单独决定斜率正负。回归诊断就是查这件事：有没有这样的点、影响多大、要不要处理。
+下面用一份模拟数据过一遍常用诊断量——各衡量什么、阈值取多少、图怎么看。先讲最基础的三个（标准化残差、杠杆值、库克距离），再看整合它们的影响图，最后补三个删除诊断（DFFITS、DFBETAS、COVRATIO）。
+三种&quot;不正常&quot;的点 三个易混的概念先分清：
+离群值（outlier）：$y$ 远离预测值、残差大，$y$ 方向异常。 高杠杆点（high leverage）：自变量远离其余样本，$x$ 方向异常；杠杆衡量它能对结果施加多大影响。 强影响点（influential point）：删掉它回归方程会明显改变，不一定伴随大残差。 杠杆高未必影响大，残差大也未必撼动方程。最麻烦的是既在 $x$ 方向极端、又偏离整体趋势的点。下面造出这三类点，看每个指标各能抓到谁。
+模拟数据 用一元线性回归演示，好处是回归线能直接画在散点图上、看得见被带偏；这些指标对多元回归同样成立，只是无法用二维散点图呈现。
+真实关系设为 $y = 3 &#43; 1.5x &#43; \varepsilon$，生成 40 个正常点，再刻意加进三个特殊点 A、B、C：
 library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 12) y_base &lt;- 3 &#43; 1.5 * x_base &#43; rnorm(n_base, 0, 1.2) base &lt;- tibble(x = x_base, y = y_base, label = &#34;normal&#34;) # B：x 居中、y 大幅偏离 —— 离群点 # C：x 偏大、y 明显偏离趋势 —— 强影响点 xB &lt;- 7; yB &lt;- 3 &#43; 1."/>
 
   
@@ -326,19 +326,19 @@ library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 
     
   </header>
 
-  <section><p>拟合出一条回归线只是开始。回归系数是全部样本共同决定的，如果其中一两个点位置特殊，它们对结果的话语权可能远大于其余点，甚至单独决定斜率的正负。回归诊断要查的就是这件事：有没有这样的点，影响有多大，要不要处理。</p>
-<p>下面用一份模拟数据把几个常用的诊断量过一遍：每个指标衡量什么、经验阈值取多少、图怎么看，以及据此怎么决定。先讲三个最基础的，标准化残差、杠杆值、库克距离，再看把它们整合到一起的影响图；最后补上三个更细的删除诊断：DFFITS、DFBETAS、COVRATIO。</p>
+  <section><p>回归系数由全部样本共同决定。若个别点位置特殊，它对结果的话语权可能远大于其余点，甚至单独决定斜率正负。回归诊断就是查这件事：有没有这样的点、影响多大、要不要处理。</p>
+<p>下面用一份模拟数据过一遍常用诊断量——各衡量什么、阈值取多少、图怎么看。先讲最基础的三个（标准化残差、杠杆值、库克距离），再看整合它们的影响图，最后补三个删除诊断（DFFITS、DFBETAS、COVRATIO）。</p>
 <h2 id="三种不正常的点">三种&quot;不正常&quot;的点</h2>
-<p>有三个概念容易混，先分清楚：</p>
+<p>三个易混的概念先分清：</p>
 <ul>
-<li><strong>离群值（outlier）</strong>：实际 $y$ 离预测值很远的点，残差大，属于 $y$ 方向上的异常。</li>
-<li><strong>高杠杆点（high leverage）</strong>：自变量取值远离其余样本的点，属于 $x$ 方向上的异常；杠杆衡量的是这个点能对回归结果施加多大影响。</li>
-<li><strong>强影响点（influential point）</strong>：删掉它，回归方程会明显改变。这样的点不一定有大残差。</li>
+<li><strong>离群值（outlier）</strong>：$y$ 远离预测值、残差大，$y$ 方向异常。</li>
+<li><strong>高杠杆点（high leverage）</strong>：自变量远离其余样本，$x$ 方向异常；杠杆衡量它能对结果施加多大影响。</li>
+<li><strong>强影响点（influential point）</strong>：删掉它回归方程会明显改变，不一定伴随大残差。</li>
 </ul>
-<p>一个点可以杠杆很高却几乎不影响结果，也可以残差很大却撼不动方程。最麻烦的是那种既在 $x$ 方向极端、又偏离整体趋势的点。下面就造出这三类点，看每个指标各自能抓到谁。</p>
+<p>杠杆高未必影响大，残差大也未必撼动方程。最麻烦的是既在 $x$ 方向极端、又偏离整体趋势的点。下面造出这三类点，看每个指标各能抓到谁。</p>
 <h2 id="模拟数据">模拟数据</h2>
-<p>用一元线性回归来演示，好处是能把回归线直接画在散点图上，看得见线被带偏。这些指标对多元回归一样成立，只是没法再用二维散点图直接呈现。</p>
-<p>真实关系设为 $y = 3 + 1.5x + \varepsilon$，先生成 40 个正常的点，再刻意加进三个特殊点 A、B、C：</p>
+<p>用一元线性回归演示，好处是回归线能直接画在散点图上、看得见被带偏；这些指标对多元回归同样成立，只是无法用二维散点图呈现。</p>
+<p>真实关系设为 $y = 3 + 1.5x + \varepsilon$，生成 40 个正常点，再刻意加进三个特殊点 A、B、C：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">library</span>(tidyverse)
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">2026</span>)
 </span></span><span style="display:flex;"><span>
@@ -398,8 +398,8 @@ library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 
 </span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Dropping the single point C visibly rotates the regression line&#34;</span>,
 </span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;x&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;y&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#66d9ef">NULL</span>) <span style="color:#f92672">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-scatter-1.png" alt="" width="888" />
-<p>三个点的位置各不相同：A 在最右端（$x$ 极端），但正好落在其余点连成的那条线上；B 的 $x$ 很普通，$y$ 却高高抬起；C 的 $x$ 偏大，$y$ 又明显偏低。看实线（全量）和虚线（剔除 C）之间的夹角：只去掉 C 一个点，斜率就从 1.05 变到 1.33。一个点能不能左右回归线，和它残差大不大是两回事。</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-scatter-1.png" alt="" width="888" />
+<p>三个点位置各异：A 在最右端（$x$ 极端）但落在其余点连成的线上；B 的 $x$ 普通、$y$ 却高高抬起；C 的 $x$ 偏大、$y$ 又明显偏低。看实线（全量）与虚线（剔除 C）的夹角：只去掉 C，斜率就从 1.05 变到 1.33。能否左右回归线，和残差大小是两回事。</p>
 <p>把五个诊断量一次性算出来备用，都来自 base R，不用额外装包：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>d <span style="color:#f92672">&lt;-</span> dat <span style="color:#f92672">|&gt;</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">mutate</span>(
@@ -438,7 +438,7 @@ library(tidyverse) set.seed(2026) n_base &lt;- 40 x_base &lt;- runif(n_base, 4, 
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">theme_blog</span>()
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h2 id="指标一--标准化残差抓离群值">指标一 · 标准化残差：抓离群值</h2>
-<p>标准化残差是残差除以它自己的标准误，可以读作&quot;偏离回归线多少个标准误&quot;：</p>
+<p>标准化残差是残差除以自身标准误，读作&quot;偏离回归线多少个标准误&quot;：</p>
 <p>$$
 r_i = \frac{e_i}{\hat\sigma \sqrt{1 - h_{ii}}}
 $$</p>
@@ -446,32 +446,32 @@ $$</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;std_resid&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Standardized residuals catch the outlier&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;standardized residual&#34;</span>, hlines <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-2.5</span>, <span style="color:#ae81ff">2.5</span>))
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-stdresid-1.png" alt="" width="888" />
-<p>B 冲出了 $\pm 2.5$ 的阈值线（3.26），C 更低，到 -4.88。但 A 的标准化残差只有 0.18，完全正常。标准化残差只看 $y$ 方向的偏离，藏在 $x$ 极端处的高杠杆点 A 它是看不出来的。</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-stdresid-1.png" alt="" width="888" />
+<p>B 冲出 $\pm 2.5$ 阈值线（3.26），C 更低至 -4.88；A 只有 0.18，完全正常。标准化残差只看 $y$ 方向偏离，抓不到藏在 $x$ 极端处的高杠杆点 A。</p>
 <h2 id="指标二--杠杆值抓-x-方向的极端">指标二 · 杠杆值：抓 x 方向的极端</h2>
 <p>杠杆值来自帽子矩阵。多元回归可写成 $\hat{Y} = HY$，其中</p>
 <p>$$
 H = X (X^{\top} X)^{-1} X^{\top}
 $$</p>
-<p>之所以叫帽子矩阵，是因为它给 $Y$ 戴上帽子变成了 $\hat{Y}$。它的对角线元素 $h_{ii}$ 就是第 $i$ 个观测的杠杆值，衡量该点自变量取值有多极端。经验法则是超过 $2(p+1)/n$ 就算高杠杆。R 里用 <code>hatvalues()</code>：</p>
+<p>叫帽子矩阵是因为它给 $Y$ 戴上帽子变成 $\hat{Y}$。对角线元素 $h_{ii}$ 即第 $i$ 个观测的杠杆值，衡量其自变量有多极端；超过 $2(p+1)/n$ 算高杠杆。R 里用 <code>hatvalues()</code>：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;hat&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Leverage catches the extreme-x points&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;leverage (hat value)&#34;</span>, hlines <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>hat)
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-leverage-1.png" alt="" width="888" />
-<p>这次越线的是 A 和 C，残差很大的 B 反而贴在底部，因为它的 $x$ 太普通。杠杆值不看响应变量 $y$，只看 $x$ 有多极端，正好和标准化残差互补：一个管 $x$，一个管 $y$。但单看任何一个，都不足以判断一个点有没有影响。</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-leverage-1.png" alt="" width="888" />
+<p>越线的是 A 和 C，残差很大的 B 因 $x$ 普通反而贴在底部。杠杆值只看 $x$ 的极端、不看 $y$，正好和标准化残差互补——一个管 $x$、一个管 $y$；但单看任一个都不足以判断有无影响。</p>
 <h2 id="指标三--库克距离抓真正的强影响点">指标三 · 库克距离：抓真正的强影响点</h2>
-<p>库克距离（Cook&rsquo;s distance）把前两者合到一起，同时考虑残差大小和杠杆：</p>
+<p>库克距离（Cook&rsquo;s distance）把前两者合一，同时考虑残差与杠杆：</p>
 <p>$$
 D_i = \frac{r_i^{2}}{p + 1} \cdot \frac{h_{ii}}{1 - h_{ii}}
 $$</p>
-<p>只有残差大、杠杆又高的点，$D_i$ 才会被两个因子同时放大。经验阈值取 $4/(n - p - 1)$。R 里用 <code>cooks.distance()</code>：</p>
+<p>只有残差大、杠杆又高的点，$D_i$ 才被两个因子同时放大。阈值取 $4/(n - p - 1)$，R 里用 <code>cooks.distance()</code>：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span><span style="color:#a6e22e">index_plot</span>(d, <span style="color:#e6db74">&#34;cooks&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Cook&#39;s distance isolates the truly influential point&#34;</span>,
 </span></span><span style="display:flex;"><span>           <span style="color:#e6db74">&#34;Cook&#39;s distance&#34;</span>, hlines <span style="color:#f92672">=</span> thr<span style="color:#f92672">$</span>cooks)
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-cooks-1.png" alt="" width="888" />
-<p>这次 C 遥遥领先（$D_C =$ 1.74），把阈值线远远甩在下面；B 只是勉强越线，残差大但杠杆低；杠杆最高的 A 库克距离几乎为 0（0.008），因为它顺着趋势，删不删都不改变方程。可见高杠杆并不等于强影响。</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-cooks-1.png" alt="" width="888" />
+<p>C 遥遥领先（$D_C =$ 1.74），把阈值线远远甩下；B 残差大但杠杆低，仅勉强越线；杠杆最高的 A 因顺着趋势，库克距离几乎为 0（0.008）。高杠杆不等于强影响。</p>
 <h2 id="影响图一张图看全">影响图：一张图看全</h2>
-<p>把标准化残差、杠杆值、库克距离放进同一张图，是回归诊断里很常用的一种画法：横轴放杠杆值，纵轴放标准化残差，点的大小对应库克距离，库克距离超阈值的点画成实心。这种图一般叫影响图（influence plot）或气泡图（bubble plot）：</p>
+<p>把三个指标放进同一张图是常用画法：横轴杠杆值、纵轴标准化残差、点大小对应库克距离，超阈值的点填实。这种图叫影响图（influence plot）或气泡图（bubble plot）：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>d <span style="color:#f92672">&lt;-</span> d <span style="color:#f92672">|&gt;</span> <span style="color:#a6e22e">mutate</span>(flagged <span style="color:#f92672">=</span> cooks <span style="color:#f92672">&gt;</span> thr<span style="color:#f92672">$</span>cooks)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(d, <span style="color:#a6e22e">aes</span>(hat, std_resid)) <span style="color:#f92672">+</span>
@@ -498,17 +498,17 @@ $$</p>
 </span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;x = leverage, y = standardized residual, bubble area = Cook&#39;s distance&#34;</span>,
 </span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;leverage (hat value)&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;standardized residual&#34;</span>) <span style="color:#f92672">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-bubble-1.png" alt="" width="888" />
-<p>几个位置的含义：</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-bubble-1.png" alt="" width="888" />
+<p>各位置的含义：</p>
 <ul>
-<li>横轴越靠右杠杆越高，纵轴越远离 0 残差越大，气泡越大库克距离越大。</li>
-<li>C 在右下角，杠杆高、负残差也大，气泡最大且填实，是最该关注的强影响点。</li>
-<li>B 在左上，残差越过了 $y=2.5$，但紧贴左侧、杠杆低，气泡不大，只是个离群点。</li>
-<li>A 在最右侧、贴着 $y=0$，杠杆最高但残差接近零，气泡小到几乎看不见，杠杆高却没有影响。</li>
+<li>越靠右杠杆越高，越远离 0 残差越大，气泡越大库克距离越大。</li>
+<li>C 在右下角，杠杆高、负残差大、气泡最大且填实，最该关注。</li>
+<li>B 在左上，残差越过 $y=2.5$ 但杠杆低、气泡不大，只是离群点。</li>
+<li>A 在最右侧贴着 $y=0$，杠杆最高但残差近零、气泡极小，高杠杆却无影响。</li>
 </ul>
-<p>要盯的就是那些既靠右、又远离中线、气泡还大的点。</p>
+<p>要盯的是既靠右、又远离中线、气泡还大的点。</p>
 <h2 id="剔除强影响点方程变了多少">剔除强影响点，方程变了多少</h2>
-<p>既然 C 被诊断出来，最直接的检验就是把它删掉，看系数变了多少：</p>
+<p>C 被诊断出来后，最直接的检验是删掉它、看系数变化多少：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>comp <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">tibble</span>(
 </span></span><span style="display:flex;"><span>  term       <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;Intercept (b0)&#34;</span>, <span style="color:#e6db74">&#34;Slope (b1)&#34;</span>),
 </span></span><span style="display:flex;"><span>  full       <span style="color:#f92672">=</span> <span style="color:#a6e22e">round</span>(<span style="color:#a6e22e">coef</span>(fit), <span style="color:#ae81ff">2</span>),
@@ -542,22 +542,22 @@ $$</p>
 </tr>
 </tbody>
 </table>
-<p>斜率从 1.05 抬到 1.33（约 +26%），截距也明显回落。一个点就能改变&quot;$x$ 每增加一个单位、$y$ 平均变化多少&quot;这个结论。样本量小的时候，这种点必须查清楚：是录入错误，是量纲不一致，还是本就不该纳入的异常记录。</p>
+<p>斜率从 1.05 抬到 1.33（约 +26%），截距也明显回落。一个点就能改写&quot;$x$ 每增一单位、$y$ 平均变化多少&quot;的结论。样本量小时这种点必须查清：录入错误、量纲不一致，还是本不该纳入的异常记录。</p>
 <blockquote>
-<p>顺带一提：样本量很大时，单个点几乎不可能有这么大权重，专门找强影响点的意义有限；但在异常检测里，找出这种点恰恰是目的本身。</p>
+<p>样本量很大时单点几乎不可能有这么大权重，专门找强影响点意义有限；但在异常检测里，找出这种点恰恰是目的本身。</p>
 </blockquote>
 <h2 id="再细一点三个删除诊断">再细一点：三个删除诊断</h2>
-<p>除了上面三个，实务里还常用到三个更细的诊断量。它们的思路一致：删掉第 $i$ 个点重新拟合，看某个量变化了多少。用 <code>influence.measures(fit)</code> 一行就能全部算出来，这里为了对照各自的阈值分开算。</p>
-<p><strong>DFFITS</strong> 衡量删掉第 $i$ 点后，它自己的拟合值变化了多少个标准误：</p>
+<p>实务里还常用三个更细的诊断量，思路一致：删掉第 $i$ 点重新拟合，看某个量变化多少。<code>influence.measures(fit)</code> 一行即可全算，这里为对照阈值分开算。</p>
+<p><strong>DFFITS</strong> 衡量删掉第 $i$ 点后，其自身拟合值变化了多少个标准误：</p>
 <p>$$
 \text{DFFITS}<em>i = \frac{\hat{y}<em>i - \hat{y}</em>{(i)}}{\hat\sigma</em>{(i)} \sqrt{h_{ii}}}
 $$</p>
-<p>经验阈值 $2\sqrt{(p+1)/n}$。它和库克距离高度相关，相当于从单点自身拟合值的角度看同一件事。</p>
-<p><strong>DFBETAS</strong> 更细，衡量删掉第 $i$ 点后，每个回归系数各自变化了多少个标准误：</p>
+<p>阈值 $2\sqrt{(p+1)/n}$。它和库克距离高度相关，是从单点自身拟合值的角度看同一件事。</p>
+<p><strong>DFBETAS</strong> 更细，衡量删掉第 $i$ 点后每个回归系数各变化了多少个标准误：</p>
 <p>$$
 \text{DFBETAS}<em>{j,i} = \frac{\hat\beta_j - \hat\beta</em>{j(i)}}{\hat\sigma_{(i)} \sqrt{(X^{\top} X)^{-1}_{jj}}}
 $$</p>
-<p>经验阈值 $2/\sqrt{n}$。它的好处是能定位到具体系数，告诉你这个点动的是哪一个 $\beta$：</p>
+<p>阈值 $2/\sqrt{n}$。好处是能定位到具体系数，告诉你这个点动的是哪一个 $\beta$：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>dfb <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">dfbetas</span>(fit) <span style="color:#f92672">|&gt;</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">as_tibble</span>() <span style="color:#f92672">|&gt;</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rename</span>(<span style="color:#a6e22e">`Intercept </span>(b0)<span style="color:#a6e22e">` = `</span>(Intercept)`, `<span style="color:#a6e22e">Slope </span>(b1)` = x) |&gt;
@@ -579,16 +579,16 @@ $$</p>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">labs</span>(title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DFBETAS pinpoints which coefficient a point distorts&#34;</span>,
 </span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;observation index&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DFBETAS&#34;</span>) <span style="color:#f92672">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-dfbetas-1.png" alt="" width="888" />
-<p>两个面板里都是 C 冲得最远，截距和斜率都被它拽出了阈值带，A、B 基本没动。这和前面&quot;删掉 C 系数大变&quot;是一致的。</p>
-<p><strong>COVRATIO</strong> 换了个角度，衡量删掉第 $i$ 点后，系数估计的精度（协方差矩阵的行列式）变化多少：</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-dfbetas-1.png" alt="" width="888" />
+<p>两个面板里都是 C 冲得最远，截距和斜率都被它拽出阈值带，A、B 基本没动，与前面&quot;删掉 C 系数大变&quot;一致。</p>
+<p><strong>COVRATIO</strong> 换个角度，衡量删掉第 $i$ 点后系数估计的精度（协方差矩阵行列式）变化多少：</p>
 <p>$$
 \text{COVRATIO}<em>i = \frac{\det\big(\hat\sigma</em>{(i)}^{2} (X_{(i)}^{\top} X_{(i)})^{-1}\big)}{\det\big(\hat\sigma^{2} (X^{\top} X)^{-1}\big)}
 $$</p>
-<p>经验阈值是偏离 1 的幅度超过 $3(p+1)/n$，即 $\lvert \text{COVRATIO}_i - 1 \rvert \ge 3(p+1)/n$。读法和前面几个不太一样：</p>
+<p>阈值是偏离 1 的幅度超过 $3(p+1)/n$，即 $\lvert \text{COVRATIO}_i - 1 \rvert \ge 3(p+1)/n$。读法和前面不同：</p>
 <ul>
-<li>$\text{COVRATIO}_i &gt; 1$：删掉这个点，估计会变差，说明它在帮着提升精度；</li>
-<li>$\text{COVRATIO}_i &lt; 1$：删掉它，估计反而变好，说明它在拖累精度。</li>
+<li>$\text{COVRATIO}_i &gt; 1$：删掉后估计变差，说明它在提升精度；</li>
+<li>$\text{COVRATIO}_i &lt; 1$：删掉后估计变好，说明它在拖累精度。</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>band <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> thr<span style="color:#f92672">$</span>covr, <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> thr<span style="color:#f92672">$</span>covr)
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">ggplot</span>(d, <span style="color:#a6e22e">aes</span>(obs, covratio)) <span style="color:#f92672">+</span>
@@ -606,9 +606,9 @@ $$</p>
 </span></span><span style="display:flex;"><span>       subtitle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Above the band = improves precision; below = hurts precision&#34;</span>,
 </span></span><span style="display:flex;"><span>       x <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;observation index&#34;</span>, y <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;COVRATIO&#34;</span>) <span style="color:#f92672">+</span>
 </span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">theme_blog</span>()
-</span></span></code></pre></div><img src="https://www.xiebro.cool/post/2026-07-15-influential-points/index.en_files/figure-html/fig-covratio-1.png" alt="" width="888" />
-<p>这张图有意思的地方在 A：前面几个指标都放过了它，只有 COVRATIO 把它标了出来。A 的 COVRATIO 有 1.56（在带子上方），说明这个高杠杆点其实在帮着稳住估计，删了反而更不准，是个&quot;好&quot;的杠杆点。C 则掉到 0.21（在带子下方很远），删掉它精度会明显变好，是要处理的坏点。</p>
-<p>把三个点在所有指标上的表现汇成一张表，看哪种点被哪个指标抓到：</p>
+</span></span></code></pre></div><img src="index.en_files/figure-html/fig-covratio-1.png" alt="" width="888" />
+<p>这张图的看点在 A：前面几个指标都放过了它，只有 COVRATIO 标出它。A 的 COVRATIO 为 1.56（带子上方），说明这个高杠杆点在稳住估计、删了反而更不准，是&quot;好&quot;杠杆点。C 则掉到 0.21（带子下方很远），删掉它精度明显变好，是要处理的坏点。</p>
+<p>把三个点在所有指标上的表现汇成一张表：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-r" data-lang="r"><span style="display:flex;"><span>mark <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">function</span>(cond) <span style="color:#a6e22e">ifelse</span>(cond, <span style="color:#e6db74">&#34;✔&#34;</span>, <span style="color:#e6db74">&#34;–&#34;</span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>summ <span style="color:#f92672">&lt;-</span> d <span style="color:#f92672">|&gt;</span>
@@ -662,20 +662,20 @@ $$</p>
 </tbody>
 </table>
 <ul>
-<li>A（高杠杆点）：只有 COVRATIO 标记它，而且是&quot;好&quot;的那种，其余指标都判它无害。</li>
-<li>B（离群点）：残差类指标抓得到，杠杆类指标漏掉它。</li>
-<li>C（强影响点）：几乎所有指标同时点名，这才是真正要处理的点。</li>
+<li>A（高杠杆点）：只有 COVRATIO 标记，且是&quot;好&quot;的那种，其余指标都判无害。</li>
+<li>B（离群点）：残差类指标抓得到，杠杆类指标漏掉。</li>
+<li>C（强影响点）：几乎所有指标同时点名，才是真正要处理的点。</li>
 </ul>
 <h2 id="小结">小结</h2>
-<p>回归诊断这套指标各有分工：</p>
+<p>这套指标各有分工：</p>
 <ul>
-<li>标准化残差看 $y$ 方向的偏离，也就是离群值；</li>
-<li>杠杆值看 $x$ 方向的极端；</li>
-<li>库克距离和 DFFITS 把两者合起来，衡量综合影响，用来锁定强影响点；</li>
-<li>DFBETAS 进一步定位到具体是哪个系数被动了；</li>
-<li>COVRATIO 从估计精度的角度看，还能分出好杠杆和坏杠杆。</li>
+<li>标准化残差看 $y$ 方向偏离（离群值）；</li>
+<li>杠杆值看 $x$ 方向极端；</li>
+<li>库克距离和 DFFITS 合两者，衡量综合影响、锁定强影响点；</li>
+<li>DFBETAS 定位到具体哪个系数被动；</li>
+<li>COVRATIO 从精度角度看，还能分出好坏杠杆。</li>
 </ul>
-<p>实际用的时候顺序大致是这样：先看影响图，扫出可疑的大气泡；再用 DFBETAS 看它扰动了哪个系数、扰动多大；最后结合业务判断是修正、剔除还是保留。还有一点前面提过：样本量小的时候单个点足以改写结论，得查清楚；样本量很大时不必纠结单点，把找强影响点的力气留给真正需要它的异常检测更划算。</p>
+<p>实际顺序：先看影响图扫出可疑大气泡，再用 DFBETAS 看它扰动了哪个系数、多大，最后结合业务判断修正、剔除还是保留。记住：样本量小时单点足以改写结论、务必查清；样本量大时不必纠结单点，把力气留给异常检测更划算。</p>
 </section>
 
   
