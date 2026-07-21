@@ -1,0 +1,714 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Top 销售经验蒸馏：从隐性判断到组织级知识图谱 - 浑身蟹数</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="一句话定位：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。
+一、为什么要蒸馏 Top 销售经验 Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。
+传统的经验沉淀方式在这里全部失效：
+培训课件——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断； 优秀案例文档——纯文本总结，不可检索、不可统计、无法验证真伪； 师徒带教——传递效率低，经验在转述中失真，且随人员流动而流失。 经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：
+可检索：按意向阶段、因素、话题精确定位打法； 可复用：情境抽象到方法论层面，换个用户也适用； 可统计：同一方法被多少真实对话验证，一目了然； 可验证：每条经验必须带对话原文三段证据。 下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：
+二、方法论总览：四阶段蒸馏管线 蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。
+阶段 名称 做什么 质量闸门 Stage 1 拉取对话 拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文 对话全文 hash 去重（批次内 &#43; 历史存量），重复对话不进入后续环节 Stage 2 关键时刻判断 LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低） 按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上 Stage 3 经验蒸馏 注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验 新标签必须声明名称、原因、证据，否则触发自动修正重试 Stage 4 图谱入库 销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j 结构强校验 &#43; 语义去重，失败与跳过均留痕 四条工程设计原则：" />
+  <meta name="author" content="xiebro" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://www.xiebro.cool/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/theme.png" />
+
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://avatars.githubusercontent.com/u/160246290?v=4" />
+  
+  
+
+  
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/twitter.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/github.svg" />
+  
+  <link rel="preload" as="image" href="https://www.xiebro.cool/instagram.svg" />
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://www.xiebro.cool/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+
+  
+  <link rel="icon" href="https://www.xiebro.cool/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://www.xiebro.cool/apple-touch-icon.png" />
+
+  
+  <meta name="generator" content="Hugo 0.122.0">
+
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="Top 销售经验蒸馏：从隐性判断到组织级知识图谱">
+<meta itemprop="description" content="一句话定位：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。
+一、为什么要蒸馏 Top 销售经验 Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。
+传统的经验沉淀方式在这里全部失效：
+培训课件——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断； 优秀案例文档——纯文本总结，不可检索、不可统计、无法验证真伪； 师徒带教——传递效率低，经验在转述中失真，且随人员流动而流失。 经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：
+可检索：按意向阶段、因素、话题精确定位打法； 可复用：情境抽象到方法论层面，换个用户也适用； 可统计：同一方法被多少真实对话验证，一目了然； 可验证：每条经验必须带对话原文三段证据。 下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：
+二、方法论总览：四阶段蒸馏管线 蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。
+阶段 名称 做什么 质量闸门 Stage 1 拉取对话 拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文 对话全文 hash 去重（批次内 &#43; 历史存量），重复对话不进入后续环节 Stage 2 关键时刻判断 LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低） 按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上 Stage 3 经验蒸馏 注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验 新标签必须声明名称、原因、证据，否则触发自动修正重试 Stage 4 图谱入库 销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j 结构强校验 &#43; 语义去重，失败与跳过均留痕 四条工程设计原则："><meta itemprop="datePublished" content="2026-07-21T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2026-07-21T00:00:00+00:00" />
+<meta itemprop="wordCount" content="378">
+<meta itemprop="keywords" content="AI,Sales,Knowledge-Graph,LLM," />
+  
+  <meta property="og:title" content="Top 销售经验蒸馏：从隐性判断到组织级知识图谱" />
+<meta property="og:description" content="一句话定位：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。
+一、为什么要蒸馏 Top 销售经验 Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。
+传统的经验沉淀方式在这里全部失效：
+培训课件——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断； 优秀案例文档——纯文本总结，不可检索、不可统计、无法验证真伪； 师徒带教——传递效率低，经验在转述中失真，且随人员流动而流失。 经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：
+可检索：按意向阶段、因素、话题精确定位打法； 可复用：情境抽象到方法论层面，换个用户也适用； 可统计：同一方法被多少真实对话验证，一目了然； 可验证：每条经验必须带对话原文三段证据。 下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：
+二、方法论总览：四阶段蒸馏管线 蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。
+阶段 名称 做什么 质量闸门 Stage 1 拉取对话 拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文 对话全文 hash 去重（批次内 &#43; 历史存量），重复对话不进入后续环节 Stage 2 关键时刻判断 LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低） 按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上 Stage 3 经验蒸馏 注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验 新标签必须声明名称、原因、证据，否则触发自动修正重试 Stage 4 图谱入库 销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j 结构强校验 &#43; 语义去重，失败与跳过均留痕 四条工程设计原则：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.xiebro.cool/post/salescopilot-distill/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2026-07-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2026-07-21T00:00:00+00:00" />
+
+
+  
+  <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Top 销售经验蒸馏：从隐性判断到组织级知识图谱"/>
+<meta name="twitter:description" content="一句话定位：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。
+一、为什么要蒸馏 Top 销售经验 Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。
+传统的经验沉淀方式在这里全部失效：
+培训课件——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断； 优秀案例文档——纯文本总结，不可检索、不可统计、无法验证真伪； 师徒带教——传递效率低，经验在转述中失真，且随人员流动而流失。 经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：
+可检索：按意向阶段、因素、话题精确定位打法； 可复用：情境抽象到方法论层面，换个用户也适用； 可统计：同一方法被多少真实对话验证，一目了然； 可验证：每条经验必须带对话原文三段证据。 下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：
+二、方法论总览：四阶段蒸馏管线 蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。
+阶段 名称 做什么 质量闸门 Stage 1 拉取对话 拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文 对话全文 hash 去重（批次内 &#43; 历史存量），重复对话不进入后续环节 Stage 2 关键时刻判断 LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低） 按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上 Stage 3 经验蒸馏 注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验 新标签必须声明名称、原因、证据，否则触发自动修正重试 Stage 4 图谱入库 销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j 结构强校验 &#43; 语义去重，失败与跳过均留痕 四条工程设计原则："/>
+
+  
+  
+  
+  <link rel="canonical" href="https://www.xiebro.cool/post/salescopilot-distill/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-3xl px-8 lg:justify-center">
+  <div class="relative z-50 mr-auto flex items-center">
+    <a
+      class="-translate-x-[1px] -translate-y-[1px] text-2xl font-semibold"
+      href="https://www.xiebro.cool/"
+      >Home</a
+    >
+    <div
+      class="btn-dark text-[0] ml-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 -mr-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+    <nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-6">
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/about/"
+        >About</a
+      >
+      
+      <a
+        class="block text-center text-2xl leading-[5rem] lg:text-base lg:font-normal"
+        href="/contact/"
+        >Contact</a
+      >
+      
+    </nav>
+    
+
+ 
+  </div>
+</header>
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl px-8 pb-16 pt-12 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Top 销售经验蒸馏：从隐性判断到组织级知识图谱</h1>
+
+    
+    <div class="text-sm antialiased opacity-60">
+      
+      <time>Jul 21, 2026</time>
+      
+      
+      
+      
+      <span class="mx-1">&middot;</span>
+      <span>xiebro</span>
+      
+    </div>
+    
+  </header>
+
+  <section><blockquote>
+<p><strong>一句话定位</strong>：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。</p>
+</blockquote>
+<h2 id="一为什么要蒸馏-top-销售经验">一、为什么要蒸馏 Top 销售经验</h2>
+<p>Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。</p>
+<p>传统的经验沉淀方式在这里全部失效：</p>
+<ul>
+<li><strong>培训课件</strong>——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断；</li>
+<li><strong>优秀案例文档</strong>——纯文本总结，不可检索、不可统计、无法验证真伪；</li>
+<li><strong>师徒带教</strong>——传递效率低，经验在转述中失真，且随人员流动而流失。</li>
+</ul>
+<p>经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：</p>
+<ul>
+<li><strong>可检索</strong>：按意向阶段、因素、话题精确定位打法；</li>
+<li><strong>可复用</strong>：情境抽象到方法论层面，换个用户也适用；</li>
+<li><strong>可统计</strong>：同一方法被多少真实对话验证，一目了然；</li>
+<li><strong>可验证</strong>：每条经验必须带对话原文三段证据。</li>
+</ul>
+<p>下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：</p>
+<img src="images/01-value-loop.png" style="max-width:100%;" alt="Top 销售经验蒸馏的价值闭环"/>
+<h2 id="二方法论总览四阶段蒸馏管线">二、方法论总览：四阶段蒸馏管线</h2>
+<p>蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>名称</th>
+<th>做什么</th>
+<th>质量闸门</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stage 1</td>
+<td><strong>拉取对话</strong></td>
+<td>拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文</td>
+<td>对话全文 hash 去重（批次内 + 历史存量），重复对话不进入后续环节</td>
+</tr>
+<tr>
+<td>Stage 2</td>
+<td><strong>关键时刻判断</strong></td>
+<td>LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低）</td>
+<td>按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上</td>
+</tr>
+<tr>
+<td>Stage 3</td>
+<td><strong>经验蒸馏</strong></td>
+<td>注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验</td>
+<td>新标签必须声明名称、原因、证据，否则触发自动修正重试</td>
+</tr>
+<tr>
+<td>Stage 4</td>
+<td><strong>图谱入库</strong></td>
+<td>销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j</td>
+<td>结构强校验 + 语义去重，失败与跳过均留痕</td>
+</tr>
+</tbody>
+</table>
+<img src="images/02-pipeline.png" style="max-width:100%;" alt="经验蒸馏四阶段管线"/>
+<blockquote>
+<p><strong>四条工程设计原则：</strong></p>
+<ol>
+<li><strong>全自动</strong>——提交样本即执行，无人工审核环节；</li>
+<li><strong>异步执行</strong>——长任务后台运行，支持暂停 / 恢复 / 取消，断点续跑不重复写入；</li>
+<li><strong>中间结果全落库</strong>——任务、对话、关键时刻、蒸馏结果、入库结果五张表，单条失败可精确定位，不需整批重跑；</li>
+<li><strong>防御性解析</strong>——LLM 输出多层容错，单条异常不阻断整批。</li>
+</ol>
+</blockquote>
+<h2 id="三什么才算一条经验五元组结构">三、什么才算一条「经验」：五元组结构</h2>
+<p>纯文本总结不可检索、不可统计。本方法论把每条经验强制约束为五元组结构，缺一即拒绝入库。</p>
+<img src="images/03-five-tuple.png" style="max-width:100%;" alt="一条经验的结构：五元组 + 检索标签"/>
+<p>五元组回答了「一条经验凭什么可信、凭什么可复用」——上图中每个分量各司其职。在此之上，每条经验还携带一组<strong>检索标签</strong>（起止意向阶段、化解 / 利用的因素、话题、适用人群），它们正是后续入图建边的原料。</p>
+<table>
+<thead>
+<tr>
+<th>经验类型</th>
+<th>标签</th>
+<th>判定标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>意向推进</strong></td>
+<td>intent_advance</td>
+<td>用户意向阶段发生正向变化</td>
+</tr>
+<tr>
+<td><strong>阻塞化解</strong></td>
+<td>blocker_resolve</td>
+<td>价格、时间、决策权等顾虑被化解或弱化</td>
+</tr>
+<tr>
+<td><strong>信号捕捉</strong></td>
+<td>signal_capture</td>
+<td>捕捉用户释放的积极信号并有效放大</td>
+</tr>
+<tr>
+<td><strong>节奏把控</strong></td>
+<td>pacing</td>
+<td>推进、暂停、转换话题的时机选择正确</td>
+</tr>
+<tr>
+<td><strong>信息承接</strong></td>
+<td>context_leverage</td>
+<td>利用既有背景信息增强沟通针对性</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>四条萃取原则</strong>：宁少勿滥——无判断含量就输出空；判断 &gt; 动作——核心是判断逻辑而非操作步骤；可复用性 &gt; 精确性——情境抽象到方法论层面；证据必须充分——before / action / after 三段原文缺一不可。</p>
+</blockquote>
+<h2 id="四知识图谱结构设计核心">四、知识图谱结构设计（核心）</h2>
+<p>经验的价值不在单条内容，而在关系：方法化解了哪个因素、推动了哪段意向阶段、被多少条真实对话反复验证。这正是选择知识图谱而非文档库或纯向量库的原因。</p>
+<p>在进入 Schema 细节之前，先补一块背景知识——什么是「图」这种数据结构。下图帮助不熟悉图数据库的读者快速建立直觉：图由节点与边构成，关系本身就是一等公民的数据，检索就是沿着边行走。</p>
+<img src="images/04-what-is-graph.png" style="max-width:100%;" alt="图结构一分钟入门：节点·边·遍历"/>
+<h3 id="41-图谱-schema五类节点七类关系">4.1 图谱 Schema：五类节点、七类关系</h3>
+<img src="images/05-schema.png" style="max-width:100%;" alt="销售经验知识图谱 Schema"/>
+<table>
+<thead>
+<tr>
+<th>节点类型</th>
+<th>含义</th>
+<th>设计要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IntentStage</strong></td>
+<td>用户意向阶段 S0～S4</td>
+<td>图谱骨架，预置五个节点、不增长：S0 暂缓流失 → S1 沉默 → S2 需求模糊 → S3 需求明确 → S4 强购买意愿</td>
+</tr>
+<tr>
+<td><strong>Factor</strong></td>
+<td>影响因素（带正 / 负极性）</td>
+<td>如「价格敏感」「效果怀疑」（负）、「孩子兴趣」（正）；name + polarity 联合唯一，同名不同极性可共存</td>
+</tr>
+<tr>
+<td><strong>Approach</strong></td>
+<td>归一化后的销售方法</td>
+<td>方法层核心资产；经归一化避免同一打法以不同措辞重复建节点</td>
+</tr>
+<tr>
+<td><strong>Experience</strong></td>
+<td>结构化经验（五元组）</td>
+<td>证据单元，携带对话原文三段证据，全局唯一 ID 保证幂等</td>
+</tr>
+<tr>
+<td><strong>Topic</strong></td>
+<td>话题标签</td>
+<td>检索入口，如「课程价格」「学习效果」；全局唯一</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>关系类型</th>
+<th>方向</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TRANSITION</strong></td>
+<td>IntentStage → IntentStage</td>
+<td>意向阶段推进路径，权重随经验累积</td>
+</tr>
+<tr>
+<td><strong>BLOCKS</strong></td>
+<td>负向 Factor → IntentStage</td>
+<td>该因素阻塞用户在此阶段推进</td>
+</tr>
+<tr>
+<td><strong>DRIVES</strong></td>
+<td>正向 Factor → IntentStage</td>
+<td>该因素驱动用户向此阶段推进</td>
+</tr>
+<tr>
+<td><strong>RESOLVES</strong></td>
+<td>Approach → 负向 Factor</td>
+<td>该方法化解此消极因素</td>
+</tr>
+<tr>
+<td><strong>LEVERAGES</strong></td>
+<td>Approach → 正向 Factor</td>
+<td>该方法利用此积极因素</td>
+</tr>
+<tr>
+<td><strong>EVIDENCE_OF</strong></td>
+<td>Experience → Approach</td>
+<td>该经验是此方法的一条真实对话证据</td>
+</tr>
+<tr>
+<td><strong>INVOLVES</strong></td>
+<td>Experience → Topic</td>
+<td>该经验涉及此话题</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-分层设计与边规划">4.2 分层设计与边规划</h3>
+<p>Experience 是证据层，Approach 是方法层；边由经验类型按决策矩阵规划生成。</p>
+<blockquote>
+<p>⭐ <strong>最关键的设计决策：证据层与方法层分离</strong>。Experience（证据层）永远只增不改，Approach（方法层）通过归一化持续收敛。同一个方法被越多条真实经验指向（EVIDENCE_OF 计数越高），它的置信度就越高——图谱因此天然具备「方法强度统计」能力，而不需要任何人工打分。</p>
+</blockquote>
+<p><strong>边规划决策矩阵</strong>——不同经验类型只建立与其语义匹配的边，避免无差别连线造成图谱噪声：</p>
+<table>
+<thead>
+<tr>
+<th>经验类型</th>
+<th>TRANSITION</th>
+<th>负因素边（BLOCKS / RESOLVES）</th>
+<th>正因素边（DRIVES / LEVERAGES）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>意向推进</td>
+<td>✅ 建立</td>
+<td>—</td>
+<td>✅ 建立</td>
+</tr>
+<tr>
+<td>阻塞化解</td>
+<td>✅ 建立</td>
+<td>✅ 建立</td>
+<td>—</td>
+</tr>
+<tr>
+<td>信号捕捉</td>
+<td>✅ 建立</td>
+<td>—</td>
+<td>✅ 建立</td>
+</tr>
+<tr>
+<td>节奏把控</td>
+<td>仅阶段跨越时建立</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>信息承接</td>
+<td>✅ 建立</td>
+<td>仅 BLOCKS</td>
+<td>✅ 建立</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Approach 归一化</strong>：入库前按「同阶段路径 + 同类型 + 因素重叠 &gt; 同路径 + 同类型 &gt; 邻近路径」的优先级检索候选方法目录，交给 LLM 判定三种结果——<strong>matched</strong>（复用已有方法）、<strong>revise</strong>（修订已有方法表述）、<strong>new</strong>（确属新打法才新建）。这是控制方法层收敛、让 EVIDENCE_OF 计数有统计意义的前提。</p>
+<h3 id="43-一条经验如何入图实例演示">4.3 一条经验如何入图（实例演示）</h3>
+<img src="images/06-example.png" style="max-width:100%;" alt="一条经验如何入图：实例演示"/>
+<blockquote>
+<p><strong>❓ 结构设计的最终检验标准：图谱能直接回答业务问题。</strong></p>
+<ul>
+<li>哪些方法最常把用户从「需求模糊」推进到「需求明确」？（沿 TRANSITION + EVIDENCE_OF 聚合）</li>
+<li>「价格敏感」通常阻塞在哪个阶段？化解它最有效的方法是什么？（BLOCKS + RESOLVES）</li>
+<li>哪些方法被最多真实对话验证过？（EVIDENCE_OF 计数排序）</li>
+<li>「学习效果」话题下有哪些可复用打法？（INVOLVES 反查）</li>
+</ul>
+</blockquote>
+<h2 id="五质量控制让图谱可信且不发散">五、质量控制：让图谱可信且不发散</h2>
+<p>没有质量控制的图谱会迅速膨胀成噪声。管线内置三层去重、全局标签闭环与入库强校验。</p>
+<img src="images/07-quality.png" style="max-width:100%;" alt="质量控制漏斗：从原始对话到入库经验"/>
+<table>
+<thead>
+<tr>
+<th>防重层级</th>
+<th>机制</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>对话层</strong></td>
+<td>对话全文 hash 去重（批内 + 历史）</td>
+<td>同一段对话不重复消耗 LLM 算力，不重复产出经验</td>
+</tr>
+<tr>
+<td><strong>方法层</strong></td>
+<td>Approach 归一化（matched / revise / new）</td>
+<td>同一打法不同措辞不会重复建节点，方法层持续收敛</td>
+</tr>
+<tr>
+<td><strong>经验层</strong></td>
+<td>语义去重（同方法 + 同阶段路径 + 因素高度重叠）</td>
+<td>过度相似的经验跳过入库，只保留有增量信息的证据</td>
+</tr>
+</tbody>
+</table>
+<p><strong>全局标签闭环</strong>——蒸馏前从图谱读取因素 / 话题标签全集快照注入提示词，要求 LLM 优先沿用已有标签；确需新建时必须声明名称、原因和原文证据，未声明的新标签触发自动修正重试；入库成功的新标签自动进入下一个任务的全集。这个闭环从根上防止了两类图谱退化：标签发散（同义因素以十种措辞各建一个节点）和孤立节点（有节点无边连接）。</p>
+<blockquote>
+<p>✅ <strong>入库强校验（缺一即拒绝）</strong>：经验类型合法 · 意向阶段方向合理（目标阶段 ≥ 起始阶段）· 原文证据三段完整 · 销售方法非空。校验失败、语义重复、写入失败均逐条留痕，可精确定位。</p>
+</blockquote>
+<h2 id="六价值衡量与应用场景">六、价值衡量与应用场景</h2>
+<p>蒸馏效果可以被量化追踪，图谱资产直接服务于三类下游场景。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>口径</th>
+<th>反映什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对话有效率</td>
+<td>保留关键时刻对话数 / 拉取对话数</td>
+<td>样本选取质量</td>
+</tr>
+<tr>
+<td>经验产出率</td>
+<td>蒸馏经验数 / 保留对话数</td>
+<td>蒸馏提取能力</td>
+</tr>
+<tr>
+<td>入库成功率</td>
+<td>入库成功经验数 / 蒸馏经验数</td>
+<td>结构化质量</td>
+</tr>
+<tr>
+<td>去重比例</td>
+<td>跳过经验数 / 蒸馏经验数</td>
+<td>样本重复度与图谱饱和度</td>
+</tr>
+<tr>
+<td>方法复用率</td>
+<td>matched + revise 数 / 总入库经验数</td>
+<td>方法层收敛程度——越高说明图谱越接近打法全集</td>
+</tr>
+</tbody>
+</table>
+<p>图谱资产直接服务三类下游场景：</p>
+<ul>
+<li><strong>新人辅导</strong>：按「意向阶段 + 因素」检索 Top 打法。新班主任遇到 S2 阶段价格敏感的家长，直接查到被验证最多的化解方法及原文案例。</li>
+<li><strong>AI 实时辅助</strong>：SalesCopilot 实战技能查询图谱，结合用户当前意向阶段与顾虑，实时给出蒸馏经验支撑的推进建议。</li>
+<li><strong>策略分析</strong>：管理层俯瞰因素分布与阶段阻塞热点，哪些顾虑最普遍、哪段推进最难，指导培训与话术资产投入。</li>
+</ul>
+</section>
+
+  
+  
+  <footer class="mt-12 flex flex-wrap">
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/ai"
+      >AI</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/sales"
+      >Sales</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/knowledge-graph"
+      >Knowledge-Graph</a
+    >
+     
+    <a
+      class="mb-1.5 mr-1.5 rounded-lg bg-black/[3%] px-5 py-1.5 no-underline dark:bg-white/[8%]"
+      href="https://www.xiebro.cool/tags/llm"
+      >LLM</a
+    >
+    
+  </footer>
+  
+
+  
+  
+  
+  
+  <nav class="mt-24 flex rounded-lg bg-black/[3%] text-lg dark:bg-white/[8%]">
+    
+    
+    <a
+      class="ml-auto flex w-1/2 items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline hover:bg-black/[2%] dark:hover:bg-white/[3%]"
+      href="https://www.xiebro.cool/post/2026-07-15-influential-points/"
+      ><span>回归诊断中的强影响点：从标准化残差到影响图</span><span class="ml-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="opaco mx-auto flex h-[4.5rem] max-w-3xl items-center px-8 text-[0.9em] opacity-60"
+>
+    
+  
+  <div class="mr-auto">
+    <a
+    class="link"
+    href="https://www.xiebro.cool/"
+    rel="noopener"
+    target="_blank"
+    >浑身蟹数  </a
+  >
+    &copy; 2026
+    <a class="link" href="https://beian.miit.gov.cn/">京ICP备2024049401</a>
+  </div>
+  
+
+</footer>
+
+  </body>
+</html>

@@ -6,8 +6,15 @@
     <description>Recent content in AI on 浑身蟹数</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 25 May 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 21 Jul 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://www.xiebro.cool/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Top 销售经验蒸馏：从隐性判断到组织级知识图谱</title>
+      <link>https://www.xiebro.cool/post/salescopilot-distill/</link>
+      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <guid>https://www.xiebro.cool/post/salescopilot-distill/</guid>
+      <description>一句话定位：把 Top 销售（班主任）散落在真实对话里的隐性经验，自动蒸馏成「情境 - 判断 - 执行 - 效果 - 证据」结构化资产，并沉淀为可检索、可复用、可统计的知识图谱，支撑销售辅导、案例检索与 AI 实时辅助。&#xA;一、为什么要蒸馏 Top 销售经验 Top 销售与普通销售的差距，不在标准 SOP 的执行，而在关键时刻的「非默认选择」——这些判断是隐性的，散落在成千上万条微信与电话对话中，人走经验丢，新人只能靠师徒传帮带缓慢习得。&#xA;传统的经验沉淀方式在这里全部失效：&#xA;培训课件——沉淀的是标准 SOP，而真正拉开差距的恰恰是 SOP 之外的临场判断； 优秀案例文档——纯文本总结，不可检索、不可统计、无法验证真伪； 师徒带教——传递效率低，经验在转述中失真，且随人员流动而流失。 经验蒸馏要做的，是把隐性判断转化为组织级经验资产，实现四个「可」：&#xA;可检索：按意向阶段、因素、话题精确定位打法； 可复用：情境抽象到方法论层面，换个用户也适用； 可统计：同一方法被多少真实对话验证，一目了然； 可验证：每条经验必须带对话原文三段证据。 下图展示了从「隐性个人经验」到「组织经验资产」的价值闭环：&#xA;二、方法论总览：四阶段蒸馏管线 蒸馏不是「让大模型总结聊天记录」，而是一条带质量闸门的自动化管线：拉取对话、判断关键时刻、结构化萃取、图谱入库，每一阶段的中间结果均落库可追溯。&#xA;阶段 名称 做什么 质量闸门 Stage 1 拉取对话 拉取电话、微信文字、微信语音、会议语音记录，统一整理为带时间和角色的对话全文 对话全文 hash 去重（批次内 + 历史存量），重复对话不进入后续环节 Stage 2 关键时刻判断 LLM 逐条判断对话是否值得提取，并标注经验密度（高 / 中 / 低） 按阈值过滤，把昂贵的蒸馏算力只花在有价值的对话上 Stage 3 经验蒸馏 注入全局因素 / 话题标签快照，LLM 萃取结构化五元组经验 新标签必须声明名称、原因、证据，否则触发自动修正重试 Stage 4 图谱入库 销售方法归一化 → 因素分类 → 边规划 → 写入 Neo4j 结构强校验 + 语义去重，失败与跳过均留痕 四条工程设计原则：</description>
+    </item>
     <item>
       <title>对组织拥抱AI的一些思考</title>
       <link>https://www.xiebro.cool/post/embrace-ai-org/</link>

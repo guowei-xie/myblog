@@ -3,10 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.xiebro.cool/post/</loc>
-    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/ai/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/categories/ai/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/</loc>
-    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/knowledge-graph/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/llm/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/sales/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/tags/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/post/salescopilot-distill/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.xiebro.cool/</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/diagnostics/</loc>
     <lastmod>2026-07-15T00:00:00+00:00</lastmod>
@@ -20,17 +44,8 @@
     <loc>https://www.xiebro.cool/tags/regression/</loc>
     <lastmod>2026-07-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/</loc>
-    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/post/2026-07-15-influential-points/</loc>
     <lastmod>2026-07-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/</loc>
-    <lastmod>2026-07-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/categories/ai/</loc>
-    <lastmod>2026-07-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/forecasting/</loc>
     <lastmod>2026-07-06T00:00:00+00:00</lastmod>
@@ -80,13 +95,7 @@
     <loc>https://www.xiebro.cool/post/2026-06-13-conversion-rate-prediction/</loc>
     <lastmod>2026-06-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://www.xiebro.cool/tags/ai/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://www.xiebro.cool/tags/organization/</loc>
-    <lastmod>2026-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/sales/</loc>
     <lastmod>2026-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/categories/thoughts/</loc>
@@ -189,9 +198,6 @@
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/post/io-the-wisp/</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://www.xiebro.cool/tags/llm/</loc>
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://www.xiebro.cool/tags/shiny/</loc>
